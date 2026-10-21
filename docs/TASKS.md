@@ -30,7 +30,7 @@
 - [ ] Dedicated Telegram bot token supplied and live E2E verified
 - [ ] systemd installation/enabling by authorized administrator
 - [ ] Reboot verification
-- [ ] Push verified changes to main
+- [x] Push verified changes to main (ba1e53a; origin confirmed)
 
 Issue #1 remains open; do not report stage 1 as complete.
 

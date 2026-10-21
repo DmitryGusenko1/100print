@@ -57,3 +57,8 @@ ingestion and ACK. Restarted the existing private cluster and API after finding 
 stopped. This is process startup only, not proof of systemd or reboot persistence.
 Keep issue #1 open until dedicated Telegram credentials and privileged service
 installation are available. No foreign credentials or services may be used as a workaround.
+
+## Delivery checkpoint (2026-10-21)
+Verified implementation ba1e53a was pushed to origin/main together with the database
+foundation and Telegram slice commits. Repository delivery is complete; service
+installation, live Telegram E2E and reboot acceptance remain unchecked.
