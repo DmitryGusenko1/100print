@@ -1,0 +1,72 @@
+[
+  {
+    "id": "strategy",
+    "name": "Strategy",
+    "head": "head-strategy",
+    "specialists": [
+      "strategy.specialist-1",
+      "strategy.specialist-2",
+      "strategy.specialist-3"
+    ]
+  },
+  {
+    "id": "marketing",
+    "name": "Marketing",
+    "head": "head-marketing",
+    "specialists": [
+      "marketing.specialist-1",
+      "marketing.specialist-2",
+      "marketing.specialist-3"
+    ]
+  },
+  {
+    "id": "seo",
+    "name": "Seo",
+    "head": "head-seo",
+    "specialists": [
+      "seo.specialist-1",
+      "seo.specialist-2",
+      "seo.specialist-3"
+    ]
+  },
+  {
+    "id": "sales",
+    "name": "Sales",
+    "head": "head-sales",
+    "specialists": [
+      "sales.specialist-1",
+      "sales.specialist-2",
+      "sales.specialist-3"
+    ]
+  },
+  {
+    "id": "finance",
+    "name": "Finance",
+    "head": "head-finance",
+    "specialists": [
+      "finance.specialist-1",
+      "finance.specialist-2",
+      "finance.specialist-3"
+    ]
+  },
+  {
+    "id": "operations",
+    "name": "Operations",
+    "head": "head-operations",
+    "specialists": [
+      "operations.specialist-1",
+      "operations.specialist-2",
+      "operations.specialist-3"
+    ]
+  },
+  {
+    "id": "critic",
+    "name": "Critic",
+    "head": "head-critic",
+    "specialists": [
+      "critic.specialist-1",
+      "critic.specialist-2",
+      "critic.specialist-3"
+    ]
+  }
+]

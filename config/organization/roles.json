@@ -1,0 +1,323 @@
+[
+  {
+    "id": "chief-of-staff",
+    "name": "CEO / Chief of Staff",
+    "kind": "chief",
+    "department": null,
+    "skills": []
+  },
+  {
+    "id": "head-strategy",
+    "name": "Head of Strategy",
+    "kind": "head",
+    "department": "strategy",
+    "skills": [
+      "strategy.01",
+      "strategy.02",
+      "strategy.03",
+      "strategy.04",
+      "strategy.05",
+      "strategy.06"
+    ]
+  },
+  {
+    "id": "strategy.specialist-1",
+    "name": "Problem Analyst",
+    "kind": "specialist",
+    "department": "strategy",
+    "skills": [
+      "strategy.01",
+      "strategy.04"
+    ]
+  },
+  {
+    "id": "strategy.specialist-2",
+    "name": "Options Analyst",
+    "kind": "specialist",
+    "department": "strategy",
+    "skills": [
+      "strategy.02",
+      "strategy.05"
+    ]
+  },
+  {
+    "id": "strategy.specialist-3",
+    "name": "Decision Analyst",
+    "kind": "specialist",
+    "department": "strategy",
+    "skills": [
+      "strategy.03",
+      "strategy.06"
+    ]
+  },
+  {
+    "id": "head-marketing",
+    "name": "Head of Marketing",
+    "kind": "head",
+    "department": "marketing",
+    "skills": [
+      "marketing.01",
+      "marketing.02",
+      "marketing.03",
+      "marketing.04",
+      "marketing.05",
+      "marketing.06"
+    ]
+  },
+  {
+    "id": "marketing.specialist-1",
+    "name": "Audience Analyst",
+    "kind": "specialist",
+    "department": "marketing",
+    "skills": [
+      "marketing.01",
+      "marketing.04"
+    ]
+  },
+  {
+    "id": "marketing.specialist-2",
+    "name": "Positioning Analyst",
+    "kind": "specialist",
+    "department": "marketing",
+    "skills": [
+      "marketing.02",
+      "marketing.05"
+    ]
+  },
+  {
+    "id": "marketing.specialist-3",
+    "name": "Campaign Planner",
+    "kind": "specialist",
+    "department": "marketing",
+    "skills": [
+      "marketing.03",
+      "marketing.06"
+    ]
+  },
+  {
+    "id": "head-seo",
+    "name": "Head of Seo",
+    "kind": "head",
+    "department": "seo",
+    "skills": [
+      "seo.01",
+      "seo.02",
+      "seo.03",
+      "seo.04",
+      "seo.05",
+      "seo.06",
+      "seo.07",
+      "seo.08"
+    ]
+  },
+  {
+    "id": "seo.specialist-1",
+    "name": "Keyword Analyst",
+    "kind": "specialist",
+    "department": "seo",
+    "skills": [
+      "seo.01",
+      "seo.04",
+      "seo.07"
+    ]
+  },
+  {
+    "id": "seo.specialist-2",
+    "name": "Content Strategist",
+    "kind": "specialist",
+    "department": "seo",
+    "skills": [
+      "seo.02",
+      "seo.05",
+      "seo.08"
+    ]
+  },
+  {
+    "id": "seo.specialist-3",
+    "name": "Technical SEO Analyst",
+    "kind": "specialist",
+    "department": "seo",
+    "skills": [
+      "seo.03",
+      "seo.06"
+    ]
+  },
+  {
+    "id": "head-sales",
+    "name": "Head of Sales",
+    "kind": "head",
+    "department": "sales",
+    "skills": [
+      "sales.01",
+      "sales.02",
+      "sales.03",
+      "sales.04",
+      "sales.05",
+      "sales.06"
+    ]
+  },
+  {
+    "id": "sales.specialist-1",
+    "name": "Funnel Analyst",
+    "kind": "specialist",
+    "department": "sales",
+    "skills": [
+      "sales.01",
+      "sales.04"
+    ]
+  },
+  {
+    "id": "sales.specialist-2",
+    "name": "Deal Analyst",
+    "kind": "specialist",
+    "department": "sales",
+    "skills": [
+      "sales.02",
+      "sales.05"
+    ]
+  },
+  {
+    "id": "sales.specialist-3",
+    "name": "Sales Enablement Specialist",
+    "kind": "specialist",
+    "department": "sales",
+    "skills": [
+      "sales.03",
+      "sales.06"
+    ]
+  },
+  {
+    "id": "head-finance",
+    "name": "Head of Finance",
+    "kind": "head",
+    "department": "finance",
+    "skills": [
+      "finance.01",
+      "finance.02",
+      "finance.03",
+      "finance.04",
+      "finance.05",
+      "finance.06",
+      "finance.07"
+    ]
+  },
+  {
+    "id": "finance.specialist-1",
+    "name": "Unit Economics Analyst",
+    "kind": "specialist",
+    "department": "finance",
+    "skills": [
+      "finance.01",
+      "finance.04",
+      "finance.07"
+    ]
+  },
+  {
+    "id": "finance.specialist-2",
+    "name": "Investment Analyst",
+    "kind": "specialist",
+    "department": "finance",
+    "skills": [
+      "finance.02",
+      "finance.05"
+    ]
+  },
+  {
+    "id": "finance.specialist-3",
+    "name": "Budget Analyst",
+    "kind": "specialist",
+    "department": "finance",
+    "skills": [
+      "finance.03",
+      "finance.06"
+    ]
+  },
+  {
+    "id": "head-operations",
+    "name": "Head of Operations",
+    "kind": "head",
+    "department": "operations",
+    "skills": [
+      "operations.01",
+      "operations.02",
+      "operations.03",
+      "operations.04",
+      "operations.05",
+      "operations.06"
+    ]
+  },
+  {
+    "id": "operations.specialist-1",
+    "name": "Process Analyst",
+    "kind": "specialist",
+    "department": "operations",
+    "skills": [
+      "operations.01",
+      "operations.04"
+    ]
+  },
+  {
+    "id": "operations.specialist-2",
+    "name": "Resource Planner",
+    "kind": "specialist",
+    "department": "operations",
+    "skills": [
+      "operations.02",
+      "operations.05"
+    ]
+  },
+  {
+    "id": "operations.specialist-3",
+    "name": "Execution Planner",
+    "kind": "specialist",
+    "department": "operations",
+    "skills": [
+      "operations.03",
+      "operations.06"
+    ]
+  },
+  {
+    "id": "head-critic",
+    "name": "Chief Critic / Risk",
+    "kind": "head",
+    "department": "critic",
+    "skills": [
+      "critic.01",
+      "critic.02",
+      "critic.03",
+      "critic.04",
+      "critic.05",
+      "critic.06"
+    ]
+  },
+  {
+    "id": "critic.specialist-1",
+    "name": "Assumption Analyst",
+    "kind": "specialist",
+    "department": "critic",
+    "skills": [
+      "critic.01",
+      "critic.04"
+    ]
+  },
+  {
+    "id": "critic.specialist-2",
+    "name": "Failure Analyst",
+    "kind": "specialist",
+    "department": "critic",
+    "skills": [
+      "critic.02",
+      "critic.05"
+    ]
+  },
+  {
+    "id": "critic.specialist-3",
+    "name": "Evidence Analyst",
+    "kind": "specialist",
+    "department": "critic",
+    "skills": [
+      "critic.03",
+      "critic.06"
+    ]
+  }
+]

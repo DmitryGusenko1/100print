@@ -1,6 +1,6 @@
 # CEO Orchestrator
 
-Isolated durable worker for GitHub issue #3. Root: `/opt/ceo-orchestrator`.
+Isolated durable worker and AI organization for GitHub issues #3 and #5. Root: `/opt/ceo-orchestrator`.
 Runs as Linux user `ceoorch` using its own `.venv`, `.env`, database, logs and data.
 No HTTP server, Redis, nginx changes, external API or paid provider required.
 
@@ -116,3 +116,86 @@ These live checks create isolated test tasks in our database and deliberately ki
 They also check retry exhaustion, result/audit persistence, heartbeat freshness,
 scheduler/handoff deduplication, reports, nonprivileged DB role, and adapter path policy.
 Expected `failed` test tasks remain as evidence. No other service is stopped or restarted.
+
+## AI organization (issue #5)
+
+The organization has CEO / Chief of Staff, seven heads (Strategy, Marketing,
+SEO, Sales, Finance, Operations, Chief Critic / Risk), and three specialists per
+head. The 29 role definitions are in `config/organization/roles.json`; the 45
+versioned skills and their schemas, instructions and test cases are in
+`config/organization/skills.json`. Skills are capabilities, not agents. Startup
+validates and synchronizes the catalog to `skills_registry`, `organization_roles`,
+`agents` and `departments` in the private `ceo_orchestrator` database.
+Run `python config/organization/build_catalog.py` to rebuild the checked-in catalog.
+
+Skills v1: Strategy: problem framing, strategic options, prioritization, business
+model analysis, scenario analysis, decision memo. Marketing: ICP / segmentation,
+positioning, offer analysis, channel strategy, campaign planning, competitor
+analysis. SEO: semantic core planning, keyword clustering, search intent, content
+brief, on-page audit, technical SEO checklist, internal linking, competitor SERP
+analysis. Sales: funnel analysis, sales process, objection analysis, offer-to-close
+logic, KPI / conversion diagnostics, sales playbook. Finance: unit economics,
+CAC/LTV, margin, break-even, ROI, scenario model, budget sanity check. Operations:
+process decomposition, resource plan, bottleneck analysis, execution plan,
+owner/deadline assignment, risk dependencies. Critic: assumption attack,
+contradiction detection, pre-mortem, failure modes, evidence gap, alternative
+hypothesis.
+
+`IntentRouter`, `DepartmentRouter` and `ComplexityRouter` accept explicit commands
+and infer departments from labels/title/problem. L1 invokes one specialist/skill;
+L2 invokes a head and its specialists; L3 invokes multiple heads with persisted
+request/receipt handoffs and conflict agreement; L4 invokes all seven heads.
+Council saves rounds 0–6: context, independent positions, mutual criticism,
+disagreement map, focused resolution and departmental acknowledgments, Critic
+challenge, Chief of Staff synthesis. Final JSON contains decision, why,
+alternatives_rejected, risks, assumptions, action_plan, KPI, next_decision_point.
+Blocking challenges, unresolved conflicts or remaining departmental objections
+set `requires_decision`; no business spending or execution is authorized.
+
+Every completed step is committed to `organization_steps`; handoffs also appear
+in `organization_handoffs`. Queue recovery reuses completed steps by task UUID,
+step key and input fingerprint. Changed context, provider identity or catalog
+fails closed instead of mixing incompatible runs. Failed/invalid provider output
+is not checkpointed. Use a new task for revised inputs.
+
+### GitHub business commands
+
+The running worker polls open issues in `DmitryGusenko1/100print` every minute.
+Only issues authored by `DmitryGusenko1` are accepted. Add `ai-task`, a department
+label, or `council`, or start the body with exactly `CEO-AI-TASK` followed by a
+newline and a JSON object:
+
+```text
+CEO-AI-TASK
+{"type":"ai-task","level":"L3","departments":["marketing","finance"],"problem":"Evaluate acquisition experiment","goal":"Validate contribution","constraints":["Budget 1000"],"criteria":["Positive contribution"],"facts":[],"assumptions":[]}
+```
+
+For L1 use `level: L1`, one department and e.g. `skill_id: seo.02`. Omit level to
+select L1 for a skill, L2 for one department or L3 for multiple departments.
+`type: council` selects L4. Operations and critic labels are also supported.
+Unknown fields/types are rejected. Ordinary development issues are not business
+commands. Intake deduplicates by repository/issue; results are posted back with a
+stable comment marker and retried after restart. Completed issues are not rerun;
+create a new issue for a new analysis. `CEO_GITHUB_AI_ENABLED=0` disables polling.
+
+The default `CEO_BRAIN_MODE=deterministic` is explicitly a workflow demonstration,
+with unverified assumptions and blocking evidence gaps. It is not live AI advice.
+`production` uses the separate `ProductionBrainProvider` strict JSON adapter,
+configured with `CEO_BRAIN_EXECUTABLE`, `CEO_BRAIN_WORKDIR` and
+`CEO_BRAIN_IDENTITY`. The executable is an installed project-local wrapper that
+accepts a JSON request on stdin and returns a schema-valid JSON object on stdout.
+The existing offline sandbox restrictions apply; unavailable sandbox/credentials
+fail explicitly without mock fallback. Another provider can implement `respond`
+without changing any role, skill, router or council code.
+
+```bash
+.venv/bin/python -m unittest tests.test_organization -v
+# Explicit live tests; only this project's database/service:
+.venv/bin/python -m unittest tests.test_organization_postgres tests.test_runtime -v
+```
+
+Tests cover all skills, L1–L4, Marketing/Finance conflict, Critic challenge,
+round persistence, fresh-store restart recovery, invalid output, routing and
+allowlist checks. Runtime checks exercise actual service crash recovery. Domain
+isolation tests prohibit file writes, network connections and child processes;
+all live checks use only this project's Unix socket and service MainPID.

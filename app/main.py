@@ -72,14 +72,16 @@ def claim(cur):
         ORDER BY priority DESC,created_at FOR UPDATE SKIP LOCKED LIMIT 1''')
     task=cur.fetchone()
     if not task: return None
-    cur.execute("SELECT id FROM agents WHERE enabled ORDER BY id LIMIT 1")
+    from app.organization.routing import DEPARTMENTS
+    business=task['type'] in ('ai-task','council',*DEPARTMENTS)
+    cur.execute("SELECT id FROM agents WHERE enabled AND id=%s",('chief-of-staff' if business else 'local',))
     agent=cur.fetchone()
     if not agent: return None
     task=dict(task); task['assigned_to']=agent['id']
     cur.execute("UPDATE tasks SET status='processing',started_at=now(),updated_at=now(),attempts=attempts+1,assigned_to=%s,error=NULL WHERE id=%s",(agent['id'],task['id']))
     cur.execute("INSERT INTO agent_runs(task_id,agent_id,status) VALUES (%s,%s,'processing') RETURNING id",(task['id'],agent['id']))
     task['run_id']=cur.fetchone()['id']
-    cur.execute('INSERT INTO decisions(task_id,body) VALUES (%s,%s)',(task['id'],Json({'agent':agent['id'],'reason':'enabled local handler'})))
+    cur.execute('INSERT INTO decisions(task_id,body) VALUES (%s,%s)',(task['id'],Json({'agent':agent['id'],'reason':'business routing pending' if business else 'enabled local handler'})))
     logging.info('task=%s new -> processing agent=%s',task['id'],agent['id'])
     return task
 
@@ -112,11 +114,24 @@ def main():
         cur.execute('SELECT pg_try_advisory_lock(310003) AS locked')
         if not cur.fetchone()['locked']: raise RuntimeError('Worker already running')
     with connect() as conn, conn.cursor() as cur:
-        cur.execute((ROOT/'config/schema.sql').read_text());recover(cur,startup=True)
+        cur.execute((ROOT/'config/schema.sql').read_text())
+        from app.organization.registry import Registry
+        Registry().sync(cur)
+        recover(cur,startup=True)
     provider=LocalBrainProvider(); current=None; future=None
     pool=concurrent.futures.ThreadPoolExecutor(max_workers=1)
+    github_pool=concurrent.futures.ThreadPoolExecutor(max_workers=1)
+    github_future=None; github_next=0
     try:
         while not stop:
+            if os.getenv('CEO_GITHUB_AI_ENABLED','1')=='1' and time.monotonic()>=github_next:
+                if github_future is None or github_future.done():
+                    if github_future is not None:
+                        try: github_future.result()
+                        except Exception: logging.exception('GitHub AI poll failed; retry next minute')
+                    from app.organization.github import poll
+                    github_future=github_pool.submit(poll)
+                    github_next=time.monotonic()+60
             # Also validates that the singleton lock session remains alive.
             with lock.cursor() as cur: cur.execute('SELECT 1')
             with connect() as conn, conn.cursor() as cur:
@@ -132,6 +147,7 @@ def main():
                 if current: future=pool.submit(provider.execute,current)
             time.sleep(max(0.2,float(os.getenv('CEO_POLL_SECONDS','2'))))
     finally:
+        github_pool.shutdown(wait=True)
         pool.shutdown(wait=True)
         lock.close()
         logging.info('worker stopped; any uncommitted result recovered on next start')

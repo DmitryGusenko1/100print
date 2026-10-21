@@ -20,3 +20,24 @@ CREATE TABLE IF NOT EXISTS heartbeats (id text PRIMARY KEY, updated_at timestamp
 CREATE TABLE IF NOT EXISTS scheduler_state (name text PRIMARY KEY, last_run timestamptz NOT NULL);
 INSERT INTO departments VALUES ('operations','Operations') ON CONFLICT DO NOTHING;
 INSERT INTO agents VALUES ('local','operations',true) ON CONFLICT DO NOTHING;
+
+-- Business organization v1. Queue UUID is the recovery/idempotency boundary.
+CREATE TABLE IF NOT EXISTS skills_registry (
+ id text NOT NULL, version text NOT NULL, definition jsonb NOT NULL,
+ PRIMARY KEY(id,version)
+);
+CREATE TABLE IF NOT EXISTS organization_roles (id text PRIMARY KEY REFERENCES agents(id), definition jsonb NOT NULL);
+CREATE TABLE IF NOT EXISTS organization_steps (
+ task_id uuid REFERENCES tasks(id) NOT NULL, step_key text NOT NULL,
+ fingerprint text NOT NULL, result jsonb NOT NULL, metadata jsonb NOT NULL,
+ created_at timestamptz NOT NULL DEFAULT now(), PRIMARY KEY(task_id,step_key)
+);
+CREATE TABLE IF NOT EXISTS organization_handoffs (
+ task_id uuid REFERENCES tasks(id) NOT NULL, handoff_key text NOT NULL,
+ body jsonb NOT NULL, created_at timestamptz NOT NULL DEFAULT now(),
+ PRIMARY KEY(task_id,handoff_key)
+);
+CREATE TABLE IF NOT EXISTS github_deliveries (
+ issue_number integer PRIMARY KEY, task_id uuid NOT NULL UNIQUE REFERENCES tasks(id),
+ delivered_at timestamptz, comment_url text
+);

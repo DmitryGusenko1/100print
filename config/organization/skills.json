@@ -1,0 +1,6437 @@
+[
+  {
+    "id": "strategy.01",
+    "name": "problem framing",
+    "version": "1.0.0",
+    "purpose": "Separate symptoms, root problem, decision owner and measurable goal.",
+    "allowed_departments": [
+      "strategy"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Separate symptoms, root problem, decision owner and measurable goal. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "problem framing: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "strategy.02",
+    "name": "strategic options",
+    "version": "1.0.0",
+    "purpose": "Compare at least three feasible options including maintaining the status quo.",
+    "allowed_departments": [
+      "strategy"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Compare at least three feasible options including maintaining the status quo. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "strategic options: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "strategy.03",
+    "name": "prioritization",
+    "version": "1.0.0",
+    "purpose": "Rank initiatives by impact, effort, dependencies and confidence; explain tradeoffs.",
+    "allowed_departments": [
+      "strategy"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Rank initiatives by impact, effort, dependencies and confidence; explain tradeoffs. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "prioritization: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "strategy.04",
+    "name": "business model analysis",
+    "version": "1.0.0",
+    "purpose": "Map customers, value proposition, revenue streams, costs and defensibility.",
+    "allowed_departments": [
+      "strategy"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Map customers, value proposition, revenue streams, costs and defensibility. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "business model analysis: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "strategy.05",
+    "name": "scenario analysis",
+    "version": "1.0.0",
+    "purpose": "Compare base, upside and downside scenarios with explicit drivers.",
+    "allowed_departments": [
+      "strategy"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Compare base, upside and downside scenarios with explicit drivers. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "scenario analysis: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "strategy.06",
+    "name": "decision memo",
+    "version": "1.0.0",
+    "purpose": "State the decision, evidence, rejected options and conditions to revisit.",
+    "allowed_departments": [
+      "strategy"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "State the decision, evidence, rejected options and conditions to revisit. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "decision memo: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "marketing.01",
+    "name": "ICP / segmentation",
+    "version": "1.0.0",
+    "purpose": "Define customer segments by needs, buying triggers, ability to pay and exclusions.",
+    "allowed_departments": [
+      "marketing"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Define customer segments by needs, buying triggers, ability to pay and exclusions. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "ICP / segmentation: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "marketing.02",
+    "name": "positioning",
+    "version": "1.0.0",
+    "purpose": "Describe target segment, reference category, differentiated promise and proof.",
+    "allowed_departments": [
+      "marketing"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Describe target segment, reference category, differentiated promise and proof. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "positioning: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "marketing.03",
+    "name": "offer analysis",
+    "version": "1.0.0",
+    "purpose": "Evaluate promise, packaging, price, proof, friction and customer value.",
+    "allowed_departments": [
+      "marketing"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Evaluate promise, packaging, price, proof, friction and customer value. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "offer analysis: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "marketing.04",
+    "name": "channel strategy",
+    "version": "1.0.0",
+    "purpose": "Compare acquisition channels by audience fit, cost, lead time and measurement.",
+    "allowed_departments": [
+      "marketing"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Compare acquisition channels by audience fit, cost, lead time and measurement. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "channel strategy: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "marketing.05",
+    "name": "campaign planning",
+    "version": "1.0.0",
+    "purpose": "Specify audience, message, channel, hypothesis, experiment and stop criteria.",
+    "allowed_departments": [
+      "marketing"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Specify audience, message, channel, hypothesis, experiment and stop criteria. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "campaign planning: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "marketing.06",
+    "name": "competitor analysis",
+    "version": "1.0.0",
+    "purpose": "Compare alternatives on customer value, pricing and proof; flag missing data.",
+    "allowed_departments": [
+      "marketing"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Compare alternatives on customer value, pricing and proof; flag missing data. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "competitor analysis: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "seo.01",
+    "name": "semantic core planning",
+    "version": "1.0.0",
+    "purpose": "Plan seed themes, entities, geography and keyword discovery; do not invent search volumes.",
+    "allowed_departments": [
+      "seo"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Plan seed themes, entities, geography and keyword discovery; do not invent search volumes. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "semantic core planning: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "seo.02",
+    "name": "keyword clustering",
+    "version": "1.0.0",
+    "purpose": "Group supplied keywords by shared intent and target page; flag cannibalization.",
+    "allowed_departments": [
+      "seo"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Group supplied keywords by shared intent and target page; flag cannibalization. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "keyword clustering: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "seo.03",
+    "name": "search intent",
+    "version": "1.0.0",
+    "purpose": "Classify informational, navigational, commercial and transactional intent with rationale.",
+    "allowed_departments": [
+      "seo"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Classify informational, navigational, commercial and transactional intent with rationale. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "search intent: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "seo.04",
+    "name": "content brief",
+    "version": "1.0.0",
+    "purpose": "Specify target reader, intent, outline, evidence needed and conversion goal.",
+    "allowed_departments": [
+      "seo"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Specify target reader, intent, outline, evidence needed and conversion goal. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "content brief: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "seo.05",
+    "name": "on-page audit",
+    "version": "1.0.0",
+    "purpose": "Check title, H1, headings, relevance, metadata, images and conversion elements.",
+    "allowed_departments": [
+      "seo"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Check title, H1, headings, relevance, metadata, images and conversion elements. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "on-page audit: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "seo.06",
+    "name": "technical SEO checklist",
+    "version": "1.0.0",
+    "purpose": "Check crawlability, indexation, canonicalization, sitemap, status codes and performance; mark unverified checks.",
+    "allowed_departments": [
+      "seo"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Check crawlability, indexation, canonicalization, sitemap, status codes and performance; mark unverified checks. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "technical SEO checklist: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "seo.07",
+    "name": "internal linking",
+    "version": "1.0.0",
+    "purpose": "Propose contextual links, anchors, hub pages and orphan-page remediation.",
+    "allowed_departments": [
+      "seo"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Propose contextual links, anchors, hub pages and orphan-page remediation. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "internal linking: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "seo.08",
+    "name": "competitor SERP analysis",
+    "version": "1.0.0",
+    "purpose": "Compare supplied SERP evidence by intent, format, authority and content gaps; require fresh SERP data.",
+    "allowed_departments": [
+      "seo"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Compare supplied SERP evidence by intent, format, authority and content gaps; require fresh SERP data. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "competitor SERP analysis: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "sales.01",
+    "name": "funnel analysis",
+    "version": "1.0.0",
+    "purpose": "Map funnel stages and conversion losses; distinguish missing data from zero.",
+    "allowed_departments": [
+      "sales"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Map funnel stages and conversion losses; distinguish missing data from zero. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "funnel analysis: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "sales.02",
+    "name": "sales process",
+    "version": "1.0.0",
+    "purpose": "Define stages, entry/exit criteria, handoffs and responsible owners.",
+    "allowed_departments": [
+      "sales"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Define stages, entry/exit criteria, handoffs and responsible owners. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "sales process: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "sales.03",
+    "name": "objection analysis",
+    "version": "1.0.0",
+    "purpose": "Group objections, identify root concerns and propose evidence-based responses.",
+    "allowed_departments": [
+      "sales"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Group objections, identify root concerns and propose evidence-based responses. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "objection analysis: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "sales.04",
+    "name": "offer-to-close logic",
+    "version": "1.0.0",
+    "purpose": "Connect buyer pain, offer, proof, commitment, follow-up and closing criteria.",
+    "allowed_departments": [
+      "sales"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Connect buyer pain, offer, proof, commitment, follow-up and closing criteria. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "offer-to-close logic: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "sales.05",
+    "name": "KPI / conversion diagnostics",
+    "version": "1.0.0",
+    "purpose": "Define denominators, periods and stage conversion metrics; locate largest losses.",
+    "allowed_departments": [
+      "sales"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Define denominators, periods and stage conversion metrics; locate largest losses. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "KPI / conversion diagnostics: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "sales.06",
+    "name": "sales playbook",
+    "version": "1.0.0",
+    "purpose": "Provide discovery, qualification, messaging, objections and follow-up steps.",
+    "allowed_departments": [
+      "sales"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Provide discovery, qualification, messaging, objections and follow-up steps. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "sales playbook: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "finance.01",
+    "name": "unit economics",
+    "version": "1.0.0",
+    "purpose": "Identify revenue per unit, variable costs, contribution margin and missing inputs.",
+    "allowed_departments": [
+      "finance"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Identify revenue per unit, variable costs, contribution margin and missing inputs. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "unit economics: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "finance.02",
+    "name": "CAC/LTV",
+    "version": "1.0.0",
+    "purpose": "Define acquisition-cost allocation and cohort lifetime value; state retention and margin assumptions.",
+    "allowed_departments": [
+      "finance"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Define acquisition-cost allocation and cohort lifetime value; state retention and margin assumptions. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "CAC/LTV: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "finance.03",
+    "name": "margin",
+    "version": "1.0.0",
+    "purpose": "Separate gross, contribution and operating margin with consistent cost treatment.",
+    "allowed_departments": [
+      "finance"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Separate gross, contribution and operating margin with consistent cost treatment. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "margin: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "finance.04",
+    "name": "break-even",
+    "version": "1.0.0",
+    "purpose": "Use fixed costs divided by contribution per unit; identify invalid or missing inputs.",
+    "allowed_departments": [
+      "finance"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Use fixed costs divided by contribution per unit; identify invalid or missing inputs. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "break-even: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "finance.05",
+    "name": "ROI",
+    "version": "1.0.0",
+    "purpose": "Compare incremental benefit to total investment, time horizon and opportunity cost.",
+    "allowed_departments": [
+      "finance"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Compare incremental benefit to total investment, time horizon and opportunity cost. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "ROI: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "finance.06",
+    "name": "scenario model",
+    "version": "1.0.0",
+    "purpose": "Model base, downside and upside using explicit financial drivers and sensitivities.",
+    "allowed_departments": [
+      "finance"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Model base, downside and upside using explicit financial drivers and sensitivities. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "scenario model: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "finance.07",
+    "name": "budget sanity check",
+    "version": "1.0.0",
+    "purpose": "Check affordability, cash timing, contingency, caps and approval thresholds.",
+    "allowed_departments": [
+      "finance"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Check affordability, cash timing, contingency, caps and approval thresholds. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "budget sanity check: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "operations.01",
+    "name": "process decomposition",
+    "version": "1.0.0",
+    "purpose": "Break the outcome into inputs, activities, outputs and acceptance criteria.",
+    "allowed_departments": [
+      "operations"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Break the outcome into inputs, activities, outputs and acceptance criteria. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "process decomposition: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "operations.02",
+    "name": "resource plan",
+    "version": "1.0.0",
+    "purpose": "Map capacity, skills, tools, cost and resource constraints to deliverables.",
+    "allowed_departments": [
+      "operations"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Map capacity, skills, tools, cost and resource constraints to deliverables. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "resource plan: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "operations.03",
+    "name": "bottleneck analysis",
+    "version": "1.0.0",
+    "purpose": "Identify throughput constraints, queues and critical path; propose verification.",
+    "allowed_departments": [
+      "operations"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Identify throughput constraints, queues and critical path; propose verification. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "bottleneck analysis: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "operations.04",
+    "name": "execution plan",
+    "version": "1.0.0",
+    "purpose": "Sequence deliverables, milestones, dependencies and completion criteria.",
+    "allowed_departments": [
+      "operations"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Sequence deliverables, milestones, dependencies and completion criteria. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "execution plan: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "operations.05",
+    "name": "owner/deadline assignment",
+    "version": "1.0.0",
+    "purpose": "Assign accountable role and relative deadline to every action; flag unavailable capacity.",
+    "allowed_departments": [
+      "operations"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Assign accountable role and relative deadline to every action; flag unavailable capacity. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "owner/deadline assignment: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "operations.06",
+    "name": "risk dependencies",
+    "version": "1.0.0",
+    "purpose": "Map dependencies, failure triggers, owners and mitigation actions.",
+    "allowed_departments": [
+      "operations"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Map dependencies, failure triggers, owners and mitigation actions. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "risk dependencies: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "critic.01",
+    "name": "assumption attack",
+    "version": "1.0.0",
+    "purpose": "List load-bearing assumptions, counterexamples and falsification experiments.",
+    "allowed_departments": [
+      "critic"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "List load-bearing assumptions, counterexamples and falsification experiments. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "assumption attack: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "critic.02",
+    "name": "contradiction detection",
+    "version": "1.0.0",
+    "purpose": "Compare proposals, facts, constraints and metrics; identify incompatible claims.",
+    "allowed_departments": [
+      "critic"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Compare proposals, facts, constraints and metrics; identify incompatible claims. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "contradiction detection: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "critic.03",
+    "name": "pre-mortem",
+    "version": "1.0.0",
+    "purpose": "Assume the plan failed; identify plausible causes and early warning indicators.",
+    "allowed_departments": [
+      "critic"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Assume the plan failed; identify plausible causes and early warning indicators. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "pre-mortem: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "critic.04",
+    "name": "failure modes",
+    "version": "1.0.0",
+    "purpose": "Rank failure modes by severity, likelihood and detectability; state uncertainty.",
+    "allowed_departments": [
+      "critic"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Rank failure modes by severity, likelihood and detectability; state uncertainty. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "failure modes: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "critic.05",
+    "name": "evidence gap",
+    "version": "1.0.0",
+    "purpose": "Separate verified facts from hypotheses and specify missing evidence that changes the decision.",
+    "allowed_departments": [
+      "critic"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Separate verified facts from hypotheses and specify missing evidence that changes the decision. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "evidence gap: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  },
+  {
+    "id": "critic.06",
+    "name": "alternative hypothesis",
+    "version": "1.0.0",
+    "purpose": "Offer competing explanations and experiments that distinguish them.",
+    "allowed_departments": [
+      "critic"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Offer competing explanations and experiments that distinguish them. Use only supplied facts. Label assumptions and evidence gaps. Never fabricate measurements. Return only the required JSON.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Acquisition costs unknown",
+          "goal": "Plan a bounded experiment",
+          "constraints": [
+            "Budget 1000"
+          ],
+          "criteria": [
+            "Positive contribution"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "alternative hypothesis: requires evidence",
+        "recommendations": [
+          "Collect baseline data"
+        ],
+        "risks": [
+          "Unverified inputs"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Baseline measurements"
+        ]
+      }
+    }
+  }
+]
