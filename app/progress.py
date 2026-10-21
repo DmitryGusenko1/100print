@@ -21,9 +21,9 @@ class Progress:
         self.lock = Path(root) / "data/progress.lock"
         self.log = Path(root) / "logs/github_worker.log"
 
-    def read(self):
+    def read(self, issue=None):
         try:
-            return json.loads(self.path.read_text())
+            return json.loads((self.path if issue is None else self.path.parent / f"progress-{int(issue)}.json").read_text())
         except FileNotFoundError:
             return None
 
@@ -33,6 +33,11 @@ class Progress:
             fcntl.flock(lock, fcntl.LOCK_EX)
             state = self.read()
             fresh = not state or state["issue_number"] != int(issue)
+            if fresh and not heartbeat:
+                saved = self.read(issue)
+                if saved:
+                    state = saved
+                    fresh = False
             if fresh:
                 if heartbeat:
                     return None
@@ -58,6 +63,24 @@ class Progress:
                 output.flush()
                 os.fsync(output.fileno())
             os.replace(temporary, self.path)
+            snapshot = self.path.parent / f"progress-{int(issue)}.json"
+            temporary = snapshot.with_suffix('.tmp')
+            with temporary.open('w') as output:
+                json.dump(state, output, ensure_ascii=False)
+                output.flush()
+                os.fsync(output.fileno())
+            os.replace(temporary, snapshot)
+            # Persist actual stage transitions immediately, even between worker polls.
+            database = self.path.parent / 'worker_queue.sqlite3'
+            if database.exists():
+                import sqlite3
+                with sqlite3.connect(database, timeout=30) as conn:
+                    conn.execute('UPDATE tasks SET last_progress=?,heartbeat=? WHERE issue_number=?',
+                                 (json.dumps(state, ensure_ascii=False), now(), int(issue)))
+                    if not heartbeat:
+                        conn.execute('INSERT OR IGNORE INTO events VALUES (?,?,?,0)',
+                                     (f"ceo-worker:{int(issue)}:progress-{state['percent']}", int(issue),
+                                      f"PROGRESS: {state['percent']}% / {state['stage']}\n{state['current_subtask']}"))
             self.log.parent.mkdir(parents=True, exist_ok=True)
             with self.log.open("a") as output:
                 output.write(json.dumps(dict(event="heartbeat" if heartbeat else "progress", **state), ensure_ascii=False) + "\n")

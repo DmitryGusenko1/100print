@@ -429,3 +429,84 @@ Deployment status on 2026-10-21: LIVE is **not verified**. Project Telegram toke
 and allowlist are absent; installation requires administrative access unavailable
 to the executor. The repository is ready for the deployment wizard; service
 active/enabled and real Telegram E2E remain acceptance prerequisites.
+
+### Zero-touch GitHub task queue (#12)
+
+`ceo-github-worker.service` polls `DmitryGusenko1/100print` every 30 seconds.
+Open issues by `DmitryGusenko1` enter the Codex queue automatically; labels
+`manual` and `no-codex` opt out. Existing owner-only intake is preserved.
+Priority is URGENT, FINAL, then ordinary (title or label), with ascending issue
+number within each priority. One process holds `data/worker.lock` throughout
+execution. A running task resumes before queued tasks after a crash; waiting
+or retry-delayed tasks allow the next eligible task to run.
+
+Durable local project state is SQLite WAL (`data/worker_queue.sqlite3`, FULL
+synchronous), with issue identity, status, attempts, start/heartbeat/completion,
+last progress, result and commit hash. The queue imports the legacy done list
+once. Issue #11 is explicitly recovered from its false legacy DONE into
+WAITING_USER, preserving its 90% stage: the previous executor reported missing
+Telegram credentials and incomplete LIVE acceptance.
+
+Actual executor stages are persisted immediately by `scripts/progress.py`,
+including per-issue snapshots, and published through a durable GitHub outbox.
+Stages are START, 10, 25, 40, 60, 75, 90, 100, DONE. Stage percentages represent
+completed work, not elapsed time. The worker writes 100 only after explicit
+DONE JSON, a clean worktree and local HEAD matching the upstream tracking ref.
+Executors write only a concise public summary in their result JSON; raw
+executor logs stay in ignored project-local files. Pending comments are
+reconciled by an HTML marker before reposting after a lost response.
+
+Executors must return `data/executor-result-N.json`:
+
+```json
+{"status":"DONE","summary":"Verified result and validation"}
+```
+
+Or return a blocked result without claiming completion:
+
+```json
+{"status":"WAITING_USER","summary":"OAuth is required","user_action":"Complete project OAuth, then create data/oauth-ready","readiness":"file:data/oauth-ready"}
+```
+
+Readiness probes support `telegram` (project preflight plus active Telegram
+service), `github`, `codex`, or an explicitly agreed project-local `file:` marker.
+The worker checks waiting tasks on subsequent polls and resumes automatically.
+Telegram preflight never echoes credentials. No unattended OAuth/UI confirmation
+is fabricated. Execution has a one-hour deadline, bounded probes and heartbeat;
+failures retry after five minutes. A surviving executor PID/start-time identity
+prevents a replacement worker from spawning a duplicate; an already written
+DONE result is reconciled before re-execution. Systemd's control-group shutdown
+also terminates executor children when restarting the worker service.
+
+Queue health and live acceptance (no service restart):
+
+```bash
+python3 app/github_worker.py --health
+python3 app/github_worker.py --synthetic
+python3 app/github_worker.py --health
+.venv/bin/python -m unittest tests.test_github_worker tests.test_progress -v
+```
+
+Health returns JSON and a nonzero exit status for a stale/dead worker or poll
+error. Synthetic tasks have negative IDs, perform no repository changes, exercise
+the live poll/claim/progress/completion path and do not post to GitHub. The worker
+process and systemd MainPID must remain unchanged during this acceptance check.
+Synthetic tasks verify scheduling and persistence, not a real Codex business task.
+
+For this in-flight upgrade, `--handoff LEGACY_PID` runs the new queue observer
+while the legacy executor finishes #12; it only executes synthetic probes during
+that interval. It recovers waiting tasks and publishes progress immediately.
+Once the legacy worker saves #12 completion, the observer terminates only that
+legacy worker PID. Existing `Restart=always` then loads the deployed implementation
+without sudo or a user command. The replacement records active/enabled/restart
+verification in queue `deployment` metadata and posts a deployment receipt to #12.
+The installed service already has Restart=always and default control-group
+shutdown; the version-controlled unit additionally documents the intended setup.
+No unrelated services, databases or environment files are modified.
+
+Limits: 24/7 operation depends on VPS/GitHub availability. GitHub comment POST
+has no idempotency key; marker reconciliation handles ordinary ambiguous retries,
+but cannot provide a transactional exactly-once guarantee across GitHub and SQLite.
+Legacy completions other than the explicitly audited #11 are imported without
+re-running their acceptance. A future task must supply truthful completion
+artifacts; an exit code alone never establishes DONE.

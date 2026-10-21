@@ -1,0 +1,19 @@
+[Unit]
+Description=CEO Orchestrator GitHub Worker
+After=network-online.target
+Wants=network-online.target
+
+[Service]
+Type=simple
+User=ceoorch
+Group=ceoorch
+Environment=HOME=/opt/ceo-orchestrator
+WorkingDirectory=/opt/ceo-orchestrator
+ExecStart=/opt/ceo-orchestrator/.venv/bin/python /opt/ceo-orchestrator/app/github_worker.py
+Restart=always
+RestartSec=10
+KillMode=control-group
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target
