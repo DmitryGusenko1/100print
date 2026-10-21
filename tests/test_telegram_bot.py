@@ -152,8 +152,50 @@ class TelegramTests(unittest.TestCase):
             bot.deliver_completed()
             bot.recover_outbox(self.cur)
             bot.deliver_completed()
+            bot.deliver_completed()
+        self.assertEqual(send.call_count, 2)  # Original plus one distinct error notice.
+        self.assertEqual(self.rows("SELECT state FROM telegram_outbox WHERE update_id=%s AND kind='final'", (self.uid,))[0]['state'], 'uncertain')
+
+    def test_explicit_rejection_retries_and_saves_receipt(self):
+        bot.ingest(self.cur, self.update('/start'))
+        with self.delivery_context(), patch.object(bot, 'api', side_effect=bot.TelegramRejected(429, 2)) as send:
+            bot.deliver_completed()
+            bot.deliver_completed()
         self.assertEqual(send.call_count, 1)
-        self.assertEqual(self.rows('SELECT state FROM telegram_outbox WHERE update_id=%s', (self.uid,))[0]['state'], 'uncertain')
+        row = self.rows('SELECT * FROM telegram_outbox WHERE update_id=%s', (self.uid,))[0]
+        self.assertEqual(row['state'], 'pending')
+        self.assertEqual(row['api_response']['error_code'], 429)
+        self.cur.execute("UPDATE telegram_outbox SET retry_at=now()-interval '1 second' WHERE update_id=%s", (self.uid,))
+        with self.delivery_context(), patch.object(bot, 'api', return_value={'message_id': 124}):
+            bot.deliver_completed()
+            bot.deliver_completed()
+        row = self.rows('SELECT * FROM telegram_outbox WHERE update_id=%s', (self.uid,))[0]
+        self.assertEqual(row['state'], 'sent')
+        self.assertEqual(row['attempts'], 2)
+        self.assertEqual(row['api_response']['message_id'], 124)
+
+    def test_memory_failure_cannot_erase_confirmed_receipt(self):
+        bot.ingest(self.cur, self.update('/start'))
+        with self.delivery_context(), patch.object(bot, 'api', return_value={'message_id': 125}) as send, patch.object(bot.memory, 'append', side_effect=RuntimeError):
+            bot.deliver_completed()
+            bot.deliver_completed()
+        self.assertEqual(send.call_count, 1)
+        self.assertEqual(self.rows('SELECT state FROM telegram_outbox WHERE update_id=%s', (self.uid,))[0]['state'], 'sent')
+
+    def test_bad_request_retries_without_formatter(self):
+        bot.ingest(self.cur, self.update('/start'))
+        self.cur.execute("UPDATE telegram_outbox SET api_response=%s WHERE update_id=%s", (Json({'ok':False,'error_code':400}),self.uid))
+        with self.delivery_context(), patch.object(bot, 'api', return_value={'message_id': 126}) as send:
+            bot.deliver_completed()
+        self.assertNotIn('parse_mode', send.call_args.args[1])
+
+    def test_intake_audit_keeps_recoverable_accepted_update(self):
+        bot.ingest(self.cur, self.update('Что такое тираж?'))
+        bot.ingest(self.cur, self.update('private', self.uid+1, chat=999))
+        rows = self.rows('SELECT * FROM telegram_update_audit WHERE update_id BETWEEN %s AND %s ORDER BY update_id', (self.uid,self.uid+1))
+        self.assertEqual(rows[0]['body'], self.update('Что такое тираж?'))
+        self.assertEqual(rows[1]['disposition'], 'allowlist-rejected')
+        self.assertEqual(rows[1]['body'], {})
 
     def test_ack_progress_and_final_are_independent_and_durable(self):
         bot.ingest(self.cur, self.update('Что такое тираж?'))

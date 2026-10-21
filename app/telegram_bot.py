@@ -8,19 +8,35 @@ import logging
 import os
 import time
 import urllib.request
-from app.db import ROOT, connect
+import urllib.error
+from app.db import ROOT, connect, Json
 from app import project_memory as memory
 from app.telegram_presentation import render_result, telegram_html
+
+
+class TelegramRejected(Exception):
+    """An explicit API rejection proves that no message was delivered."""
+    def __init__(self, code, retry_after=30):
+        self.code = int(code)
+        self.retry_after = max(1, int(retry_after))
+        super().__init__('Telegram rejected request: '+str(self.code))
 
 
 def api(method, body):
     request = urllib.request.Request(
         'https://api.telegram.org/bot'+os.environ['CEO_TELEGRAM_TOKEN']+'/'+method,
         data=json.dumps(body).encode(), headers={'Content-Type': 'application/json'})
-    with urllib.request.urlopen(request, timeout=40) as response:
-        result = json.load(response)
+    try:
+        with urllib.request.urlopen(request, timeout=8 if method == 'sendMessage' else 40) as response:
+            result = json.load(response)
+    except urllib.error.HTTPError as error:
+        # Do not persist descriptions or exception strings containing token URLs.
+        try:
+            result = json.load(error)
+        except (ValueError, OSError):
+            raise RuntimeError('Telegram returned an unverified HTTP failure') from None
     if not result.get('ok'):
-        raise RuntimeError('Telegram API rejected request')
+        raise TelegramRejected(result.get('error_code', 500), result.get('parameters', {}).get('retry_after', 30))
     return result['result']
 
 
@@ -67,6 +83,11 @@ def health(cur):
 
 def ingest(cur, update):
     message = update.get('message', {})
+    has_text = isinstance(message.get('text'), str) and bool(message['text'].strip())
+    accepted = has_text and allowed(message)
+    cur.execute('''INSERT INTO telegram_update_audit(update_id,disposition,body)
+        VALUES (%s,%s,%s) ON CONFLICT DO NOTHING''',
+        (update['update_id'], 'accepted' if accepted else ('allowlist-rejected' if has_text else 'unsupported'), Json(update if accepted else {})))
     if not isinstance(message.get('text'), str) or not message['text'].strip() or not allowed(message):
         return
     uid = update['update_id']
@@ -122,6 +143,11 @@ def ingest(cur, update):
 
 
 def collect(cur):
+    cur.execute("SELECT DISTINCT update_id FROM telegram_outbox WHERE state='uncertain' AND kind!='delivery-error'")
+    for row in cur.fetchall():
+        queue_reply(cur, row['update_id'],
+                    'Не удалось подтвердить доставку ответа. Запрос сохранён; повторная отправка ответа приостановлена, чтобы не создать дубликат.',
+                    'delivery-error')
     # Backfill accepted tasks too; uniqueness makes every collection restart-safe.
     cur.execute("""SELECT i.update_id,t.status,i.created_at < now()-interval '30 seconds' AS overdue
         FROM telegram_inbox i JOIN tasks t ON t.id=i.task_id WHERE t.status IN ('new','processing')""")
@@ -146,9 +172,8 @@ def collect(cur):
 def deliver_completed():
     with connect() as conn, conn.cursor() as cur:
         collect(cur)
-        collect_notifications(cur)
         cur.execute('''SELECT o.*,i.chat_id,i.user_id,i.conversation_id FROM telegram_outbox o
-            JOIN telegram_inbox i ON i.update_id=o.update_id WHERE o.state='pending'
+            JOIN telegram_inbox i ON i.update_id=o.update_id WHERE o.state='pending' AND o.retry_at<=now()
             AND NOT EXISTS (SELECT 1 FROM telegram_outbox earlier WHERE earlier.update_id=o.update_id
                 AND (CASE earlier.kind WHEN 'ack' THEN 0 WHEN 'progress' THEN 1 ELSE 2 END,earlier.part)
                 < (CASE o.kind WHEN 'ack' THEN 0 WHEN 'progress' THEN 1 ELSE 2 END,o.part) AND earlier.state NOT IN ('sent','uncertain')) ORDER BY CASE o.kind WHEN 'ack' THEN 0 WHEN 'progress' THEN 1 ELSE 2 END,o.id
@@ -157,19 +182,30 @@ def deliver_completed():
         for row in rows:
             if not allowed({'chat': {'id': row['chat_id']}, 'from': {'id': row['user_id']}}):
                 continue
-            cur.execute("UPDATE telegram_outbox SET state='sending' WHERE id=%s", (row['id'],))
+            cur.execute("UPDATE telegram_outbox SET state='sending',attempts=attempts+1 WHERE id=%s", (row['id'],))
             conn.commit()  # Durable intent BEFORE the external effect.
             try:
-                sent = api('sendMessage', {'chat_id': row['chat_id'], 'text': telegram_html(row['text']), 'parse_mode': 'HTML'})
+                body = {'chat_id': row['chat_id'], 'text': telegram_html(row['text']), 'parse_mode': 'HTML'}
+                if (row['api_response'] or {}).get('error_code') == 400:
+                    body = {'chat_id': row['chat_id'], 'text': row['text']}
+                sent = api('sendMessage', body)
+                # Persist the receipt before ancillary memory writes can fail.
+                cur.execute("UPDATE telegram_outbox SET state='sent',sent_at=now(),telegram_message_id=%s,api_response=%s WHERE id=%s", (sent['message_id'],Json({'ok':True,'message_id':sent['message_id'],'chat_id':str(sent.get('chat',{}).get('id',row['chat_id']))}),row['id']))
+                conn.commit()
                 memory.append(cur, str(row['conversation_id']), row['text'], role='assistant',
                               request_id=f'telegram:outbox:{row["id"]}')
-                cur.execute("UPDATE telegram_outbox SET state='sent',sent_at=now(),telegram_message_id=%s WHERE id=%s", (sent['message_id'],row['id']))
+                conn.commit()
+            except TelegramRejected as error:
+                conn.rollback()
+                cur.execute("""UPDATE telegram_outbox SET state='pending',
+                    retry_at=now()+(%s * interval '1 second'),api_response=%s WHERE id=%s""",
+                    (error.retry_after,Json({'ok':False,'error_code':error.code,'retry_after':error.retry_after}),row['id']))
                 conn.commit()
             except Exception:
                 conn.rollback()
-                cur.execute("UPDATE telegram_outbox SET state='uncertain' WHERE id=%s", (row['id'],))
+                cur.execute("UPDATE telegram_outbox SET state='uncertain' WHERE id=%s AND state='sending'", (row['id'],))
                 conn.commit()
-                logging.warning('Telegram delivery uncertain; automatic resend disabled')
+                logging.warning('Telegram delivery or memory persistence failed; inspect durable receipt')
 
 
 def recover_outbox(cur):
@@ -200,6 +236,12 @@ def main():
                 cur.execute("SELECT extract(epoch FROM last_run)::bigint AS offset FROM scheduler_state WHERE name='telegram-offset'")
                 offset = cur.fetchone()['offset']
             deliver_completed()
+            # Optional review failures must never prevent inbound polling or ACK.
+            try:
+                with connect() as conn, conn.cursor() as cur:
+                    collect_notifications(cur)
+            except Exception:
+                logging.warning('Telegram optional review failed')
             for update in api('getUpdates', {'offset': offset, 'timeout': 1, 'allowed_updates': ['message']}):
                 with connect() as conn, conn.cursor() as cur:
                     ingest(cur, update)

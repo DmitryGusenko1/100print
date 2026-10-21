@@ -19,3 +19,10 @@ ALTER TABLE telegram_outbox ADD COLUMN IF NOT EXISTS created_at timestamptz NOT 
 ALTER TABLE telegram_outbox ADD COLUMN IF NOT EXISTS sent_at timestamptz;
 ALTER TABLE telegram_outbox DROP CONSTRAINT IF EXISTS telegram_outbox_update_id_part_key;
 CREATE UNIQUE INDEX IF NOT EXISTS telegram_outbox_kind_part ON telegram_outbox(update_id,kind,part);
+ALTER TABLE telegram_outbox ADD COLUMN IF NOT EXISTS attempts integer NOT NULL DEFAULT 0;
+ALTER TABLE telegram_outbox ADD COLUMN IF NOT EXISTS retry_at timestamptz NOT NULL DEFAULT now();
+ALTER TABLE telegram_outbox ADD COLUMN IF NOT EXISTS api_response jsonb;
+CREATE TABLE IF NOT EXISTS telegram_update_audit (
+ update_id bigint PRIMARY KEY, disposition text NOT NULL, body jsonb NOT NULL,
+ received_at timestamptz NOT NULL DEFAULT now()
+);

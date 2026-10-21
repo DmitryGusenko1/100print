@@ -11,14 +11,17 @@ import sys
 import time
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
-from app.db import connect
+from app.db import connect, ROOT
 
 
 def evidence():
+    baseline_path = ROOT/'data/telegram-e2e-baseline.json'
+    baseline = json.loads(baseline_path.read_text())['after_update_id'] if baseline_path.exists() else -1
     with connect() as conn, conn.cursor() as cur:
         cur.execute('''SELECT i.*,t.result,t.status FROM telegram_inbox i
             JOIN tasks t ON t.id=i.task_id
-            WHERE t.status='done' ORDER BY i.created_at DESC LIMIT 1''')
+            WHERE t.status='done' AND i.update_id>=0 AND i.update_id>%s
+            ORDER BY i.created_at DESC LIMIT 1''', (baseline,))
         item = cur.fetchone()
         assert item, 'No completed real Telegram task'
         uid, cid = item['update_id'], str(item['conversation_id'])
