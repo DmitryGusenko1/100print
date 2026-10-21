@@ -63,3 +63,26 @@ async def create_state(payload: StateCreate, owner_id: int = Depends(require_api
     await require_project(session,owner_id,payload.project_id)
     row=ProjectState(**payload.model_dump()); session.add(row); await session.commit(); await session.refresh(row)
     return {"id":str(row.id)}
+
+
+@app.get("/projects/{project_id}/decisions")
+async def decisions(project_id: uuid.UUID, owner_id: int = Depends(require_api_identity), session: AsyncSession = Depends(get_session)):
+    await require_project(session, owner_id, project_id)
+    rows = (await session.scalars(select(Decision).where(Decision.project_id == project_id).order_by(Decision.created_at.desc()))).all()
+    return [{"id": str(x.id), "text": x.text, "confirmed": x.confirmed, "source_message_id": str(x.source_message_id) if x.source_message_id else None} for x in rows]
+
+@app.patch("/decisions/{decision_id}")
+async def update_decision(decision_id: uuid.UUID, confirmed: bool, owner_id: int = Depends(require_api_identity), session: AsyncSession = Depends(get_session)):
+    row = await session.get(Decision, decision_id)
+    if not row:
+        raise HTTPException(status_code=404, detail="Decision not found")
+    await require_project(session, owner_id, row.project_id)
+    row.confirmed = confirmed
+    await session.commit()
+    return {"id": str(row.id), "confirmed": row.confirmed}
+
+@app.get("/projects/{project_id}/states")
+async def states(project_id: uuid.UUID, owner_id: int = Depends(require_api_identity), session: AsyncSession = Depends(get_session)):
+    await require_project(session, owner_id, project_id)
+    rows = (await session.scalars(select(ProjectState).where(ProjectState.project_id == project_id).order_by(ProjectState.created_at.desc()).limit(50))).all()
+    return [{"id": str(x.id), "summary": x.summary, "source_message_id": str(x.source_message_id) if x.source_message_id else None, "created_at": x.created_at.isoformat()} for x in rows]
