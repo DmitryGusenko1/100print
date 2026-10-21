@@ -83,7 +83,7 @@ Bridge #8, API #6 и Telegram используют один provider. Контр
 по JSON Schema; timeout/ошибка CLI/невалидный JSON завершают вызов ошибкой,
 без подмены демонстрационным ответом. В результате сохраняются provider/model,
 структурированные позиции отделов, Critic, конфликты и рекомендация.
-`deterministic` доступен только как явно выбранный test/mock provider.
+`deterministic` доступен только через injection в тестах; live runtime отклоняет этот mode.
 Для памяти API не нужен OpenAI API key; для анализа нужна действующая авторизация Codex.
 Подробности и ограничения: [README](../README.md#brain-and-codex-adapters).
 

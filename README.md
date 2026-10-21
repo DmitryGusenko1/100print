@@ -100,7 +100,7 @@ evidence gaps, blocking and alternative hypotheses. Council returns independent
 positions, conflict map, critique and synthesis. Only structured analytical artifacts
 are persisted; no hidden chain-of-thought is retained.
 
-`CEO_BRAIN_MODE=deterministic` is an explicit **test/mock** mode. Tests inject the
+`CEO_BRAIN_MODE=deterministic` is rejected by the live runtime. Tests inject the
 mock provider directly; never configure this mode on the live worker.
 
 ## Reproduce a fresh installation
@@ -370,3 +370,15 @@ means separate context-isolated initial calls using the same model, not model
 diversity. CLI latency, authorization and upstream availability affect execution.
 Telegram's shared-provider path is tested, but live Telegram delivery remains
 unverified because the project's token and chat allowlist are absent.
+
+### FINAL #10: production + Voice
+
+Bridge #8 и API #6 используют ProductionCodexProvider (Codex CLI под ceoorch),
+структурированные JSON-контракты, timeout и fail-closed без deterministic fallback.
+Постоянный bridge теперь поддерживает `CONTEXT` и `DECISION` в поле message:
+контекст и подтверждённые пользователем решения доступны через тот же GitHub plugin.
+Короткий текст для Project Instructions: [инструкции](docs/CHATGPT_PROJECT_INSTRUCTIONS.md).
+Контракт и одна фраза для нового Voice-чата: [Voice bridge](docs/VOICE_BRIDGE.md).
+
+Проверка нового acceptance: `.venv/bin/python scripts/verify_production.py --session issue10-acceptance-v2 --snapshot data/issue10-v2-before-restart.json`.
+Результат и проверенные ограничения: [acceptance #10](docs/ISSUE10_ACCEPTANCE.md).

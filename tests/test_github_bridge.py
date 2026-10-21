@@ -7,6 +7,32 @@ from app.organization.brain import DeterministicBrainProvider
 
 
 class BridgeTests(unittest.TestCase):
+    def test_context_and_decision_receipts_are_atomic_and_replay_safe(self):
+        bridge.migrate()
+        session = 'controls-' + uuid.uuid4().hex
+        decision = 'Сохранять цены до проверки маржи ' + session
+        for index, text in enumerate(('DECISION\n' + decision, 'CONTEXT\n' + session)):
+            comment = {'id': -int(uuid.uuid4().int % 10**15),
+                       'user': {'login': bridge.OWNER},
+                       'body': f'CHATGPT_IN\nsession={session}\nmessage={text}'}
+            with patch.object(bridge.memory, 'create_task', side_effect=AssertionError('control ran inference')):
+                bridge.ingest(comment)
+                bridge.ingest(comment)
+            with connect() as conn, conn.cursor() as cur:
+                cur.execute('''SELECT t.status,t.result,t.error FROM tasks t JOIN
+                    chatgpt_bridge_comments b ON b.task_id=t.id WHERE b.comment_id=%s''', (comment['id'],))
+                receipt = bridge.brief(cur.fetchone())
+                self.assertEqual(receipt['status'], 'done')
+                if index == 0:
+                    self.assertTrue(receipt['saved'])
+                    cur.execute('SELECT count(*) AS n FROM project_memory WHERE text=%s AND kind=\'decision\'', (decision,))
+                    self.assertEqual(cur.fetchone()['n'], 1)
+                else:
+                    self.assertTrue(any(r['text'] == decision for r in receipt['context']['relevant_memory']))
+            # Do not leave synthetic receipts for later delivery tests.
+            with connect() as conn, conn.cursor() as cur:
+                cur.execute('UPDATE chatgpt_bridge_comments SET delivered_at=now() WHERE comment_id=%s', (comment['id'],))
+
     def test_legacy_gh_pagination(self):
         from types import SimpleNamespace
         with patch.object(bridge.subprocess, 'run', return_value=SimpleNamespace(stdout='[{"id":1}]\n[{"id":2}]\n')) as run:
@@ -68,6 +94,7 @@ class BridgeTests(unittest.TestCase):
             with self.assertRaises(RuntimeError):
                 bridge.deliver([], test_only=True)
         self.assertEqual(len(posted), 1)
+        self.assertIn('"request_comment_id":' + str(comment['id']), posted[0]['body'])
         # Fresh delivery recovers the reply marker and never sends a second POST.
         with patch.object(bridge, 'api', side_effect=AssertionError('duplicate POST')):
             bridge.deliver(posted, test_only=True)

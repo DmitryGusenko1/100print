@@ -41,11 +41,9 @@ class LocalBrainProvider(BrainProvider):
 def business_brain():
     """An explicit mode prevents a failed production run becoming mock advice."""
     import os
-    from app.organization.brain import DeterministicBrainProvider
     mode=os.getenv('CEO_BRAIN_MODE','production')
-    if mode=='deterministic': return DeterministicBrainProvider()
     if mode=='production':
         from app.organization.codex import ProductionCodexProvider
         return ProductionCodexProvider(os.getenv('CEO_BRAIN_WORKDIR','/opt/ceo-orchestrator'),
             os.getenv('CEO_BRAIN_MODEL','gpt-6.1-sol'), float(os.getenv('CEO_BRAIN_TIMEOUT','180')))
-    raise ValueError('Unknown CEO_BRAIN_MODE')
+    raise ValueError('Live runtime requires production; inject test providers in tests only')

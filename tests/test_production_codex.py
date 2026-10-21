@@ -22,6 +22,9 @@ class ProductionCodexTests(unittest.TestCase):
             with self.assertRaises(ValueError): ProductionCodexProvider(timeout=timeout)
         with patch.dict(os.environ,{'CEO_BRAIN_MODE':'production'}):
             self.assertIsInstance(business_brain(),ProductionCodexProvider)
+        with patch.dict(os.environ,{'CEO_BRAIN_MODE':'deterministic'}):
+            with self.assertRaisesRegex(ValueError, 'requires production'):
+                business_brain()
 
     def fake(self, value, code=0, timeout=False):
         def popen(command, **kwargs):

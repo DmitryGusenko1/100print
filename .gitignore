@@ -10,3 +10,5 @@ __pycache__/
 snap/
 .pytest_cache/
 config/chatgpt.env
+# Separate managed worktree; never vendor its runtime, credentials or repository.
+/ai-business-brain/

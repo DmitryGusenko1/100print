@@ -23,10 +23,6 @@ class ProductionCodexProvider(BrainProvider):
             raise PermissionError('Production Codex requires ceoorch')
         self.workdir = Path(workdir).resolve(strict=True)
         allowed = {ROOT, ROOT / 'ai-business-brain'}
-        # Optional external path is accepted only when it resolves to our own tree.
-        alias = Path('/opt/ai-business-brain')
-        if alias.exists() and alias.resolve().is_relative_to(ROOT):
-            allowed.add(alias.resolve())
         if self.workdir not in allowed or self.workdir.stat().st_uid != os.getuid():
             raise ValueError('Production workdir outside project allowlist')
         if not isinstance(timeout, (int, float)) or not 0 < timeout <= 300:

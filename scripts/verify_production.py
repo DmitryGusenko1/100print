@@ -1,5 +1,6 @@
 #!/usr/bin/env python3
-"""Read-only verification of issue #9's real bridge/API analysis and durable artifacts."""
+"""Read-only verification of real bridge/API analysis and durable artifacts."""
+import argparse
 import json
 from pathlib import Path
 import sys
@@ -12,11 +13,11 @@ from app.github_bridge import comments
 from dotenv import load_dotenv
 
 
-def verify():
+def verify(session="production-e2e", snapshot_path="data/issue9-before-restart.json"):
     with connect() as conn, conn.cursor() as cur:
-        cur.execute('''SELECT t.*,b.reply_comment_id,b.delivered_at FROM tasks t
+        cur.execute('''SELECT t.*,b.comment_id,b.reply_comment_id,b.delivered_at FROM tasks t
             JOIN chatgpt_bridge_comments b ON b.task_id=t.id
-            WHERE b.session_id='production-e2e' ORDER BY t.created_at DESC LIMIT 1''')
+            WHERE b.session_id=%s ORDER BY t.created_at DESC LIMIT 1''', (session,))
         task = cur.fetchone()
         assert task and task['status'] == 'done', 'Production E2E has not completed'
         result = task['result']
@@ -49,7 +50,7 @@ def verify():
         cur.execute('SELECT count(*) AS n FROM project_memory WHERE task_id=%s', (task['id'],))
         memory_count = cur.fetchone()['n']
         assert memory_count > 10
-    snapshot = ROOT / 'data/issue9-before-restart.json'
+    snapshot = ROOT / snapshot_path
     if snapshot.exists():
         for old in json.loads(snapshot.read_text()):
             assert all(steps[old['step_key']][k] == v for k, v in old.items())
@@ -60,6 +61,8 @@ def verify():
     assert brief['provider'] == result['provider'] and brief['demonstration'] is False
     assert brief['confidence'] > 0 and len(brief['positions']) >= 3
     assert brief['structured_recommendation']['recommendation']
+    if session.startswith('issue10-'):
+        assert brief['request_comment_id'] == task['comment_id']
     # Exercise the actual localhost #6 API, using only this project's token.
     load_dotenv(ROOT / 'config/chatgpt.env')
     request = urllib.request.Request('http://127.0.0.1:8096/tools/get_task_result',
@@ -74,9 +77,14 @@ def verify():
                 'departments': sorted(departments), 'checkpoints': len(steps),
                 'production_calls': len(calls), 'memory_artifacts': memory_count,
                 'attempts': task['attempts'], 'api_result_verified': True,
+                'restart_checkpoints_verified': len(json.loads(snapshot.read_text())) if snapshot.exists() else 0,
                 'reply_url': reply['html_url']}
     print(json.dumps(evidence, ensure_ascii=False, indent=2))
 
 
 if __name__ == '__main__':
-    verify()
+    parser = argparse.ArgumentParser(description=__doc__)
+    parser.add_argument('--session', default='production-e2e')
+    parser.add_argument('--snapshot', default='data/issue9-before-restart.json')
+    args = parser.parse_args()
+    verify(args.session, args.snapshot)

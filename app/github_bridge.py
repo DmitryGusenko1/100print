@@ -4,7 +4,7 @@ import logging
 import re
 import subprocess
 import time
-from app.db import connect, ROOT
+from app.db import connect, ROOT, enqueue, Json
 from app import project_memory as memory
 
 REPO = 'DmitryGusenko1/100print'
@@ -69,8 +69,26 @@ def ingest(comment):
         cid = str(conv['id'])
         memory.append(cur, cid, text, request_id=key,
                       metadata={'transport': 'github', 'issue': ISSUE, 'comment_id': comment['id']})
-        # create_task invokes get_relevant_context before enqueueing, in this transaction.
-        task = memory.create_task(cur, cid, text, key)
+        # Control receipts and memory changes commit atomically with intake. They
+        # never reach inference, and replay uses the same comment ID as analysis.
+        operation, separator, content = text.partition('\n')
+        if operation in ('CONTEXT', 'DECISION') and separator and content.strip():
+            if operation == 'CONTEXT':
+                result = {'operation': operation, 'context': memory.context(cur, cid, content)}
+            else:
+                item = memory.append(cur, cid, content, kind='decision',
+                    metadata={'status': 'accepted', 'transport': 'github',
+                              'comment_id': comment['id'], 'source': 'user-reported'},
+                    request_id=key + ':decision')
+                result = {'operation': operation, 'saved': True, 'memory_id': str(item['id']),
+                          'decision_status': 'accepted', 'text': content}
+            tid = enqueue(cur, operation + ' bridge receipt', 'echo', {}, 'chatgpt', key)
+            cur.execute("UPDATE tasks SET status='done',result=%s,finished_at=now() WHERE id=%s",
+                        (Json(json.loads(json.dumps(result, default=str))), tid))
+            task = {'task_id': tid}
+        else:
+            # create_task retrieves server context before enqueueing analysis.
+            task = memory.create_task(cur, cid, text, key)
         cur.execute('''INSERT INTO chatgpt_bridge_comments(comment_id,session_id,conversation_id,task_id)
                        VALUES (%s,%s,%s,%s)''', (comment['id'], session, cid, task['task_id']))
     logging.info('Bridge intake comment=%s task=%s', comment['id'], task['task_id'])
@@ -78,6 +96,8 @@ def ingest(comment):
 
 def brief(row):
     result = row['result'] or {}
+    if result.get('operation') in ('CONTEXT', 'DECISION'):
+        return {'status': row['status'], **result}
     analysis = result.get('analysis', {})
     return {'status': row['status'], 'provider': result.get('provider'),
             'model':result.get('model'), 'provider_metadata':result.get('provider_metadata'),
@@ -105,13 +125,16 @@ def deliver(existing, test_only=False):
         found = next((c for c in existing if marker in c.get('body', '') and c.get('user', {}).get('login') == OWNER), None)
         # Compact bounded JSON remains parseable even for a verbose production provider.
         summary = brief(row)
+        summary['request_comment_id'] = row['comment_id']
         encoded = json.dumps(summary, ensure_ascii=False, separators=(',', ':'))
         if len(encoded) > 45000:
             summary = {'status': row['status'], 'truncated': True,
-                       'provider':summary['provider'], 'model':summary['model'],
-                       'demonstration':summary['demonstration'], 'confidence':summary['confidence'],
-                       'provider_metadata':summary['provider_metadata'],
-                       'recommendation': str(summary['recommendation'])[:4000],
+                       'request_comment_id': row['comment_id'],
+                       'operation': summary.get('operation'),
+                       'provider':summary.get('provider'), 'model':summary.get('model'),
+                       'demonstration':summary.get('demonstration'), 'confidence':summary.get('confidence'),
+                       'provider_metadata':summary.get('provider_metadata'),
+                       'recommendation': str(summary.get('recommendation', ''))[:4000],
                        'detail': 'Full result and artifacts in project memory by task_id'}
             encoded = json.dumps(summary, ensure_ascii=False)
         body = f'CHATGPT_OUT\nsession={row["session_id"]}\ntask_id={row["task_id"]}\nresult={encoded}\n{marker}'
