@@ -199,3 +199,17 @@ round persistence, fresh-store restart recovery, invalid output, routing and
 allowlist checks. Runtime checks exercise actual service crash recovery. Domain
 isolation tests prohibit file writes, network connections and child processes;
 all live checks use only this project's Unix socket and service MainPID.
+
+## ChatGPT project memory (#6)
+
+The authenticated MCP endpoint `/mcp/` and HTTP adapter `/tools/{method}` use
+`ceo_orchestrator` for project `100print` only. Conversations, typed memory,
+analysis queue links and organization checkpoints survive service restarts.
+The existing worker supervises the localhost API on port 8096 when
+`config/chatgpt.env` supplies `CEO_CHATGPT_TOKEN` (32+ characters).
+
+See [project instructions](docs/CHATGPT_PROJECT_INSTRUCTIONS.md) and
+[tool setup, transport and production limitations](docs/CHATGPT_TOOL_SETUP.md).
+ChatGPT account connection, trusted HTTPS/OAuth gateway and Telegram credentials
+are deployment prerequisites. The default deterministic provider is a labelled
+workflow demonstration; it must not be presented as production business advice.

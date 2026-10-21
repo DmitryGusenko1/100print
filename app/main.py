@@ -98,6 +98,9 @@ def finish(cur, task, result=None, error=None):
         (status,Json(result) if result is not None else None,error,status,delay,task['id']))
     cur.execute('UPDATE agent_runs SET status=%s,finished_at=now(),result=%s,error=%s WHERE id=%s',
         ('failed' if error else 'done',Json(result) if result is not None else None,error,task['run_id']))
+    if result:
+        from app.project_memory import persist_analysis
+        persist_analysis(cur,task,result)
     if result and result.get('requires_decision'):
         cur.execute('INSERT INTO decisions(task_id,body) VALUES (%s,%s)',(task['id'],Json(result)))
     logging.info('task=%s processing -> %s error=%s',task['id'],status,error)
@@ -115,15 +118,27 @@ def main():
         if not cur.fetchone()['locked']: raise RuntimeError('Worker already running')
     with connect() as conn, conn.cursor() as cur:
         cur.execute((ROOT/'config/schema.sql').read_text())
+        cur.execute((ROOT/'config/chatgpt_schema.sql').read_text())
         from app.organization.registry import Registry
         Registry().sync(cur)
         recover(cur,startup=True)
+    from dotenv import load_dotenv
+    load_dotenv(ROOT/'config/chatgpt.env',override=False)
+    api=None; telegram=None
+    def start_api():
+        return subprocess.Popen([sys.executable,'-m','uvicorn','app.chatgpt_api:app',
+            '--host','127.0.0.1','--port','8096'],cwd=ROOT,
+            stdout=open(ROOT/'logs/chatgpt-api.log','a'),stderr=subprocess.STDOUT)
     provider=LocalBrainProvider(); current=None; future=None
     pool=concurrent.futures.ThreadPoolExecutor(max_workers=1)
     github_pool=concurrent.futures.ThreadPoolExecutor(max_workers=1)
     github_future=None; github_next=0
     try:
         while not stop:
+            if os.getenv('CEO_CHATGPT_MANAGED','1')=='1' and os.getenv('CEO_CHATGPT_TOKEN') and (api is None or api.poll() is not None):
+                api=start_api()
+            if os.getenv('CEO_TELEGRAM_TOKEN') and os.getenv('CEO_TELEGRAM_ALLOWED_CHATS') and (telegram is None or telegram.poll() is not None):
+                telegram=subprocess.Popen([sys.executable,'-m','app.telegram_bot'],cwd=ROOT)
             if os.getenv('CEO_GITHUB_AI_ENABLED','1')=='1' and time.monotonic()>=github_next:
                 if github_future is None or github_future.done():
                     if github_future is not None:
@@ -147,6 +162,14 @@ def main():
                 if current: future=pool.submit(provider.execute,current)
             time.sleep(max(0.2,float(os.getenv('CEO_POLL_SECONDS','2'))))
     finally:
+        if telegram is not None:
+            telegram.terminate()
+            try: telegram.wait(timeout=10)
+            except subprocess.TimeoutExpired: telegram.kill()
+        if api is not None:
+            api.terminate()
+            try: api.wait(timeout=10)
+            except subprocess.TimeoutExpired: api.kill()
         github_pool.shutdown(wait=True)
         pool.shutdown(wait=True)
         lock.close()

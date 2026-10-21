@@ -1,0 +1,21 @@
+[Unit]
+Description=100print authenticated memory and MCP API
+After=ceo-orchestrator.service
+Requires=ceo-orchestrator.service
+
+[Service]
+Type=simple
+User=ceoorch
+WorkingDirectory=/opt/ceo-orchestrator
+EnvironmentFile=/opt/ceo-orchestrator/config/chatgpt.env
+ExecStart=/opt/ceo-orchestrator/.venv/bin/uvicorn app.chatgpt_api:app --host 127.0.0.1 --port 8096
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+ProtectSystem=strict
+ReadWritePaths=/opt/ceo-orchestrator
+PrivateTmp=true
+UMask=0077
+
+[Install]
+WantedBy=multi-user.target

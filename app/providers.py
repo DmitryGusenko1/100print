@@ -18,7 +18,20 @@ class LocalBrainProvider(BrainProvider):
         if kind in ('ai-task','council',*DEPARTMENTS):
             from app.organization.engine import Organization
             from app.organization.store import PostgresStore
-            return Organization(business_brain(),PostgresStore()).execute(task)
+            org=Organization(business_brain(),PostgresStore())
+            result=org.execute(task)
+            if task.get('payload',{}).get('analytical_protocol'):
+                from app.organization import contracts as c
+                if 'critic_challenge' not in result:
+                    result['critic_challenge']=org.ask('analytical/critic/v1','challenge','critic','head-critic',
+                        {'question':task['title'],'result':result},c.CHALLENGE,
+                        instructions='Challenge evidence, assumptions, contradictions and risks. Never automatically agree.')
+                result['analysis']=org.ask('analytical/v1','analytical','strategy','chief-of-staff',
+                    {'question':task['title'],'organization_result':result},c.ANALYTICAL,
+                    instructions='Return a concise evidence-based analytical brief, never hidden chain-of-thought. Separate facts and assumptions; list unknowns; compare 2-4 hypotheses with arguments for and against each. Address Critic objections and internal contradictions. Include risks, calibrated confidence, recommendation and evidence that would change it. Never automatically agree with the user.')
+                result['demonstration']=result['provider'].startswith('deterministic')
+                result['requires_decision']=result.get('requires_decision',False) or result['critic_challenge']['blocking'] or result['analysis']['confidence']<.7
+            return result
         raise ValueError(f'No handler registered for task type: {kind}')
 
 

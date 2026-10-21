@@ -33,3 +33,10 @@ REVIEW = obj({'reviewer': TEXT, 'target': TEXT, 'challenges': TEXTS})
 def validate(schema, value):
     Draft202012Validator(schema).validate(value)
     return value
+
+ANALYTICAL = obj({'question': TEXT, 'evidence': TEXTS, 'assumptions': TEXTS,
+    'unknowns': TEXTS, 'hypotheses': {'type':'array','minItems':2,'maxItems':4,
+        'items':obj({'hypothesis':TEXT,'arguments_for':TEXTS,'arguments_against':TEXTS})},
+    'counterarguments':TEXTS,'contradictions':TEXTS,'risks':TEXTS,
+    'confidence':{'type':'number','minimum':0,'maximum':1}, 'decision':TEXT,
+    'change_conditions':TEXTS})

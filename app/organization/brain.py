@@ -14,6 +14,18 @@ class DeterministicBrainProvider(BrainProvider):
 
     def respond(self, request):
         op=request['operation']; data=request['input']; dept=request['department']
+        if op=='analytical':
+            return {'question':data['question'],'evidence':[],
+                'assumptions':['No verified business evidence supplied'],
+                'unknowns':['Baseline metrics, cost, demand and capacity'],
+                'hypotheses':[
+                    {'hypothesis':'A bounded pilot could improve outcomes','arguments_for':['Limits exposure while collecting observations'], 'arguments_against':['Pilot results may not scale']},
+                    {'hypothesis':'Maintaining current operations could preserve cash','arguments_for':['Avoids unvalidated investment'], 'arguments_against':['May miss profitable demand']}],
+                'counterarguments':['User preferences are not evidence of profitability'],
+                'contradictions':['Growth goals may conflict with cash preservation'],
+                'risks':['Demonstration provider; no real business inference was performed'],
+                'confidence':0,'decision':'Gather evidence; no investment approval',
+                'change_conditions':['Verified margin, demand, cash and capacity; production specialist review']}
         if op=='skill':
             return {'summary':request['skill']['name']+': '+data['context']['goal'],
                 'recommendations':[request['skill']['purpose'],'Collect baseline evidence before committing resources'],
