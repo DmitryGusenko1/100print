@@ -469,7 +469,7 @@ Or return a blocked result without claiming completion:
 ```
 
 Readiness probes support `telegram` (project preflight plus active Telegram
-service), `github`, `codex`, or an explicitly agreed project-local `file:` marker.
+service), `telegram-e2e` (real delivery and persisted artifacts), `github`, `codex`, or an explicitly agreed project-local `file:` marker.
 The worker checks waiting tasks on subsequent polls and resumes automatically.
 Telegram preflight never echoes credentials. No unattended OAuth/UI confirmation
 is fabricated. Execution has a one-hour deadline, bounded probes and heartbeat;

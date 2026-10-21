@@ -1,6 +1,7 @@
 """Single-project, durable GitHub executor. No third-party dependencies."""
 import argparse
 import fcntl
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -153,6 +154,8 @@ class Queue:
 
 
 def readiness(task):
+    if task['readiness'] == 'telegram-e2e':
+        return run([str(ROOT/'.venv/bin/python'), str(ROOT/'scripts/verify_telegram.py')], 45).returncode == 0
     if task['readiness'] == 'telegram':
         result = run([str(ROOT/'.venv/bin/python'), str(ROOT/'scripts/telegram_preflight.py')], 45)
         active = run(['systemctl', 'is-active', 'ceo-telegram-bot.service'], 10)
@@ -227,8 +230,8 @@ BODY:\n{task['body']}
 При изменениях выполнить tests, git add/commit/push. Финал DONE/CHANGED/TESTED/NEXT.
 ОБЯЗАТЕЛЬНО запиши {result_path} JSON: {{"status":"DONE","summary":"проверенный результат"}} ТОЛЬКО при полном DoD.
 Если нужны token/OAuth/UI/права: прекрати зависимое выполнение, запиши JSON
-{{"status":"WAITING_USER","summary":"причина","user_action":"ровно одно простое действие","readiness":"telegram или github или file:data/имя-маркера"}}.
-Для Telegram readiness=telegram. Для общего UI подтверждения попроси создать указанный project-local marker только после подтверждения.
+{{"status":"WAITING_USER","summary":"причина","user_action":"ровно одно простое действие","readiness":"telegram или telegram-e2e или github или file:data/имя-маркера"}}.
+Для отсутствующих Telegram credentials readiness=telegram; для ожидания реального сообщения/E2E readiness=telegram-e2e. Для общего UI подтверждения попроси создать указанный project-local marker только после подтверждения.
 Не помещай секреты, логи команд и hidden reasoning в JSON или финал. Exit 0 без DONE JSON не означает успех.
 '''
     log_path = queue.root / f'logs/executor-{number}.log'
@@ -272,7 +275,8 @@ def finish(queue, task, result, progress):
         if not action or not probe or '\n' in action:
             raise ValueError('WAITING_USER requires one action and readiness probe')
         queue.update(number, status='WAITING_USER', result=summary, user_action=action, readiness=probe)
-        queue.event(number, 'waiting-'+str(task['attempt']), f'STATUS: WAITING_USER\n{summary}\nUSER_ACTION: {action}')
+        waiting_key = hashlib.sha256((action+'|'+probe).encode()).hexdigest()[:16]
+        queue.event(number, 'waiting-'+waiting_key, f'STATUS: WAITING_USER\n{summary}\nUSER_ACTION: {action}')
         return
     if result.get('status') != 'DONE':
         raise ValueError('Missing explicit executor completion')

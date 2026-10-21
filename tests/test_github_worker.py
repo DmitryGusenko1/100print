@@ -65,6 +65,7 @@ class WorkerTests(unittest.TestCase):
         p.update(1, 'implementation')
         result = dict(status='WAITING_USER',summary='auth needed', user_action='Complete OAuth',readiness='github')
         finish(q, task, result, p)
+        task['attempt'] += 1
         finish(q, task, result, p)
         self.assertEqual(1,q.db.execute("SELECT COUNT(*) FROM events WHERE marker LIKE '%waiting%'").fetchone()[0])
         self.assertIsNone(q.claim())
