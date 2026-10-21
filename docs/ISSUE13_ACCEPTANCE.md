@@ -42,3 +42,21 @@ authorization. Runtime tests also verified worker crash recovery. Historical
 messages predate ACK deployment and cannot establish the ACK latency criterion.
 A fresh real inbound Telegram question is still required for full E2E acceptance;
 no complete LIVE acceptance is claimed yet.
+
+Final issue #13 verification (2026-10-21): the previously pending LIVE gate is now
+satisfied by real inbound update 27208783, task
+`193280ec-e716-4f65-aef2-b2b5d2d1c94b`. The current verifier confirms ACK latency
+3.481367 seconds, provider `production-codex-v1`, confirmed final delivery and
+persisted user/assistant messages, with L4 Council and Critic artifacts. Exactly
+one ACK and one progress notice were sent for this update. All three accepted
+Telegram tasks are done; all historical final parts are sent; pending queue and
+duplicate outbox parts are zero. A fresh restart of the Telegram service through
+its own MainPID and systemd Restart=always preserved the complete evidence and
+Telegram message IDs. Machine-readable local evidence is in
+`data/issue13-live-evidence.json`. No further user action is required.
+
+`/status` reports zero queued tasks, no active task, a healthy worker and provider
+readiness as unknown when there has been no production checkpoint in ten minutes;
+this idle-time state is intentional and does not claim a fresh provider probe.
+The Telegram API ambiguity limitation above still applies; the observed LIVE
+acceptance has no uncertain sends or duplicate replies.
