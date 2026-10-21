@@ -382,3 +382,50 @@ Bridge #8 и API #6 используют ProductionCodexProvider (Codex CLI по
 
 Проверка нового acceptance: `.venv/bin/python scripts/verify_production.py --session issue10-acceptance-v2 --snapshot data/issue10-v2-before-restart.json`.
 Результат и проверенные ограничения: [acceptance #10](docs/ISSUE10_ACCEPTANCE.md).
+
+### Telegram transport (#11)
+
+The existing `app.telegram_bot` now uses the same PostgreSQL `ceo_orchestrator`,
+`project_memory`, task queue, L1–L4 routing and `production-codex-v1` as bridge #8.
+`/start`, `/status`, `/new` and text are supported. Sessions are keyed by chat and
+user; `/new` changes the session without deleting shared project memory. Only
+structured specialist/Critic/Council artifacts are persisted by the shared worker.
+Demo output is blocked at delivery.
+
+One deployment wizard (requires local administrative access):
+
+```sh
+sudo python3 /opt/ceo-orchestrator/scripts/setup_telegram.py
+```
+
+Enter the bot token in the hidden prompt and numeric chat/user allowlists. If both
+allowlists are set, both must match. They are stored only in the ignored,
+owner-only `config/telegram.env`, reused on subsequent runs. No token is passed in
+command arguments. The wizard checks Telegram credentials and webhook ownership,
+installs **only** `ceo-telegram-bot.service`, enables it with `Restart=always` as
+`ceoorch`, then asks for a real business question in Telegram. It verifies the
+production response, confirmed Telegram message IDs, user/assistant memory,
+Critic/specialist artifacts and unchanged delivery evidence across a bot restart.
+Choose a pricing or investment question for L3, or a new printing plant question
+for L4/Council. The wizard does not mark issue progress done automatically.
+
+Read-only evidence check after deployment:
+
+```sh
+.venv/bin/python scripts/verify_telegram.py
+```
+
+Inbox update IDs, tasks, memory keys and outbox parts are durable and unique.
+The polling offset advances atomically with ingestion; a PostgreSQL singleton
+lock prevents parallel pollers. Telegram has no send idempotency key: an interrupted
+or ambiguous send is quarantined as `uncertain`, including on restart. Later
+parts of that reply wait. Such rows need manual reconciliation against Telegram;
+automatic resending could create duplicates. A confirmed Telegram reply followed
+by a database failure can therefore lack assistant memory until reconciliation.
+Other queued messages continue. No exactly-once guarantee across the external API
+and PostgreSQL is claimed.
+
+Deployment status on 2026-10-21: LIVE is **not verified**. Project Telegram token
+and allowlist are absent; installation requires administrative access unavailable
+to the executor. The repository is ready for the deployment wizard; service
+active/enabled and real Telegram E2E remain acceptance prerequisites.

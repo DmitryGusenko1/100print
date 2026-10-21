@@ -1,0 +1,19 @@
+[Unit]
+Description=100print Telegram shared AI transport
+After=network-online.target ceo-orchestrator.service
+Wants=network-online.target ceo-orchestrator.service
+
+[Service]
+Type=simple
+User=ceoorch
+Group=ceoorch
+WorkingDirectory=/opt/ceo-orchestrator
+EnvironmentFile=/opt/ceo-orchestrator/config/telegram.env
+ExecStart=/opt/ceo-orchestrator/.venv/bin/python -m app.telegram_bot
+Restart=always
+RestartSec=5
+UMask=0077
+NoNewPrivileges=true
+
+[Install]
+WantedBy=multi-user.target

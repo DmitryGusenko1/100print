@@ -12,3 +12,7 @@ snap/
 config/chatgpt.env
 # Separate managed worktree; never vendor its runtime, credentials or repository.
 /ai-business-brain/
+
+config/telegram.env
+
+config/.telegram-env-*
