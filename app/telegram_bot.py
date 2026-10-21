@@ -31,11 +31,11 @@ def allowed(message):
             (not users or str(message.get('from', {}).get('id')) in users))
 
 
-def queue_reply(cur, update_id, text):
+def queue_reply(cur, update_id, text, kind="final"):
     # UTF-16 units stay below Telegram's limit even for non-BMP characters.
     for part, start in enumerate(range(0, len(text), 1800)):
-        cur.execute('INSERT INTO telegram_outbox(update_id,part,text) VALUES (%s,%s,%s) ON CONFLICT DO NOTHING',
-                    (update_id, part, text[start:start+1800]))
+        cur.execute('INSERT INTO telegram_outbox(update_id,part,text,kind) VALUES (%s,%s,%s,%s) ON CONFLICT DO NOTHING',
+                    (update_id, part, text[start:start+1800], kind))
 
 
 def health(cur):
@@ -43,7 +43,20 @@ def health(cur):
     provider = business_brain()
     cur.execute("SELECT updated_at > now()-interval '60 seconds' AS healthy FROM heartbeats WHERE id='orchestrator'")
     row = cur.fetchone()
-    return ('100print | provider='+provider.identity+
+    worker_ok = bool(row and row['healthy'])
+    cur.execute("SELECT count(*) AS n FROM tasks WHERE status IN ('new','processing')")
+    count = cur.fetchone()['n']
+    cur.execute("SELECT details->>'active_task' AS active FROM heartbeats WHERE id='orchestrator'")
+    active = cur.fetchone()
+    cur.execute("SELECT status,error FROM tasks WHERE type IN ('ai-task','council') ORDER BY updated_at DESC LIMIT 1")
+    latest = cur.fetchone()
+    cur.execute("""SELECT EXISTS (SELECT 1 FROM organization_steps
+        WHERE metadata->>'provider'='production-codex-v1'
+        AND step_key != 'manifest' AND created_at > now()-interval '10 minutes') AS recent""")
+    recent = cur.fetchone()['recent']
+    provider_health = 'ERROR' if latest and latest['error'] else ('OK' if recent and worker_ok else 'UNKNOWN')
+    return ('100print | queue='+str(count)+' | active_task='+str(active['active'] if active else None)+
+            ' | provider_health='+provider_health+' | provider='+provider.identity+
             ' | demonstration='+str(provider.identity != 'production-codex-v1').lower()+
             ' | memory=ceo_orchestrator/shared OK | worker='+('OK' if row and row['healthy'] else 'STALE'))
 
@@ -79,12 +92,34 @@ def ingest(cur, update):
     else:
         task = memory.create_task(cur, cid, message['text'], f'telegram:update:{uid}')
         cur.execute('UPDATE telegram_inbox SET task_id=%s WHERE update_id=%s', (task['task_id'],uid))
+        queue_reply(cur, uid, 'Принял. Анализирую.', 'ack')
+
+
+def render_result(result):
+    value = result.get('final') or result.get('analysis') or result.get('result') or result
+    if isinstance(value, str):
+        return value
+    lines = []
+    for key, label in [('decision','Решение'),('summary','Ответ'),('recommendation','Рекомендация'),
+                       ('why','Обоснование'),('risks','Риски'),('assumptions','Допущения'),
+                       ('evidence_gaps','Что уточнить'),('change_conditions','Условия пересмотра')]:
+        item = value.get(key)
+        if item:
+            lines.append(label+': '+('; '.join(map(str,item)) if isinstance(item,list) else str(item)))
+    return '\n\n'.join(lines) or json.dumps(value,ensure_ascii=False)
 
 
 def collect(cur):
+    # Backfill accepted tasks too; uniqueness makes every collection restart-safe.
+    cur.execute("""SELECT i.update_id,t.status,i.created_at < now()-interval '30 seconds' AS overdue
+        FROM telegram_inbox i JOIN tasks t ON t.id=i.task_id WHERE t.status IN ('new','processing')""")
+    for row in cur.fetchall():
+        queue_reply(cur, row['update_id'], 'Принял. Анализирую.', 'ack')
+        if row['overdue']:
+            queue_reply(cur, row['update_id'], 'Анализ ещё выполняется.', 'progress')
     cur.execute('''SELECT i.update_id,t.id,t.status,t.result FROM telegram_inbox i JOIN tasks t ON t.id=i.task_id
         WHERE t.status IN ('done','failed') AND NOT EXISTS
-        (SELECT 1 FROM telegram_outbox o WHERE o.update_id=i.update_id)''')
+        (SELECT 1 FROM telegram_outbox o WHERE o.update_id=i.update_id AND o.kind='final')''')
     for row in cur.fetchall():
         result = row['result'] or {}
         if row['status'] == 'failed':
@@ -92,7 +127,7 @@ def collect(cur):
         elif result.get('provider') != 'production-codex-v1' or result.get('demonstration') is not False:
             text = 'Production provider недоступен; демонстрационный ответ заблокирован. Задача '+str(row['id'])
         else:
-            text = json.dumps(result.get('final') or result.get('analysis') or result, ensure_ascii=False)
+            text = render_result(result)
         queue_reply(cur, row['update_id'], text)
 
 
@@ -102,7 +137,9 @@ def deliver_completed():
         cur.execute('''SELECT o.*,i.chat_id,i.user_id,i.conversation_id FROM telegram_outbox o
             JOIN telegram_inbox i ON i.update_id=o.update_id WHERE o.state='pending'
             AND NOT EXISTS (SELECT 1 FROM telegram_outbox earlier WHERE earlier.update_id=o.update_id
-                AND earlier.part<o.part AND earlier.state!='sent') ORDER BY o.id LIMIT 10 FOR UPDATE OF o SKIP LOCKED''')
+                AND (CASE earlier.kind WHEN 'ack' THEN 0 WHEN 'progress' THEN 1 ELSE 2 END,earlier.part)
+                < (CASE o.kind WHEN 'ack' THEN 0 WHEN 'progress' THEN 1 ELSE 2 END,o.part) AND earlier.state NOT IN ('sent','uncertain')) ORDER BY CASE o.kind WHEN 'ack' THEN 0 WHEN 'progress' THEN 1 ELSE 2 END,o.id
+            LIMIT 10 FOR UPDATE OF o SKIP LOCKED''')
         rows = list(cur.fetchall())
         for row in rows:
             if not allowed({'chat': {'id': row['chat_id']}, 'from': {'id': row['user_id']}}):
@@ -113,7 +150,7 @@ def deliver_completed():
                 sent = api('sendMessage', {'chat_id': row['chat_id'], 'text': row['text']})
                 memory.append(cur, str(row['conversation_id']), row['text'], role='assistant',
                               request_id=f'telegram:outbox:{row["id"]}')
-                cur.execute("UPDATE telegram_outbox SET state='sent',telegram_message_id=%s WHERE id=%s", (sent['message_id'],row['id']))
+                cur.execute("UPDATE telegram_outbox SET state='sent',sent_at=now(),telegram_message_id=%s WHERE id=%s", (sent['message_id'],row['id']))
                 conn.commit()
             except Exception:
                 conn.rollback()
@@ -147,10 +184,12 @@ def main():
             with connect() as conn, conn.cursor() as cur:
                 cur.execute("SELECT extract(epoch FROM last_run)::bigint AS offset FROM scheduler_state WHERE name='telegram-offset'")
                 offset = cur.fetchone()['offset']
-            for update in api('getUpdates', {'offset': offset, 'timeout': 10, 'allowed_updates': ['message']}):
+            deliver_completed()
+            for update in api('getUpdates', {'offset': offset, 'timeout': 1, 'allowed_updates': ['message']}):
                 with connect() as conn, conn.cursor() as cur:
                     ingest(cur, update)
                     cur.execute("UPDATE scheduler_state SET last_run=to_timestamp(%s) WHERE name='telegram-offset'", (update['update_id']+1,))
+                deliver_completed()
             deliver_completed()
         except Exception:
             logging.warning('Telegram transport failed; durable state retained')

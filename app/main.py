@@ -25,10 +25,11 @@ def start_database():
         subprocess.run(command+['-l',str(ROOT/'logs/postgres.log'),'start','-w'],env=env,check=True,timeout=60)
 
 def recover(cur, startup=False, active=None):
+    active_ids = active if isinstance(active, list) else ([active] if active else [])
     cur.execute('''SELECT id,attempts,max_attempts FROM tasks WHERE status='processing'
         AND (%s OR started_at < now() - %s * interval '1 second')
-        AND (%s::uuid IS NULL OR id != %s::uuid) FOR UPDATE''',
-        (startup,int(os.getenv('CEO_STALE_SECONDS','300')),active,active))
+        AND NOT (id = ANY(%s::uuid[])) FOR UPDATE''',
+        (startup,int(os.getenv('CEO_STALE_SECONDS','300')),active_ids))
     for row in cur.fetchall():
         status='new' if row['attempts'] < row['max_attempts'] else 'failed'
         cur.execute('''UPDATE tasks SET status=%s,error='Interrupted worker; recovered',
@@ -67,9 +68,10 @@ def maintenance(cur, active):
             (Json({'counts':counts,'completed_last_day':completed,'requires_decision_or_stuck':needs,'automatic_actions':['bounded retry','deduplicated follow-up','handoff review']}),))
         logging.info('daily report counts=%s',counts)
 
-def claim(cur):
+def claim(cur, fast=False):
     cur.execute('''SELECT * FROM tasks WHERE status='new' AND available_at<=now()
-        ORDER BY priority DESC,created_at FOR UPDATE SKIP LOCKED LIMIT 1''')
+        AND (%s = (COALESCE(payload->>'level','')='L1'))
+        ORDER BY priority DESC,created_at FOR UPDATE SKIP LOCKED LIMIT 1''', (fast,))
     task=cur.fetchone()
     if not task: return None
     from app.organization.routing import DEPARTMENTS
@@ -130,7 +132,8 @@ def main():
             '--host','127.0.0.1','--port','8096'],cwd=ROOT,
             stdout=open(ROOT/'logs/chatgpt-api.log','a'),stderr=subprocess.STDOUT)
     provider=LocalBrainProvider(); current=None; future=None
-    pool=concurrent.futures.ThreadPoolExecutor(max_workers=1)
+    pool=concurrent.futures.ThreadPoolExecutor(max_workers=2)
+    quick=None; quick_future=None
     github_pool=concurrent.futures.ThreadPoolExecutor(max_workers=1)
     github_future=None; github_next=0
     try:
@@ -148,7 +151,12 @@ def main():
             # Also validates that the singleton lock session remains alive.
             with lock.cursor() as cur: cur.execute('SELECT 1')
             with connect() as conn, conn.cursor() as cur:
-                maintenance(cur,str(current['id']) if current else None)
+                maintenance(cur,[str(t['id']) for t in (current,quick) if t])
+                if quick_future and quick_future.done():
+                    try: result=quick_future.result(); error=None
+                    except Exception as exc: result=None; error=str(exc)[:2000]
+                    finish(cur,quick,result,error)
+                    quick_future=None; quick=None
                 if future and future.done():
                     try: result=future.result(); error=None
                     except Exception as exc: result=None;error=str(exc)[:2000]
@@ -158,6 +166,9 @@ def main():
                 with connect() as conn, conn.cursor() as cur: current=claim(cur)
                 # Commit processing before starting any side effects.
                 if current: future=pool.submit(provider.execute,current)
+            if not quick_future:
+                with connect() as conn, conn.cursor() as cur: quick=claim(cur,fast=True)
+                if quick: quick_future=pool.submit(provider.execute,quick)
             time.sleep(max(0.2,float(os.getenv('CEO_POLL_SECONDS','2'))))
     finally:
         if api is not None:

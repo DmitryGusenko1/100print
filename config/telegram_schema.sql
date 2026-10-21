@@ -13,3 +13,9 @@ CREATE TABLE IF NOT EXISTS telegram_outbox (
  CHECK(state IN ('pending','sending','sent','uncertain')), telegram_message_id bigint,
  UNIQUE(update_id,part)
 );
+
+ALTER TABLE telegram_outbox ADD COLUMN IF NOT EXISTS kind text NOT NULL DEFAULT 'final';
+ALTER TABLE telegram_outbox ADD COLUMN IF NOT EXISTS created_at timestamptz NOT NULL DEFAULT now();
+ALTER TABLE telegram_outbox ADD COLUMN IF NOT EXISTS sent_at timestamptz;
+ALTER TABLE telegram_outbox DROP CONSTRAINT IF EXISTS telegram_outbox_update_id_part_key;
+CREATE UNIQUE INDEX IF NOT EXISTS telegram_outbox_kind_part ON telegram_outbox(update_id,kind,part);

@@ -24,9 +24,14 @@ def evidence():
         uid, cid = item['update_id'], str(item['conversation_id'])
         result = item['result']
         assert result['provider'] == 'production-codex-v1' and result['demonstration'] is False
-        cur.execute('SELECT id,state,telegram_message_id,text FROM telegram_outbox WHERE update_id=%s ORDER BY part', (uid,))
+        cur.execute('SELECT id,state,telegram_message_id,text,kind,sent_at FROM telegram_outbox WHERE update_id=%s ORDER BY part', (uid,))
         outbox = cur.fetchall()
         assert outbox and all(r['state'] == 'sent' and r['telegram_message_id'] for r in outbox), 'Telegram reply not confirmed'
+        ack = next((r for r in outbox if r['kind']=='ack'), None)
+        assert ack and ack['sent_at'], 'Missing confirmed ACK'
+        ack_seconds = (ack['sent_at']-item['created_at']).total_seconds()
+        assert ack_seconds <= 10, 'ACK exceeded 10 seconds'
+        assert any(r['kind']=='final' for r in outbox), 'Missing final answer'
         cur.execute("SELECT role,dedupe_key,text FROM project_memory WHERE conversation_id=%s AND kind='message'", (cid,))
         messages = {r['dedupe_key']: r for r in cur.fetchall()}
         assert messages[f'telegram:update:{uid}']['role'] == 'user'
@@ -35,14 +40,15 @@ def evidence():
             assert message['role'] == 'assistant' and message['text'] == part['text']
         cur.execute('SELECT step_key FROM organization_steps WHERE task_id=%s', (item['task_id'],))
         keys = sorted(r['step_key'] for r in cur.fetchall())
-        assert 'analytical/v1' in keys and (any('critic' in key for key in keys) or 'round/5' in keys), 'Missing Critic artifacts'
+        if result.get('routing', {}).get('level') != 'L1':
+            assert 'analytical/v1' in keys and (any('critic' in key for key in keys) or 'round/5' in keys), 'Missing Critic artifacts'
         cur.execute('SELECT kind,count(*) AS n FROM project_memory WHERE task_id=%s GROUP BY kind', (item['task_id'],))
         artifacts = {r['kind']:r['n'] for r in cur.fetchall()}
         assert artifacts.get('specialist_result', 0) and artifacts.get('decision', 0)
         if result.get('routing', {}).get('level') == 'L4':
             assert artifacts.get('council_round', 0) and all(f'round/{i}' in keys for i in range(7))
         return {'update_id':uid, 'task_id':str(item['task_id']), 'provider':result['provider'],
-                'demonstration':False, 'outbox_ids':[r['id'] for r in outbox],
+                'demonstration':False, 'ack_seconds':ack_seconds, 'outbox_ids':[r['id'] for r in outbox],
                 'telegram_message_ids':[r['telegram_message_id'] for r in outbox],
                 'artifacts':artifacts, 'checkpoints':keys}
 

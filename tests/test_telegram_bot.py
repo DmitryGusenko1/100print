@@ -76,7 +76,9 @@ class TelegramTests(unittest.TestCase):
         bot.collect(self.cur)
         bot.collect(self.cur)
         replies = self.rows('SELECT * FROM telegram_outbox WHERE update_id BETWEEN %s AND %s', (self.uid, self.uid+3))
-        self.assertEqual(len(replies), 4)
+        self.assertEqual(len(replies), 8)
+        self.assertEqual(sum(r['kind']=='ack' for r in replies), 4)
+        self.assertEqual(sum(r['kind']=='final' for r in replies), 4)
         self.cur.execute("UPDATE telegram_outbox SET state='sending' WHERE update_id=%s", (self.uid,))
         bot.recover_outbox(self.cur)
         self.assertEqual(self.rows('SELECT state FROM telegram_outbox WHERE update_id=%s', (self.uid,))[0]['state'], 'uncertain')
@@ -86,7 +88,7 @@ class TelegramTests(unittest.TestCase):
         self.cur.execute("UPDATE tasks SET status='done',result=%s WHERE id=(SELECT task_id FROM telegram_inbox WHERE update_id=%s)",
                          (Json({'provider':'deterministic', 'demonstration':True, 'final':{'secret':'mock advice'}}), self.uid))
         bot.collect(self.cur)
-        reply = self.rows('SELECT text FROM telegram_outbox WHERE update_id=%s', (self.uid,))[0]['text']
+        reply = self.rows("SELECT text FROM telegram_outbox WHERE update_id=%s AND kind='final'", (self.uid,))[0]['text']
         self.assertNotIn('mock advice', reply)
         self.cur.execute('DELETE FROM telegram_outbox WHERE update_id=%s', (self.uid,))
         text = '😀'*4000
@@ -127,3 +129,37 @@ class TelegramTests(unittest.TestCase):
             bot.deliver_completed()
         self.assertEqual(send.call_count, 1)
         self.assertEqual(self.rows('SELECT state FROM telegram_outbox WHERE update_id=%s', (self.uid,))[0]['state'], 'uncertain')
+
+    def test_ack_progress_and_final_are_independent_and_durable(self):
+        bot.ingest(self.cur, self.update('Что такое тираж?'))
+        task = self.rows('SELECT t.* FROM tasks t JOIN telegram_inbox i ON i.task_id=t.id WHERE i.update_id=%s', (self.uid,))[0]
+        self.assertEqual(task['payload']['level'], 'L1')
+        self.cur.execute("UPDATE telegram_inbox SET created_at=now()-interval '31 seconds' WHERE update_id=%s", (self.uid,))
+        bot.collect(self.cur)
+        bot.collect(self.cur)
+        rows = self.rows('SELECT kind,text FROM telegram_outbox WHERE update_id=%s ORDER BY id', (self.uid,))
+        self.assertEqual([(r['kind'],r['text']) for r in rows], [('ack','Принял. Анализирую.'),('progress','Анализ ещё выполняется.')])
+        self.cur.execute("UPDATE tasks SET status='done',result=%s WHERE id=%s", (Json({'provider':'production-codex-v1','demonstration':False,'result':{'summary':'Тираж — число экземпляров.'}}),task['id']))
+        with self.delivery_context(), patch.object(bot,'api',return_value={'message_id':123}) as send:
+            for _ in range(5): bot.deliver_completed()
+        self.assertEqual(send.call_count,3)
+        self.assertIn('Тираж',send.call_args_list[-1].args[1]['text'])
+
+    def test_failed_task_delivers_clear_error_after_ack(self):
+        bot.ingest(self.cur, self.update('Вопрос'))
+        self.cur.execute("UPDATE tasks SET status='failed' WHERE id=(SELECT task_id FROM telegram_inbox WHERE update_id=%s)",(self.uid,))
+        bot.collect(self.cur)
+        rows=self.rows("SELECT text FROM telegram_outbox WHERE update_id=%s AND kind='final'",(self.uid,))
+        self.assertIn('Анализ не завершён',rows[0]['text'])
+
+    def test_fast_slot_claims_l1_while_business_slot_is_busy(self):
+        from app.main import claim
+        from app.db import enqueue
+        slow = enqueue(self.cur, 'Council slot test', 'echo', {'level':'L4'})
+        fast = enqueue(self.cur, 'Fast slot test', 'echo', {'level':'L1'})
+        self.cur.execute('UPDATE tasks SET priority=2147483647 WHERE id IN (%s,%s)', (slow,fast))
+        normal = claim(self.cur)
+        self.assertEqual(str(normal['id']), slow)
+        quick = claim(self.cur, fast=True)
+        self.assertEqual(str(quick['id']), fast)
+        self.assertEqual(self.rows('SELECT status FROM tasks WHERE id=%s',(slow,))[0]['status'], 'processing')

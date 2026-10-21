@@ -102,6 +102,8 @@ def routing(question):
     if any(w in q for w in ('новую типограф','новой типограф','new print','council','совет')): return 'L4',[]
     if any(w in q for w in ('метатег','meta tag')): return 'L1',['seo']
     if any(w in q for w in ('отчет по продаж','отчёт по продаж','sales report')): return 'L2',['sales']
+    if len(q) < 180 and (q.strip(' !?.') in ('привет','спасибо','как дела') or any(q.startswith(w) for w in ('что такое ', 'объясни ', 'сколько будет '))):
+        return 'L1',['strategy']
     deps=[]
     for words,selected in [
         (('позициони','position'),['strategy','marketing']),
@@ -148,7 +150,7 @@ def persist_analysis(cur,task,result):
     row=cur.fetchone()
     if not row: return
     cid=str(row['conversation_id'])
-    for kind,value,key in [('specialist_result',result,'result'),('decision',result.get('final',result.get('analysis',{})),'decision')]:
+    for kind,value,key in [('specialist_result',result,'result'),('decision',result.get('final',result.get('analysis',result.get('result',{}))),'decision')]:
         if value: append(cur,cid,json.dumps(value,ensure_ascii=False),kind,'tool',{'status':'proposed','provider':result.get('provider')},.8,0 if result.get('demonstration') else .3,f'{task["id"]}:{key}',str(task['id']),'organization')
     cur.execute("SELECT step_key,result FROM organization_steps WHERE task_id=%s AND (step_key LIKE 'round/%%' OR step_key LIKE '%%/result')",(task['id'],))
     steps=list(cur.fetchall())

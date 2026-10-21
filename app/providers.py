@@ -23,7 +23,7 @@ class LocalBrainProvider(BrainProvider):
             result['provider_metadata']=getattr(org.provider,'metadata',{'provider':org.provider.identity})
             result['model']=result['provider_metadata'].get('model')
             result['demonstration']=org.provider.identity.startswith('deterministic')
-            if task.get('payload',{}).get('analytical_protocol'):
+            if task.get('payload',{}).get('analytical_protocol') and result['routing']['level'] != 'L1':
                 from app.organization import contracts as c
                 if 'critic_challenge' not in result:
                     result['critic_challenge']=org.ask('analytical/critic/v1','challenge','critic','head-critic',

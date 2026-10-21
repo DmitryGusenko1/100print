@@ -89,8 +89,13 @@ class ChatGPTTests(unittest.TestCase):
                 with patch('app.providers.business_brain',return_value=DeterministicBrainProvider()):
                     result=LocalBrainProvider().execute(task)
                 self.assertTrue(result['demonstration'])
-                self.assertIn('change_conditions',result['analysis'])
-                self.assertTrue(result['critic_challenge'])
+                if level == 'L1':
+                    self.assertNotIn('analysis', result)
+                    self.assertNotIn('critic_challenge', result)
+                    self.assertTrue(result['result'])
+                else:
+                    self.assertIn('change_conditions',result['analysis'])
+                    self.assertTrue(result['critic_challenge'])
                 if 'finance' in departments and 'marketing' in departments:
                     self.assertTrue(result['conflicts']['conflicts'])
                 with connect() as conn,conn.cursor() as cur:
