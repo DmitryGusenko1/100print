@@ -3,3 +3,9 @@
 logs/
 data/
 __pycache__/
+.cache/
+.codex/
+.config/
+.gitconfig
+snap/
+.pytest_cache/

@@ -1,0 +1,15 @@
+[Unit]
+Description=CEO Orchestrator
+After=network.target
+
+[Service]
+Type=simple
+User=ceoorch
+Group=ceoorch
+WorkingDirectory=/opt/ceo-orchestrator
+ExecStart=/opt/ceo-orchestrator/.venv/bin/python /opt/ceo-orchestrator/app/main.py
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target
