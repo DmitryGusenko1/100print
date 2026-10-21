@@ -2,22 +2,31 @@
 
 ## NOW
 
-- [ ] Создать Python package structure
-- [ ] Config через pydantic-settings
+- [x] Создать Python package structure
+- [x] Config через pydantic-settings
 - [ ] Structured logging
-- [ ] FastAPI /health
-- [ ] PostgreSQL connection
-- [ ] Alembic
-- [ ] Initial DB models
-- [ ] Telegram text ingestion
-- [ ] End-to-end smoke test
+- [x] FastAPI /health
+- [x] PostgreSQL connection code
+- [x] Alembic
+- [x] Initial DB models
+- [x] Telegram text ingestion
+- [x] Telegram text -> message -> thought -> ACK vertical slice
+- [x] pytest smoke tests prepared
+- [ ] Apply migration on VPS
+- [ ] Verify pgvector on VPS
+- [ ] Run pytest on VPS
+- [ ] Start systemd API service
+- [ ] Start systemd bot service
+- [ ] Verify Telegram -> PostgreSQL -> ACK on VPS
+- [ ] Verify services survive reboot
 
 ## NEXT
 
 - [ ] IntentRouter
 - [ ] DepartmentRouter
 - [ ] BrainProvider abstraction
-- [ ] Memory retrieval
+- [ ] ContextBuilder
+- [ ] Hybrid retrieval
 - [ ] Department heads
 - [ ] Council rounds
 - [ ] Voice transcription

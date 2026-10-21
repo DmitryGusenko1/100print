@@ -1,0 +1,16 @@
+[Unit]
+Description=AI Business Brain API
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+User=ai-brain
+Group=ai-brain
+WorkingDirectory=/opt/ai-business-brain
+EnvironmentFile=/opt/ai-business-brain/.env
+ExecStart=/opt/ai-business-brain/.venv/bin/uvicorn app.main:app --host 127.0.0.1 --port 8090
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=multi-user.target

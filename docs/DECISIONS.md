@@ -24,3 +24,8 @@
 Статус: принято.
 
 Obsidian/Markdown используется как удобный человекочитаемый слой и экспорт. Главный источник истины — серверная БД.
+
+## ADR-006 — Atomic Telegram ingestion
+Статус: принято.
+
+Первый vertical slice сохраняет Telegram message и создаёт memory_item типа thought в одной транзакции. Исходный original_text не нормализуется и не перезаписывается. Повторная доставка Telegram update определяется по source + external_id.
