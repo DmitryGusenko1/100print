@@ -213,3 +213,43 @@ See [project instructions](docs/CHATGPT_PROJECT_INSTRUCTIONS.md) and
 ChatGPT account connection, trusted HTTPS/OAuth gateway and Telegram credentials
 are deployment prerequisites. The default deterministic provider is a labelled
 workflow demonstration; it must not be presented as production business advice.
+
+### GitHub worker progress (issue #7)
+
+The GitHub executor in `app/github_worker.py` records structured JSON progress
+and a heartbeat every 30 seconds in `logs/github_worker.log`, including while
+Codex is running. Inspect progress without reading process listings:
+
+```sh
+/opt/ceo-orchestrator/scripts/progress.py
+# issue #7 | 60% | integration | current: memory bridge tests
+watch -n 2 /opt/ceo-orchestrator/scripts/progress.py
+```
+
+The executor reports actual stage changes and subtasks with:
+
+```sh
+python3 scripts/progress.py --issue 7 --stage integration \
+  --current 'memory bridge tests' --action 'connected memory bridge'
+```
+
+Stages are `analysis` (10%), `planning` (25%), `implementation` (40%),
+`integration` (60%), `tests` (75%), `commit/push` (90%), and `done` (100%).
+The worker sets `done` after a successful executor exit. Failed or timed out
+execution retains its actual stage and records the failure in `last_action`.
+Percentages never increase merely because time passes. The executor prompt
+requires reporting each stage and updating the current subtask as work changes.
+
+`data/progress.json` stores `issue_number`, `stage`, `percent`, `started_at`,
+`updated_at`, `last_action`, `current_subtask`, and nullable `eta_optional`.
+Updates use a process lock, fsync and atomic replacement; state survives worker
+restarts, and the same issue resumes at its saved stage. Backward stage changes
+are rejected. `--eta` supplies an optional estimate. Heartbeats refresh
+`updated_at` without changing the stage, start time or last substantive action.
+A new issue starts at 10%; completed progress remains visible until then.
+If the worker stops, the timestamp stops advancing; inspect the JSON or log to
+check freshness. No GitHub comment is required for heartbeat visibility.
+
+Run isolated verification with `python3 -m unittest tests.test_progress -v`.
+Deploy worker changes by restarting only `ceo-github-worker.service` after its
+current executor has finished (restarting during an issue interrupts that run).
