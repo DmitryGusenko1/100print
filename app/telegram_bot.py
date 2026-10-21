@@ -40,9 +40,12 @@ def queue_reply(cur, update_id, text, kind="final"):
 
 
 def health(cur):
-    cur.execute("SELECT updated_at > now()-interval '60 seconds' AS healthy FROM heartbeats WHERE id='orchestrator'")
+    cur.execute("SELECT details,updated_at > now()-interval '60 seconds' AS healthy FROM heartbeats WHERE id='orchestrator'")
     row = cur.fetchone()
     worker_ok = bool(row and row['healthy'])
+    active = (row['details'] or {}).get('active_task') if row else None
+    active_ids = active if isinstance(active, list) else ([active] if active else [])
+    active_label = ', '.join(str(task) for task in active_ids) or 'нет'
     cur.execute("SELECT count(*) AS n FROM tasks WHERE status IN ('new','processing')")
     count = cur.fetchone()['n']
     cur.execute("SELECT status,error FROM tasks WHERE type IN ('ai-task','council') ORDER BY updated_at DESC LIMIT 1")
@@ -55,6 +58,7 @@ def health(cur):
     return ('**100print — статус**\n'
             + ('Анализ работает.' if worker_ok else 'Анализ временно недоступен.')
             + '\nВ очереди: '+str(count)
+            + '\nАктивная задача: '+active_label
             + '\nAI-команда: '+{'OK':'доступна', 'ERROR':'последний анализ завершился ошибкой',
                                   'UNKNOWN':'готовность уточняется'}[provider_health]
             + '\nОбщая память доступна.')

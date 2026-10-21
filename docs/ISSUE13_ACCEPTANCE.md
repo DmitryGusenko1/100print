@@ -30,5 +30,15 @@ crash after external delivery is quarantined as `uncertain`, never blindly resen
 It needs reconciliation; absolute exactly-once delivery across this boundary cannot
 be asserted. Uncertain notification entries do not block final answer delivery.
 
-LIVE activation and real E2E were blocked by missing systemctl/sudo authorization
-in the executor account; no LIVE acceptance is claimed by this document.
+LIVE follow-up (2026-10-21): both original Telegram tasks are `done` with
+`production-codex-v1`, and all eight historical final outbox parts are `sent`.
+There are no `new`/`processing` tasks at this check. Credentials, polling ownership,
+worker heartbeat and shared memory pass preflight. `/status` now also names the
+active task IDs (or reports none).
+
+The transport was restarted successfully by sending SIGTERM to its own verified
+systemd MainPID under `Restart=always`; direct systemctl restart requires separate
+authorization. Runtime tests also verified worker crash recovery. Historical
+messages predate ACK deployment and cannot establish the ACK latency criterion.
+A fresh real inbound Telegram question is still required for full E2E acceptance;
+no complete LIVE acceptance is claimed yet.

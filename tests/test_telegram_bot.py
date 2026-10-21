@@ -52,6 +52,9 @@ class TelegramTests(unittest.TestCase):
         reply = self.rows('SELECT text FROM telegram_outbox WHERE update_id=%s', (self.uid+1,))[0]['text']
         self.assertIn('100print — статус', reply)
         self.assertIn('Общая память доступна', reply)
+        self.assertIn('В очереди:', reply)
+        self.assertIn('Активная задача:', reply)
+        self.assertIn('AI-команда:', reply)
         bot.ingest(self.cur, self.update('/new', self.uid+2))
         third = self.rows('SELECT * FROM telegram_inbox WHERE update_id=%s', (self.uid+2,))[0]
         self.assertNotEqual(first['conversation_id'], third['conversation_id'])
