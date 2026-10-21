@@ -14,11 +14,11 @@ class DepartmentHead:
         decomposition={'department':self.department,'head':self.definition['head'],
             'context_package':context,'assignments':[
                 {'agent':rid,'skill_id':sid} for rid in self.definition['specialists']
-                for sid in org.registry.roles[rid]['skills']]}
+                for sid in org.registry.roles[rid]['skills'] if org.selected(sid, self.department)]}
         org.checkpoint(prefix+'/accepted-and-decomposed',decomposition,lambda:decomposition)
         for rid in self.definition['specialists']:
             role=org.registry.roles[rid]
-            assignments.extend({'agent':rid,'skill_id':sid} for sid in role['skills'])
+            assignments.extend({'agent':rid,'skill_id':sid} for sid in role['skills'] if org.selected(sid, self.department))
         def run_assignment(assignment):
             sid=assignment['skill_id']
             return org.skill(context,sid,assignment['agent'],prefix+'/specialist/'+sid)
@@ -31,6 +31,11 @@ class DepartmentHead:
 class Organization:
     def __init__(self, provider, store, registry=None):
         self.provider=provider; self.store=store; self.registry=registry or Registry()
+
+    def selected(self, sid, department):
+        chosen=getattr(self, 'selected_skills', [])
+        local=[s for s in chosen if department in self.registry.skills[s]['allowed_departments']]
+        return sid in local if local else not self.registry.skills[sid].get('priority')
 
     def independent(self, callback, inputs):
         # Production calls are bounded; map preserves order and each checkpoint remains durable.
@@ -77,10 +82,12 @@ class Organization:
     def execute(self, task):
         self.task_id=str(task['id']); p=task.get('payload') or {}
         routing=route(task,self.registry)
+        self.selected_skills=routing['skill_ids']
         context=c.validate(c.CONTEXT,{'problem':p.get('problem',task['title']),
-            'goal':p.get('goal',task['title']), 'constraints':p.get('constraints',[]),
+            'goal':p.get('goal',task['title']), 'constraints':list(p.get('constraints',[])),
             'criteria':p.get('criteria',['Evidence-supported decision']), 'facts':p.get('facts',[]),
             'assumptions':p.get('assumptions',[])})
+        context['constraints'] += self.registry.preset['principles']
         manifest={'routing':routing,'context':context,'provider':self.provider.identity,
                   'provider_metadata':getattr(self.provider,'metadata',{}), 'catalog':fingerprint({'skills':self.registry.skills,'roles':self.registry.roles,'departments':self.registry.departments})}
         self.checkpoint('manifest',manifest,lambda:manifest)
@@ -91,11 +98,18 @@ class Organization:
             result=self.skill(context,sid,rid,'L1/skill')
             return {'routing':routing,'provider':self.provider.identity,'specialist':rid,'skill_id':sid,'result':result}
         if level=='L2':
+            sid=routing['skill_id'] or (self.selected_skills[0] if self.selected_skills else self.registry.roles[self.registry.departments[deps[0]]['head']]['skills'][0])
+            chosen=self.selected_skills or [sid]
+            assignments=[]; findings=[]
+            for skill_id in chosen:
+                rid=next(r['id'] for r in self.registry.roles.values() if r['kind']=='specialist' and r['department']==deps[0] and skill_id in r['skills'])
+                assignments.append({'agent':rid,'skill_id':skill_id})
+                findings.append(self.skill(context,skill_id,rid,'L2/specialist/'+skill_id))
             position=self.ask('L2/'+deps[0]+'/result','department',deps[0],
                 self.registry.departments[deps[0]]['head'],
-                {'context':context,'findings':[],'inbound':[]},c.POSITION,
+                {'context':context,'findings':findings,'inbound':[]},c.POSITION,
                 instructions='Give a concise departmental position, assumptions, objections and change conditions.')
-            result={'departmental_result':position,'assignments':[]}
+            result={'departmental_result':position,'assignments':assignments}
             challenge=self.ask('L2/critic','challenge','critic','head-critic',
                 {'context':context,'position':result},c.CHALLENGE,
                 instructions='Review assumptions and strongest counterargument; identify evidence gaps and blocking risk.')

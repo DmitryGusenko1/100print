@@ -73,7 +73,7 @@ class ChatGPTTests(unittest.TestCase):
             ('Стоит ли снижать цену?','L3',{'sales','finance','marketing','critic'}),
             ('Как выйти в топ Google?','L3',{'seo','marketing','critic'}),
             ('Куда вложить 5 млн?','L3',{'finance','strategy','critic'}),
-            ('Запускаем ли новую типографию?','L4',set())]:
+            ('Запускаем ли новую типографию?','L3',{'operations','finance','strategy'})]:
             with self.subTest(question=question):
                 cid=self.new();key=str(uuid.uuid4())
                 # Prevent the daemon racing this test's provider execution.

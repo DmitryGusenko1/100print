@@ -39,7 +39,7 @@ class PostgresOrganizationTests(unittest.TestCase):
                         self.assertTrue(task['result']['critic_challenge']['blocking'])
         with connect() as conn, conn.cursor() as cur:
             cur.execute('SELECT count(*) AS n FROM skills_registry')
-            self.assertEqual(cur.fetchone()['n'],45)
+            self.assertEqual(cur.fetchone()['n'],62)
             cur.execute('SELECT count(*) AS n FROM organization_roles')
             self.assertEqual(cur.fetchone()['n'],29)
 

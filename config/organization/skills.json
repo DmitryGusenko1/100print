@@ -6433,5 +6433,3360 @@
         ]
       }
     }
+  },
+  {
+    "id": "finance.pricing",
+    "name": "Pricing / Unit Economics",
+    "version": "1.0.0",
+    "purpose": "Support evidence-based 100print decisions: Pricing / Unit Economics",
+    "allowed_departments": [
+      "finance"
+    ],
+    "priority": "first",
+    "trigger_conditions": [
+      "марж",
+      "margin",
+      "pricing",
+      "демпинг",
+      "рентабель",
+      "ценообраз",
+      "прибыл"
+    ],
+    "required_inputs": [
+      "Revenue net of discounts/tax",
+      "variable production, partner, delivery, rework costs",
+      "CAC",
+      "repeat cohorts",
+      "fixed cost",
+      "equipment quote"
+    ],
+    "analysis_checklist": [
+      "Contribution per order = net revenue minus all variable costs",
+      "CAC payback by cohort",
+      "repeat economics",
+      "partner vs own incremental cost",
+      "break-even volume",
+      "price floor and target margin",
+      "equipment ROI threshold"
+    ],
+    "output_contract": [
+      "summary: recommendation and decision gate",
+      "recommendations: actionable next steps, owner and review point; calculations with units and assumptions; KPIs and thresholds",
+      "risks: failure modes and escalation",
+      "assumptions: explicit unverified claims",
+      "evidence_gaps: missing inputs, sources and validation required"
+    ],
+    "kpis": [
+      "Contribution margin",
+      "contribution/order",
+      "CAC payback",
+      "cohort contribution LTV"
+    ],
+    "risks_failure_modes": [
+      "Double-counted overhead",
+      "average margin hides unprofitable orders",
+      "speculative LTV"
+    ],
+    "escalation_rules": [
+      "Escalate negative contribution or cash exposure to Finance head + Critic; irreversible CAPEX needs owner decision"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Contribution per order = net revenue minus all variable costs; CAC payback by cohort; repeat economics; partner vs own incremental cost; break-even volume; price floor and target margin; equipment ROI threshold. Escalate negative contribution or cash exposure to Finance head + Critic; irreversible CAPEX needs owner decision. Report structured findings and evidence, never hidden chain-of-thought. Missing evidence is not zero; do not fabricate data or thresholds.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Pricing / Unit Economics",
+          "goal": "Evaluate decision",
+          "constraints": [
+            "Не демпинговать; проверять pricing floor и вклад.",
+            "Не ограничивать ЦА без доказательств.",
+            "Маркетинг — сервис продаж; KPI маркетинга — деньги.",
+            "Не копировать конкурентов.",
+            "Фокус на внутренних процессах и экономике.",
+            "Портал — главный интерфейс бренда.",
+            "Saved designs + repeat order — ключевой retention-механизм.",
+            "Гибридное распределение производства между своими мощностями и партнёрами."
+          ],
+          "criteria": [
+            "Incremental contribution and service quality"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "Provisional: gather evidence",
+        "recommendations": [
+          "Collect required baseline before committing"
+        ],
+        "risks": [
+          "Double-counted overhead; average margin hides unprofitable orders; speculative LTV"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Revenue net of discounts/tax",
+          "variable production, partner, delivery, rework costs",
+          "CAC",
+          "repeat cohorts",
+          "fixed cost",
+          "equipment quote"
+        ]
+      }
+    }
+  },
+  {
+    "id": "strategy.product",
+    "name": "Product Management",
+    "version": "1.0.0",
+    "purpose": "Support evidence-based 100print decisions: Product Management",
+    "allowed_departments": [
+      "strategy"
+    ],
+    "priority": "first",
+    "trigger_conditions": [
+      "продукт",
+      "mvp",
+      "мвп",
+      "roadmap",
+      "добавить.*портал",
+      "метрик.*портал"
+    ],
+    "required_inputs": [
+      "Customer jobs",
+      "portal funnel",
+      "hypotheses",
+      "delivery capacity",
+      "feature cost"
+    ],
+    "analysis_checklist": [
+      "Define MVP and explicit exclusions",
+      "prioritize value vs complexity",
+      "map customer journey",
+      "test product hypotheses",
+      "sequence portal roadmap",
+      "saved designs and repeat-order mechanics"
+    ],
+    "output_contract": [
+      "summary: recommendation and decision gate",
+      "recommendations: actionable next steps, owner and review point; calculations with units and assumptions; KPIs and thresholds",
+      "risks: failure modes and escalation",
+      "assumptions: explicit unverified claims",
+      "evidence_gaps: missing inputs, sources and validation required"
+    ],
+    "kpis": [
+      "Activation",
+      "paid order conversion",
+      "repeat order rate",
+      "contribution per feature cohort"
+    ],
+    "risks_failure_modes": [
+      "Feature volume mistaken for value",
+      "untested segment exclusion"
+    ],
+    "escalation_rules": [
+      "Cross-functional roadmap conflicts require L3; portfolio commitment requires owner"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Define MVP and explicit exclusions; prioritize value vs complexity; map customer journey; test product hypotheses; sequence portal roadmap; saved designs and repeat-order mechanics. Cross-functional roadmap conflicts require L3; portfolio commitment requires owner. Report structured findings and evidence, never hidden chain-of-thought. Missing evidence is not zero; do not fabricate data or thresholds.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Product Management",
+          "goal": "Evaluate decision",
+          "constraints": [
+            "Не демпинговать; проверять pricing floor и вклад.",
+            "Не ограничивать ЦА без доказательств.",
+            "Маркетинг — сервис продаж; KPI маркетинга — деньги.",
+            "Не копировать конкурентов.",
+            "Фокус на внутренних процессах и экономике.",
+            "Портал — главный интерфейс бренда.",
+            "Saved designs + repeat order — ключевой retention-механизм.",
+            "Гибридное распределение производства между своими мощностями и партнёрами."
+          ],
+          "criteria": [
+            "Incremental contribution and service quality"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "Provisional: gather evidence",
+        "recommendations": [
+          "Collect required baseline before committing"
+        ],
+        "risks": [
+          "Feature volume mistaken for value; untested segment exclusion"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Customer jobs",
+          "portal funnel",
+          "hypotheses",
+          "delivery capacity",
+          "feature cost"
+        ]
+      }
+    }
+  },
+  {
+    "id": "operations.production",
+    "name": "Production Planning",
+    "version": "1.0.0",
+    "purpose": "Support evidence-based 100print decisions: Production Planning",
+    "allowed_departments": [
+      "operations"
+    ],
+    "priority": "first",
+    "trigger_conditions": [
+      "производств",
+      "мощност",
+      "узкое место",
+      "bottleneck",
+      "очеред",
+      "заказ.*партн"
+    ],
+    "required_inputs": [
+      "Order mix",
+      "machine calendars",
+      "setup/run times",
+      "partner capacity",
+      "due dates"
+    ],
+    "analysis_checklist": [
+      "Calculate effective capacity and utilization",
+      "locate bottleneck",
+      "schedule queues by due date and setup",
+      "route orders between own/partner",
+      "account for SLA and load balancing"
+    ],
+    "output_contract": [
+      "summary: recommendation and decision gate",
+      "recommendations: actionable next steps, owner and review point; calculations with units and assumptions; KPIs and thresholds",
+      "risks: failure modes and escalation",
+      "assumptions: explicit unverified claims",
+      "evidence_gaps: missing inputs, sources and validation required"
+    ],
+    "kpis": [
+      "On-time SLA",
+      "queue age",
+      "bottleneck utilization",
+      "throughput",
+      "contribution/hour"
+    ],
+    "risks_failure_modes": [
+      "100% utilization inflates queues",
+      "ignore setup or partner reliability"
+    ],
+    "escalation_rules": [
+      "Escalate SLA breach to Operations; cost tradeoff adds pricing at L3"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Calculate effective capacity and utilization; locate bottleneck; schedule queues by due date and setup; route orders between own/partner; account for SLA and load balancing. Escalate SLA breach to Operations; cost tradeoff adds pricing at L3. Report structured findings and evidence, never hidden chain-of-thought. Missing evidence is not zero; do not fabricate data or thresholds.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Production Planning",
+          "goal": "Evaluate decision",
+          "constraints": [
+            "Не демпинговать; проверять pricing floor и вклад.",
+            "Не ограничивать ЦА без доказательств.",
+            "Маркетинг — сервис продаж; KPI маркетинга — деньги.",
+            "Не копировать конкурентов.",
+            "Фокус на внутренних процессах и экономике.",
+            "Портал — главный интерфейс бренда.",
+            "Saved designs + repeat order — ключевой retention-механизм.",
+            "Гибридное распределение производства между своими мощностями и партнёрами."
+          ],
+          "criteria": [
+            "Incremental contribution and service quality"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "Provisional: gather evidence",
+        "recommendations": [
+          "Collect required baseline before committing"
+        ],
+        "risks": [
+          "100% utilization inflates queues; ignore setup or partner reliability"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Order mix",
+          "machine calendars",
+          "setup/run times",
+          "partner capacity",
+          "due dates"
+        ]
+      }
+    }
+  },
+  {
+    "id": "operations.prepress",
+    "name": "Quality Control / Prepress",
+    "version": "1.0.0",
+    "purpose": "Support evidence-based 100print decisions: Quality Control / Prepress",
+    "allowed_departments": [
+      "operations"
+    ],
+    "priority": "first",
+    "trigger_conditions": [
+      "макет",
+      "prepress",
+      "preflight",
+      "dpi",
+      "вылет",
+      "до печати",
+      "брак"
+    ],
+    "required_inputs": [
+      "Actual file metadata",
+      "product/process spec",
+      "printer profile",
+      "proof approval"
+    ],
+    "analysis_checklist": [
+      "Check file readiness",
+      "bleed and safe margins against process spec",
+      "effective DPI at final size",
+      "color space/profile and fonts",
+      "preflight",
+      "defect prevention",
+      "trace rework",
+      "define acceptance criteria before release"
+    ],
+    "output_contract": [
+      "summary: recommendation and decision gate",
+      "recommendations: actionable next steps, owner and review point; calculations with units and assumptions; KPIs and thresholds",
+      "risks: failure modes and escalation",
+      "assumptions: explicit unverified claims",
+      "evidence_gaps: missing inputs, sources and validation required"
+    ],
+    "kpis": [
+      "First-pass yield",
+      "rework cost",
+      "defect rate",
+      "preflight rejection rate"
+    ],
+    "risks_failure_modes": [
+      "Universal DPI or bleed guessed without process",
+      "visual inspection cannot certify file metadata"
+    ],
+    "escalation_rules": [
+      "Missing file/spec blocks print-ready claim; unresolved color/IP issues escalate to Operations or Legal"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Check file readiness; bleed and safe margins against process spec; effective DPI at final size; color space/profile and fonts; preflight; defect prevention; trace rework; define acceptance criteria before release. Missing file/spec blocks print-ready claim; unresolved color/IP issues escalate to Operations or Legal. Report structured findings and evidence, never hidden chain-of-thought. Missing evidence is not zero; do not fabricate data or thresholds.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Quality Control / Prepress",
+          "goal": "Evaluate decision",
+          "constraints": [
+            "Не демпинговать; проверять pricing floor и вклад.",
+            "Не ограничивать ЦА без доказательств.",
+            "Маркетинг — сервис продаж; KPI маркетинга — деньги.",
+            "Не копировать конкурентов.",
+            "Фокус на внутренних процессах и экономике.",
+            "Портал — главный интерфейс бренда.",
+            "Saved designs + repeat order — ключевой retention-механизм.",
+            "Гибридное распределение производства между своими мощностями и партнёрами."
+          ],
+          "criteria": [
+            "Incremental contribution and service quality"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "Provisional: gather evidence",
+        "recommendations": [
+          "Collect required baseline before committing"
+        ],
+        "risks": [
+          "Universal DPI or bleed guessed without process; visual inspection cannot certify file metadata"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Actual file metadata",
+          "product/process spec",
+          "printer profile",
+          "proof approval"
+        ]
+      }
+    }
+  },
+  {
+    "id": "sales.retention",
+    "name": "CRM / Retention / Repeat Orders",
+    "version": "1.0.0",
+    "purpose": "Support evidence-based 100print decisions: CRM / Retention / Repeat Orders",
+    "allowed_departments": [
+      "sales"
+    ],
+    "priority": "first",
+    "trigger_conditions": [
+      "повтор",
+      "retention",
+      "crm",
+      "реактивац",
+      "удержан",
+      "ltv"
+    ],
+    "required_inputs": [
+      "Consent",
+      "lifecycle events",
+      "order cohorts",
+      "saved designs",
+      "order frequency and contribution"
+    ],
+    "analysis_checklist": [
+      "Segment by observed lifecycle",
+      "identify repeat triggers",
+      "saved-template reorder convenience",
+      "reactivation control group",
+      "retention cohorts",
+      "frequency and contribution LTV"
+    ],
+    "output_contract": [
+      "summary: recommendation and decision gate",
+      "recommendations: actionable next steps, owner and review point; calculations with units and assumptions; KPIs and thresholds",
+      "risks: failure modes and escalation",
+      "assumptions: explicit unverified claims",
+      "evidence_gaps: missing inputs, sources and validation required"
+    ],
+    "kpis": [
+      "Incremental repeat contribution",
+      "cohort retention",
+      "repeat frequency",
+      "LTV"
+    ],
+    "risks_failure_modes": [
+      "Spam",
+      "selection bias",
+      "discounts erase margin"
+    ],
+    "escalation_rules": [
+      "Privacy requires Legal; negative cohort economics requires Finance"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Segment by observed lifecycle; identify repeat triggers; saved-template reorder convenience; reactivation control group; retention cohorts; frequency and contribution LTV. Privacy requires Legal; negative cohort economics requires Finance. Report structured findings and evidence, never hidden chain-of-thought. Missing evidence is not zero; do not fabricate data or thresholds.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "CRM / Retention / Repeat Orders",
+          "goal": "Evaluate decision",
+          "constraints": [
+            "Не демпинговать; проверять pricing floor и вклад.",
+            "Не ограничивать ЦА без доказательств.",
+            "Маркетинг — сервис продаж; KPI маркетинга — деньги.",
+            "Не копировать конкурентов.",
+            "Фокус на внутренних процессах и экономике.",
+            "Портал — главный интерфейс бренда.",
+            "Saved designs + repeat order — ключевой retention-механизм.",
+            "Гибридное распределение производства между своими мощностями и партнёрами."
+          ],
+          "criteria": [
+            "Incremental contribution and service quality"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "Provisional: gather evidence",
+        "recommendations": [
+          "Collect required baseline before committing"
+        ],
+        "risks": [
+          "Spam; selection bias; discounts erase margin"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Consent",
+          "lifecycle events",
+          "order cohorts",
+          "saved designs",
+          "order frequency and contribution"
+        ]
+      }
+    }
+  },
+  {
+    "id": "marketing.growth",
+    "name": "Growth / Performance Marketing",
+    "version": "1.0.0",
+    "purpose": "Support evidence-based 100print decisions: Growth / Performance Marketing",
+    "allowed_departments": [
+      "marketing"
+    ],
+    "priority": "first",
+    "trigger_conditions": [
+      "канал",
+      "cac",
+      "performance",
+      "масштабиров.*реклам",
+      "реклам"
+    ],
+    "required_inputs": [
+      "Spend and attribution windows",
+      "paid orders",
+      "segment CAC",
+      "creative and landing data",
+      "capacity"
+    ],
+    "analysis_checklist": [
+      "Compare acquisition channels and funnel economics",
+      "test creatives and landing conversion",
+      "CAC by segment",
+      "scale only with contribution/payback and capacity gates",
+      "measure incrementality"
+    ],
+    "output_contract": [
+      "summary: recommendation and decision gate",
+      "recommendations: actionable next steps, owner and review point; calculations with units and assumptions; KPIs and thresholds",
+      "risks: failure modes and escalation",
+      "assumptions: explicit unverified claims",
+      "evidence_gaps: missing inputs, sources and validation required"
+    ],
+    "kpis": [
+      "Incremental contribution after acquisition",
+      "CAC",
+      "payback",
+      "paid conversion"
+    ],
+    "risks_failure_modes": [
+      "Attributed ROAS mistaken for incrementality",
+      "scale exceeds production capacity"
+    ],
+    "escalation_rules": [
+      "Unprofitable scale requires Finance + Critic; cross-functional capacity decision L3"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Compare acquisition channels and funnel economics; test creatives and landing conversion; CAC by segment; scale only with contribution/payback and capacity gates; measure incrementality. Unprofitable scale requires Finance + Critic; cross-functional capacity decision L3. Report structured findings and evidence, never hidden chain-of-thought. Missing evidence is not zero; do not fabricate data or thresholds.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Growth / Performance Marketing",
+          "goal": "Evaluate decision",
+          "constraints": [
+            "Не демпинговать; проверять pricing floor и вклад.",
+            "Не ограничивать ЦА без доказательств.",
+            "Маркетинг — сервис продаж; KPI маркетинга — деньги.",
+            "Не копировать конкурентов.",
+            "Фокус на внутренних процессах и экономике.",
+            "Портал — главный интерфейс бренда.",
+            "Saved designs + repeat order — ключевой retention-механизм.",
+            "Гибридное распределение производства между своими мощностями и партнёрами."
+          ],
+          "criteria": [
+            "Incremental contribution and service quality"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "Provisional: gather evidence",
+        "recommendations": [
+          "Collect required baseline before committing"
+        ],
+        "risks": [
+          "Attributed ROAS mistaken for incrementality; scale exceeds production capacity"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Spend and attribution windows",
+          "paid orders",
+          "segment CAC",
+          "creative and landing data",
+          "capacity"
+        ]
+      }
+    }
+  },
+  {
+    "id": "strategy.analytics",
+    "name": "Data Analytics / Experiment Design",
+    "version": "1.0.0",
+    "purpose": "Support evidence-based 100print decisions: Data Analytics / Experiment Design",
+    "allowed_departments": [
+      "strategy"
+    ],
+    "priority": "first",
+    "trigger_conditions": [
+      "метрик",
+      "эксперимент",
+      "experiment",
+      "аналитик",
+      "атрибуц",
+      "статист"
+    ],
+    "required_inputs": [
+      "Hypothesis",
+      "baseline",
+      "unit of randomization",
+      "event quality",
+      "sample size",
+      "decision cost"
+    ],
+    "analysis_checklist": [
+      "Specify hypothesis and baseline",
+      "primary success criterion and guardrails",
+      "attribution limits",
+      "confidence/uncertainty",
+      "flag insufficient sample size",
+      "predeclare stop/continue rules",
+      "inspect novelty and seasonality"
+    ],
+    "output_contract": [
+      "summary: recommendation and decision gate",
+      "recommendations: actionable next steps, owner and review point; calculations with units and assumptions; KPIs and thresholds",
+      "risks: failure modes and escalation",
+      "assumptions: explicit unverified claims",
+      "evidence_gaps: missing inputs, sources and validation required"
+    ],
+    "kpis": [
+      "Decision quality",
+      "event completeness",
+      "experiment power",
+      "incremental contribution"
+    ],
+    "risks_failure_modes": [
+      "Peeking",
+      "multiple comparisons",
+      "underpowered tests",
+      "correlation claimed as causality"
+    ],
+    "escalation_rules": [
+      "Insufficient data yields provisional recommendation; financial exposure adds Finance"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Specify hypothesis and baseline; primary success criterion and guardrails; attribution limits; confidence/uncertainty; flag insufficient sample size; predeclare stop/continue rules; inspect novelty and seasonality. Insufficient data yields provisional recommendation; financial exposure adds Finance. Report structured findings and evidence, never hidden chain-of-thought. Missing evidence is not zero; do not fabricate data or thresholds.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Data Analytics / Experiment Design",
+          "goal": "Evaluate decision",
+          "constraints": [
+            "Не демпинговать; проверять pricing floor и вклад.",
+            "Не ограничивать ЦА без доказательств.",
+            "Маркетинг — сервис продаж; KPI маркетинга — деньги.",
+            "Не копировать конкурентов.",
+            "Фокус на внутренних процессах и экономике.",
+            "Портал — главный интерфейс бренда.",
+            "Saved designs + repeat order — ключевой retention-механизм.",
+            "Гибридное распределение производства между своими мощностями и партнёрами."
+          ],
+          "criteria": [
+            "Incremental contribution and service quality"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "Provisional: gather evidence",
+        "recommendations": [
+          "Collect required baseline before committing"
+        ],
+        "risks": [
+          "Peeking; multiple comparisons; underpowered tests; correlation claimed as causality"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Hypothesis",
+          "baseline",
+          "unit of randomization",
+          "event quality",
+          "sample size",
+          "decision cost"
+        ]
+      }
+    }
+  },
+  {
+    "id": "finance.procurement",
+    "name": "Procurement / Equipment ROI",
+    "version": "1.0.0",
+    "purpose": "Support evidence-based 100print decisions: Procurement / Equipment ROI",
+    "allowed_departments": [
+      "finance"
+    ],
+    "priority": "first",
+    "trigger_conditions": [
+      "оборудован",
+      "equipment",
+      "станок",
+      "capex",
+      "закуп",
+      "купить.*машин"
+    ],
+    "required_inputs": [
+      "Supplier quotes",
+      "CAPEX",
+      "OPEX",
+      "demand distribution",
+      "capacity",
+      "maintenance and residual value"
+    ],
+    "analysis_checklist": [
+      "Compare own-vs-outsourced incremental cash flow",
+      "CAPEX/OPEX",
+      "break-even utilization",
+      "payback",
+      "supplier scorecard",
+      "maintenance burden",
+      "replacement risk",
+      "downside demand scenario"
+    ],
+    "output_contract": [
+      "summary: recommendation and decision gate",
+      "recommendations: actionable next steps, owner and review point; calculations with units and assumptions; KPIs and thresholds",
+      "risks: failure modes and escalation",
+      "assumptions: explicit unverified claims",
+      "evidence_gaps: missing inputs, sources and validation required"
+    ],
+    "kpis": [
+      "Incremental cash ROI",
+      "payback",
+      "break-even utilization",
+      "downtime",
+      "TCO"
+    ],
+    "risks_failure_modes": [
+      "Sunk costs",
+      "optimistic demand",
+      "omitted maintenance/working capital"
+    ],
+    "escalation_rules": [
+      "CAPEX approval belongs to owner; Operations validates utilization at L3"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Compare own-vs-outsourced incremental cash flow; CAPEX/OPEX; break-even utilization; payback; supplier scorecard; maintenance burden; replacement risk; downside demand scenario. CAPEX approval belongs to owner; Operations validates utilization at L3. Report structured findings and evidence, never hidden chain-of-thought. Missing evidence is not zero; do not fabricate data or thresholds.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Procurement / Equipment ROI",
+          "goal": "Evaluate decision",
+          "constraints": [
+            "Не демпинговать; проверять pricing floor и вклад.",
+            "Не ограничивать ЦА без доказательств.",
+            "Маркетинг — сервис продаж; KPI маркетинга — деньги.",
+            "Не копировать конкурентов.",
+            "Фокус на внутренних процессах и экономике.",
+            "Портал — главный интерфейс бренда.",
+            "Saved designs + repeat order — ключевой retention-механизм.",
+            "Гибридное распределение производства между своими мощностями и партнёрами."
+          ],
+          "criteria": [
+            "Incremental contribution and service quality"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "Provisional: gather evidence",
+        "recommendations": [
+          "Collect required baseline before committing"
+        ],
+        "risks": [
+          "Sunk costs; optimistic demand; omitted maintenance/working capital"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Supplier quotes",
+          "CAPEX",
+          "OPEX",
+          "demand distribution",
+          "capacity",
+          "maintenance and residual value"
+        ]
+      }
+    }
+  },
+  {
+    "id": "seo.seo",
+    "name": "SEO",
+    "version": "1.0.0",
+    "purpose": "Support evidence-based 100print decisions: SEO",
+    "allowed_departments": [
+      "seo"
+    ],
+    "priority": "secondary",
+    "trigger_conditions": [
+      "seo",
+      "сео",
+      "семантик",
+      "органическ",
+      "поисков",
+      "метатег"
+    ],
+    "required_inputs": [
+      "Search demand",
+      "query intent",
+      "index/crawl data",
+      "location",
+      "leads and revenue"
+    ],
+    "analysis_checklist": [
+      "Build semantic clusters",
+      "commercial vs informational intent",
+      "landing mapping",
+      "technical crawl checks",
+      "local SEO",
+      "content SEO",
+      "connect qualified organic visits to leads and revenue"
+    ],
+    "output_contract": [
+      "summary: recommendation and decision gate",
+      "recommendations: actionable next steps, owner and review point; calculations with units and assumptions; KPIs and thresholds",
+      "risks: failure modes and escalation",
+      "assumptions: explicit unverified claims",
+      "evidence_gaps: missing inputs, sources and validation required"
+    ],
+    "kpis": [
+      "Qualified organic traffic",
+      "leads",
+      "revenue contribution"
+    ],
+    "risks_failure_modes": [
+      "Rankings without sales",
+      "cannibalization",
+      "unsupported crawl claims"
+    ],
+    "escalation_rules": [
+      "Technical blockers to Operations; weak attribution to Analytics"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Build semantic clusters; commercial vs informational intent; landing mapping; technical crawl checks; local SEO; content SEO; connect qualified organic visits to leads and revenue. Technical blockers to Operations; weak attribution to Analytics. Report structured findings and evidence, never hidden chain-of-thought. Missing evidence is not zero; do not fabricate data or thresholds.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "SEO",
+          "goal": "Evaluate decision",
+          "constraints": [
+            "Не демпинговать; проверять pricing floor и вклад.",
+            "Не ограничивать ЦА без доказательств.",
+            "Маркетинг — сервис продаж; KPI маркетинга — деньги.",
+            "Не копировать конкурентов.",
+            "Фокус на внутренних процессах и экономике.",
+            "Портал — главный интерфейс бренда.",
+            "Saved designs + repeat order — ключевой retention-механизм.",
+            "Гибридное распределение производства между своими мощностями и партнёрами."
+          ],
+          "criteria": [
+            "Incremental contribution and service quality"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "Provisional: gather evidence",
+        "recommendations": [
+          "Collect required baseline before committing"
+        ],
+        "risks": [
+          "Rankings without sales; cannibalization; unsupported crawl claims"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Search demand",
+          "query intent",
+          "index/crawl data",
+          "location",
+          "leads and revenue"
+        ]
+      }
+    }
+  },
+  {
+    "id": "strategy.research",
+    "name": "Customer Research / JTBD",
+    "version": "1.0.0",
+    "purpose": "Support evidence-based 100print decisions: Customer Research / JTBD",
+    "allowed_departments": [
+      "strategy"
+    ],
+    "priority": "secondary",
+    "trigger_conditions": [
+      "jtbd",
+      "интервью",
+      "customer research",
+      "исследован.*клиент",
+      "готовност.*плат"
+    ],
+    "required_inputs": [
+      "Interview transcripts",
+      "recruitment criteria",
+      "observed purchases",
+      "alternatives"
+    ],
+    "analysis_checklist": [
+      "Identify jobs, triggers, barriers and alternatives",
+      "distinguish stated willingness to pay from actual payment",
+      "synthesize interviews with source IDs",
+      "validate hypotheses without excluding audiences prematurely"
+    ],
+    "output_contract": [
+      "summary: recommendation and decision gate",
+      "recommendations: actionable next steps, owner and review point; calculations with units and assumptions; KPIs and thresholds",
+      "risks: failure modes and escalation",
+      "assumptions: explicit unverified claims",
+      "evidence_gaps: missing inputs, sources and validation required"
+    ],
+    "kpis": [
+      "Validated hypotheses",
+      "paid validation",
+      "interview coverage"
+    ],
+    "risks_failure_modes": [
+      "Leading questions",
+      "convenience sample",
+      "invented quotes"
+    ],
+    "escalation_rules": [
+      "Conflicting evidence requires Product review; do not declare market validation from small sample"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Identify jobs, triggers, barriers and alternatives; distinguish stated willingness to pay from actual payment; synthesize interviews with source IDs; validate hypotheses without excluding audiences prematurely. Conflicting evidence requires Product review; do not declare market validation from small sample. Report structured findings and evidence, never hidden chain-of-thought. Missing evidence is not zero; do not fabricate data or thresholds.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Customer Research / JTBD",
+          "goal": "Evaluate decision",
+          "constraints": [
+            "Не демпинговать; проверять pricing floor и вклад.",
+            "Не ограничивать ЦА без доказательств.",
+            "Маркетинг — сервис продаж; KPI маркетинга — деньги.",
+            "Не копировать конкурентов.",
+            "Фокус на внутренних процессах и экономике.",
+            "Портал — главный интерфейс бренда.",
+            "Saved designs + repeat order — ключевой retention-механизм.",
+            "Гибридное распределение производства между своими мощностями и партнёрами."
+          ],
+          "criteria": [
+            "Incremental contribution and service quality"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "Provisional: gather evidence",
+        "recommendations": [
+          "Collect required baseline before committing"
+        ],
+        "risks": [
+          "Leading questions; convenience sample; invented quotes"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Interview transcripts",
+          "recruitment criteria",
+          "observed purchases",
+          "alternatives"
+        ]
+      }
+    }
+  },
+  {
+    "id": "operations.logistics",
+    "name": "Logistics / Delivery",
+    "version": "1.0.0",
+    "purpose": "Support evidence-based 100print decisions: Logistics / Delivery",
+    "allowed_departments": [
+      "operations"
+    ],
+    "priority": "secondary",
+    "trigger_conditions": [
+      "достав",
+      "логист",
+      "shipping",
+      "упаков"
+    ],
+    "required_inputs": [
+      "Destinations",
+      "shipment weights",
+      "carrier tariffs",
+      "packaging and failure data"
+    ],
+    "analysis_checklist": [
+      "Compare delivery SLA and routing",
+      "shipping cost per order",
+      "packaging requirements",
+      "failure risks",
+      "regional scalability"
+    ],
+    "output_contract": [
+      "summary: recommendation and decision gate",
+      "recommendations: actionable next steps, owner and review point; calculations with units and assumptions; KPIs and thresholds",
+      "risks: failure modes and escalation",
+      "assumptions: explicit unverified claims",
+      "evidence_gaps: missing inputs, sources and validation required"
+    ],
+    "kpis": [
+      "On-time delivery",
+      "delivered cost",
+      "damage rate",
+      "contribution after shipping"
+    ],
+    "risks_failure_modes": [
+      "Ignore failed delivery or regional variability"
+    ],
+    "escalation_rules": [
+      "SLA/cost conflict to Operations + Finance at L3"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Compare delivery SLA and routing; shipping cost per order; packaging requirements; failure risks; regional scalability. SLA/cost conflict to Operations + Finance at L3. Report structured findings and evidence, never hidden chain-of-thought. Missing evidence is not zero; do not fabricate data or thresholds.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Logistics / Delivery",
+          "goal": "Evaluate decision",
+          "constraints": [
+            "Не демпинговать; проверять pricing floor и вклад.",
+            "Не ограничивать ЦА без доказательств.",
+            "Маркетинг — сервис продаж; KPI маркетинга — деньги.",
+            "Не копировать конкурентов.",
+            "Фокус на внутренних процессах и экономике.",
+            "Портал — главный интерфейс бренда.",
+            "Saved designs + repeat order — ключевой retention-механизм.",
+            "Гибридное распределение производства между своими мощностями и партнёрами."
+          ],
+          "criteria": [
+            "Incremental contribution and service quality"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "Provisional: gather evidence",
+        "recommendations": [
+          "Collect required baseline before committing"
+        ],
+        "risks": [
+          "Ignore failed delivery or regional variability"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Destinations",
+          "shipment weights",
+          "carrier tariffs",
+          "packaging and failure data"
+        ]
+      }
+    }
+  },
+  {
+    "id": "critic.legal",
+    "name": "Legal / Contracts / Claims",
+    "version": "1.0.0",
+    "purpose": "Support evidence-based 100print decisions: Legal / Contracts / Claims",
+    "allowed_departments": [
+      "critic"
+    ],
+    "priority": "secondary",
+    "trigger_conditions": [
+      "договор",
+      "юрид",
+      "претензи",
+      "copyright",
+      "персональн.*данн",
+      "возврат"
+    ],
+    "required_inputs": [
+      "Jurisdiction",
+      "customer/partner terms",
+      "claim evidence",
+      "consent/data flow",
+      "design rights"
+    ],
+    "analysis_checklist": [
+      "Review customer and supplier terms",
+      "claims procedure",
+      "refund/reprint logic",
+      "uploaded design copyright/IP",
+      "privacy touchpoints",
+      "identify counsel questions"
+    ],
+    "output_contract": [
+      "summary: recommendation and decision gate",
+      "recommendations: actionable next steps, owner and review point; calculations with units and assumptions; KPIs and thresholds",
+      "risks: failure modes and escalation",
+      "assumptions: explicit unverified claims",
+      "evidence_gaps: missing inputs, sources and validation required"
+    ],
+    "kpis": [
+      "Claim resolution time",
+      "reprint/refund cost",
+      "unresolved compliance issues"
+    ],
+    "risks_failure_modes": [
+      "Assuming jurisdiction",
+      "definitive legal advice without counsel"
+    ],
+    "escalation_rules": [
+      "Qualified legal counsel required for jurisdiction-specific interpretation, disputed IP, personal data obligations or material contract liability; no legal clearance from this skill"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Review customer and supplier terms; claims procedure; refund/reprint logic; uploaded design copyright/IP; privacy touchpoints; identify counsel questions. Qualified legal counsel required for jurisdiction-specific interpretation, disputed IP, personal data obligations or material contract liability; no legal clearance from this skill. Report structured findings and evidence, never hidden chain-of-thought. Missing evidence is not zero; do not fabricate data or thresholds.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Legal / Contracts / Claims",
+          "goal": "Evaluate decision",
+          "constraints": [
+            "Не демпинговать; проверять pricing floor и вклад.",
+            "Не ограничивать ЦА без доказательств.",
+            "Маркетинг — сервис продаж; KPI маркетинга — деньги.",
+            "Не копировать конкурентов.",
+            "Фокус на внутренних процессах и экономике.",
+            "Портал — главный интерфейс бренда.",
+            "Saved designs + repeat order — ключевой retention-механизм.",
+            "Гибридное распределение производства между своими мощностями и партнёрами."
+          ],
+          "criteria": [
+            "Incremental contribution and service quality"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "Provisional: gather evidence",
+        "recommendations": [
+          "Collect required baseline before committing"
+        ],
+        "risks": [
+          "Assuming jurisdiction; definitive legal advice without counsel"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Jurisdiction",
+          "customer/partner terms",
+          "claim evidence",
+          "consent/data flow",
+          "design rights"
+        ]
+      }
+    }
+  },
+  {
+    "id": "marketing.content",
+    "name": "Content Strategy",
+    "version": "1.0.0",
+    "purpose": "Support evidence-based 100print decisions: Content Strategy",
+    "allowed_departments": [
+      "marketing"
+    ],
+    "priority": "secondary",
+    "trigger_conditions": [
+      "контент",
+      "content",
+      "telegram",
+      "телеграм",
+      "тем.*стат"
+    ],
+    "required_inputs": [
+      "Use cases",
+      "funnel",
+      "topic demand",
+      "channel performance",
+      "order attribution"
+    ],
+    "analysis_checklist": [
+      "Use-case education and demand generation",
+      "topic clusters",
+      "product-led content",
+      "Telegram/short-form/SEO formats",
+      "CTA mapping",
+      "content-to-order funnel"
+    ],
+    "output_contract": [
+      "summary: recommendation and decision gate",
+      "recommendations: actionable next steps, owner and review point; calculations with units and assumptions; KPIs and thresholds",
+      "risks: failure modes and escalation",
+      "assumptions: explicit unverified claims",
+      "evidence_gaps: missing inputs, sources and validation required"
+    ],
+    "kpis": [
+      "Qualified leads",
+      "assisted/incremental order contribution",
+      "CTA conversion"
+    ],
+    "risks_failure_modes": [
+      "Vanity views",
+      "copied competitor content"
+    ],
+    "escalation_rules": [
+      "Weak attribution to Analytics; pricing claims to Finance"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Use-case education and demand generation; topic clusters; product-led content; Telegram/short-form/SEO formats; CTA mapping; content-to-order funnel. Weak attribution to Analytics; pricing claims to Finance. Report structured findings and evidence, never hidden chain-of-thought. Missing evidence is not zero; do not fabricate data or thresholds.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Content Strategy",
+          "goal": "Evaluate decision",
+          "constraints": [
+            "Не демпинговать; проверять pricing floor и вклад.",
+            "Не ограничивать ЦА без доказательств.",
+            "Маркетинг — сервис продаж; KPI маркетинга — деньги.",
+            "Не копировать конкурентов.",
+            "Фокус на внутренних процессах и экономике.",
+            "Портал — главный интерфейс бренда.",
+            "Saved designs + repeat order — ключевой retention-механизм.",
+            "Гибридное распределение производства между своими мощностями и партнёрами."
+          ],
+          "criteria": [
+            "Incremental contribution and service quality"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "Provisional: gather evidence",
+        "recommendations": [
+          "Collect required baseline before committing"
+        ],
+        "risks": [
+          "Vanity views; copied competitor content"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Use cases",
+          "funnel",
+          "topic demand",
+          "channel performance",
+          "order attribution"
+        ]
+      }
+    }
+  },
+  {
+    "id": "strategy.ux",
+    "name": "UX / Conversion Optimization",
+    "version": "1.0.0",
+    "purpose": "Support evidence-based 100print decisions: UX / Conversion Optimization",
+    "allowed_departments": [
+      "strategy"
+    ],
+    "priority": "secondary",
+    "trigger_conditions": [
+      "ux",
+      "конверси",
+      "checkout",
+      "редактор",
+      "оформлен.*заказ",
+      "usability"
+    ],
+    "required_inputs": [
+      "Funnel events",
+      "session observations",
+      "editor errors",
+      "saved design/reorder usage"
+    ],
+    "analysis_checklist": [
+      "Locate friction in editor, quote, checkout and order flow",
+      "test saved designs/reorder usability",
+      "prioritize conversion hypotheses with contribution guardrails"
+    ],
+    "output_contract": [
+      "summary: recommendation and decision gate",
+      "recommendations: actionable next steps, owner and review point; calculations with units and assumptions; KPIs and thresholds",
+      "risks: failure modes and escalation",
+      "assumptions: explicit unverified claims",
+      "evidence_gaps: missing inputs, sources and validation required"
+    ],
+    "kpis": [
+      "Paid conversion",
+      "task completion",
+      "reorder completion",
+      "error rate"
+    ],
+    "risks_failure_modes": [
+      "Conversion uplift destroys margin",
+      "unrepresentative usability sample"
+    ],
+    "escalation_rules": [
+      "Production-impacting promises to Operations; uncertain effects to Analytics"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Locate friction in editor, quote, checkout and order flow; test saved designs/reorder usability; prioritize conversion hypotheses with contribution guardrails. Production-impacting promises to Operations; uncertain effects to Analytics. Report structured findings and evidence, never hidden chain-of-thought. Missing evidence is not zero; do not fabricate data or thresholds.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "UX / Conversion Optimization",
+          "goal": "Evaluate decision",
+          "constraints": [
+            "Не демпинговать; проверять pricing floor и вклад.",
+            "Не ограничивать ЦА без доказательств.",
+            "Маркетинг — сервис продаж; KPI маркетинга — деньги.",
+            "Не копировать конкурентов.",
+            "Фокус на внутренних процессах и экономике.",
+            "Портал — главный интерфейс бренда.",
+            "Saved designs + repeat order — ключевой retention-механизм.",
+            "Гибридное распределение производства между своими мощностями и партнёрами."
+          ],
+          "criteria": [
+            "Incremental contribution and service quality"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "Provisional: gather evidence",
+        "recommendations": [
+          "Collect required baseline before committing"
+        ],
+        "risks": [
+          "Conversion uplift destroys margin; unrepresentative usability sample"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Funnel events",
+          "session observations",
+          "editor errors",
+          "saved design/reorder usage"
+        ]
+      }
+    }
+  },
+  {
+    "id": "operations.partnerships",
+    "name": "Partnerships / Franchise / Network Expansion",
+    "version": "1.0.0",
+    "purpose": "Support evidence-based 100print decisions: Partnerships / Franchise / Network Expansion",
+    "allowed_departments": [
+      "operations"
+    ],
+    "priority": "secondary",
+    "trigger_conditions": [
+      "нов.*точк",
+      "нов.*типограф",
+      "франшиз",
+      "партнерств",
+      "партнёрств",
+      "расширен.*сет"
+    ],
+    "required_inputs": [
+      "Partner candidates",
+      "territories",
+      "economics",
+      "quality audits",
+      "SLA",
+      "local demand"
+    ],
+    "analysis_checklist": [
+      "Score partner typographies on quality, SLA, economics, territory",
+      "define expansion gates",
+      "test franchise suitability vs partner network",
+      "hybrid capacity"
+    ],
+    "output_contract": [
+      "summary: recommendation and decision gate",
+      "recommendations: actionable next steps, owner and review point; calculations with units and assumptions; KPIs and thresholds",
+      "risks: failure modes and escalation",
+      "assumptions: explicit unverified claims",
+      "evidence_gaps: missing inputs, sources and validation required"
+    ],
+    "kpis": [
+      "Partner contribution",
+      "SLA",
+      "defects",
+      "territory payback"
+    ],
+    "risks_failure_modes": [
+      "Expansion before process repeatability",
+      "assumed exclusivity"
+    ],
+    "escalation_rules": [
+      "Expansion cash/territory conflicts require L3 Finance/Strategy/Operations; enterprise strategy may request Council"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Score partner typographies on quality, SLA, economics, territory; define expansion gates; test franchise suitability vs partner network; hybrid capacity. Expansion cash/territory conflicts require L3 Finance/Strategy/Operations; enterprise strategy may request Council. Report structured findings and evidence, never hidden chain-of-thought. Missing evidence is not zero; do not fabricate data or thresholds.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Partnerships / Franchise / Network Expansion",
+          "goal": "Evaluate decision",
+          "constraints": [
+            "Не демпинговать; проверять pricing floor и вклад.",
+            "Не ограничивать ЦА без доказательств.",
+            "Маркетинг — сервис продаж; KPI маркетинга — деньги.",
+            "Не копировать конкурентов.",
+            "Фокус на внутренних процессах и экономике.",
+            "Портал — главный интерфейс бренда.",
+            "Saved designs + repeat order — ключевой retention-механизм.",
+            "Гибридное распределение производства между своими мощностями и партнёрами."
+          ],
+          "criteria": [
+            "Incremental contribution and service quality"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "Provisional: gather evidence",
+        "recommendations": [
+          "Collect required baseline before committing"
+        ],
+        "risks": [
+          "Expansion before process repeatability; assumed exclusivity"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Partner candidates",
+          "territories",
+          "economics",
+          "quality audits",
+          "SLA",
+          "local demand"
+        ]
+      }
+    }
+  },
+  {
+    "id": "strategy.competitive",
+    "name": "Competitive Intelligence",
+    "version": "1.0.0",
+    "purpose": "Support evidence-based 100print decisions: Competitive Intelligence",
+    "allowed_departments": [
+      "strategy"
+    ],
+    "priority": "secondary",
+    "trigger_conditions": [
+      "конкурент",
+      "competitor",
+      "заменител"
+    ],
+    "required_inputs": [
+      "Dated public offers",
+      "comparable basket",
+      "terms",
+      "substitutes",
+      "source links"
+    ],
+    "analysis_checklist": [
+      "Map competitors/substitutes",
+      "normalize price/service comparison",
+      "positioning and offer gaps",
+      "derive independent hypotheses, never copy blindly"
+    ],
+    "output_contract": [
+      "summary: recommendation and decision gate",
+      "recommendations: actionable next steps, owner and review point; calculations with units and assumptions; KPIs and thresholds",
+      "risks: failure modes and escalation",
+      "assumptions: explicit unverified claims",
+      "evidence_gaps: missing inputs, sources and validation required"
+    ],
+    "kpis": [
+      "Validated differentiation",
+      "win/loss",
+      "contribution at comparable offer"
+    ],
+    "risks_failure_modes": [
+      "Stale prices",
+      "unlike-for-like basket",
+      "copying business model"
+    ],
+    "escalation_rules": [
+      "Unverified prices remain assumptions; strategic repositioning to Strategy head"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Map competitors/substitutes; normalize price/service comparison; positioning and offer gaps; derive independent hypotheses, never copy blindly. Unverified prices remain assumptions; strategic repositioning to Strategy head. Report structured findings and evidence, never hidden chain-of-thought. Missing evidence is not zero; do not fabricate data or thresholds.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Competitive Intelligence",
+          "goal": "Evaluate decision",
+          "constraints": [
+            "Не демпинговать; проверять pricing floor и вклад.",
+            "Не ограничивать ЦА без доказательств.",
+            "Маркетинг — сервис продаж; KPI маркетинга — деньги.",
+            "Не копировать конкурентов.",
+            "Фокус на внутренних процессах и экономике.",
+            "Портал — главный интерфейс бренда.",
+            "Saved designs + repeat order — ключевой retention-механизм.",
+            "Гибридное распределение производства между своими мощностями и партнёрами."
+          ],
+          "criteria": [
+            "Incremental contribution and service quality"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "Provisional: gather evidence",
+        "recommendations": [
+          "Collect required baseline before committing"
+        ],
+        "risks": [
+          "Stale prices; unlike-for-like basket; copying business model"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Dated public offers",
+          "comparable basket",
+          "terms",
+          "substitutes",
+          "source links"
+        ]
+      }
+    }
+  },
+  {
+    "id": "operations.pmo",
+    "name": "Project Management / PMO",
+    "version": "1.0.0",
+    "purpose": "Support evidence-based 100print decisions: Project Management / PMO",
+    "allowed_departments": [
+      "operations"
+    ],
+    "priority": "secondary",
+    "trigger_conditions": [
+      "дедлайн",
+      "milestone",
+      "pmo",
+      "блокер",
+      "инициатив",
+      "проектн.*управ"
+    ],
+    "required_inputs": [
+      "Initiatives",
+      "owners",
+      "deadlines",
+      "dependencies",
+      "status and decision rights"
+    ],
+    "analysis_checklist": [
+      "Map initiatives, owners, dependencies, deadlines, milestones, blockers, status, next review",
+      "escalate blocked critical path"
+    ],
+    "output_contract": [
+      "summary: recommendation and decision gate",
+      "recommendations: actionable next steps, owner and review point; calculations with units and assumptions; KPIs and thresholds",
+      "risks: failure modes and escalation",
+      "assumptions: explicit unverified claims",
+      "evidence_gaps: missing inputs, sources and validation required"
+    ],
+    "kpis": [
+      "Milestone reliability",
+      "blocked age",
+      "review freshness"
+    ],
+    "risks_failure_modes": [
+      "Status theater",
+      "missing owner",
+      "invented deadline commitments"
+    ],
+    "escalation_rules": [
+      "Unowned blockers to head; cross-functional priority conflict L3"
+    ],
+    "input_schema": {
+      "type": "object",
+      "properties": {
+        "context": {
+          "type": "object",
+          "properties": {
+            "problem": {
+              "type": "string",
+              "minLength": 1
+            },
+            "goal": {
+              "type": "string",
+              "minLength": 1
+            },
+            "constraints": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "criteria": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "facts": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            },
+            "assumptions": {
+              "type": "array",
+              "items": {
+                "type": "string",
+                "minLength": 1
+              }
+            }
+          },
+          "required": [
+            "problem",
+            "goal",
+            "constraints",
+            "criteria",
+            "facts",
+            "assumptions"
+          ],
+          "additionalProperties": false
+        }
+      },
+      "required": [
+        "context"
+      ],
+      "additionalProperties": false
+    },
+    "output_schema": {
+      "type": "object",
+      "properties": {
+        "summary": {
+          "type": "string",
+          "minLength": 1
+        },
+        "recommendations": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "risks": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "assumptions": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        },
+        "evidence_gaps": {
+          "type": "array",
+          "items": {
+            "type": "string",
+            "minLength": 1
+          }
+        }
+      },
+      "required": [
+        "summary",
+        "recommendations",
+        "risks",
+        "assumptions",
+        "evidence_gaps"
+      ],
+      "additionalProperties": false
+    },
+    "instructions": "Map initiatives, owners, dependencies, deadlines, milestones, blockers, status, next review; escalate blocked critical path. Unowned blockers to head; cross-functional priority conflict L3. Report structured findings and evidence, never hidden chain-of-thought. Missing evidence is not zero; do not fabricate data or thresholds.",
+    "test_case": {
+      "input": {
+        "context": {
+          "problem": "Project Management / PMO",
+          "goal": "Evaluate decision",
+          "constraints": [
+            "Не демпинговать; проверять pricing floor и вклад.",
+            "Не ограничивать ЦА без доказательств.",
+            "Маркетинг — сервис продаж; KPI маркетинга — деньги.",
+            "Не копировать конкурентов.",
+            "Фокус на внутренних процессах и экономике.",
+            "Портал — главный интерфейс бренда.",
+            "Saved designs + repeat order — ключевой retention-механизм.",
+            "Гибридное распределение производства между своими мощностями и партнёрами."
+          ],
+          "criteria": [
+            "Incremental contribution and service quality"
+          ],
+          "facts": [],
+          "assumptions": []
+        }
+      },
+      "expected": {
+        "summary": "Provisional: gather evidence",
+        "recommendations": [
+          "Collect required baseline before committing"
+        ],
+        "risks": [
+          "Status theater; missing owner; invented deadline commitments"
+        ],
+        "assumptions": [],
+        "evidence_gaps": [
+          "Initiatives",
+          "owners",
+          "deadlines",
+          "dependencies",
+          "status and decision rights"
+        ]
+      }
+    }
   }
 ]

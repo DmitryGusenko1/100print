@@ -27,7 +27,12 @@
     "department": "strategy",
     "skills": [
       "strategy.01",
-      "strategy.04"
+      "strategy.04",
+      "strategy.product",
+      "strategy.analytics",
+      "strategy.research",
+      "strategy.ux",
+      "strategy.competitive"
     ]
   },
   {
@@ -71,7 +76,9 @@
     "department": "marketing",
     "skills": [
       "marketing.01",
-      "marketing.04"
+      "marketing.04",
+      "marketing.growth",
+      "marketing.content"
     ]
   },
   {
@@ -118,7 +125,8 @@
     "skills": [
       "seo.01",
       "seo.04",
-      "seo.07"
+      "seo.07",
+      "seo.seo"
     ]
   },
   {
@@ -163,7 +171,8 @@
     "department": "sales",
     "skills": [
       "sales.01",
-      "sales.04"
+      "sales.04",
+      "sales.retention"
     ]
   },
   {
@@ -209,7 +218,9 @@
     "skills": [
       "finance.01",
       "finance.04",
-      "finance.07"
+      "finance.07",
+      "finance.pricing",
+      "finance.procurement"
     ]
   },
   {
@@ -253,7 +264,12 @@
     "department": "operations",
     "skills": [
       "operations.01",
-      "operations.04"
+      "operations.04",
+      "operations.production",
+      "operations.prepress",
+      "operations.logistics",
+      "operations.partnerships",
+      "operations.pmo"
     ]
   },
   {
@@ -297,7 +313,8 @@
     "department": "critic",
     "skills": [
       "critic.01",
-      "critic.04"
+      "critic.04",
+      "critic.legal"
     ]
   },
   {

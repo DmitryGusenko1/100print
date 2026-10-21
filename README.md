@@ -522,3 +522,11 @@ L3 is limited to four functions. Optional vector retrieval has an application-ro
 migration and a full-text fallback; no root or extension installation is performed.
 Administrator helper/installer preparation is included but has not been applied.
 Live completion remains subject to actual production and Telegram E2E acceptance.
+
+### Specialist skills (#16)
+
+17 domain skills extend the existing 100print organization. The first-priority
+pack covers pricing, product, production, prepress, retention, growth, analytics
+and procurement. L2 now runs specialist + head + Critic; L3 composes selected skills
+across two to four functions. Council remains an explicit escalation.
+See [registry, routing map, specs, examples and verification](docs/ISSUE16_SKILLS.md).

@@ -7,12 +7,16 @@ CATALOG = Path(__file__).resolve().parents[2] / 'config/organization'
 
 class Registry:
     def __init__(self, root=CATALOG):
+        self.preset = json.loads((root/'100print.json').read_text())
         self.skills = {s['id']: s for s in json.loads((root/'skills.json').read_text())}
         self.roles = {r['id']: r for r in json.loads((root/'roles.json').read_text())}
         self.departments = {d['id']: d for d in json.loads((root/'departments.json').read_text())}
         for skill in self.skills.values():
             for key in ('id','name','version','purpose','allowed_departments','instructions','test_case'):
                 if not skill[key]: raise ValueError('Incomplete skill: '+key)
+            if skill.get('priority'):
+                for key in ('trigger_conditions','required_inputs','analysis_checklist','output_contract','kpis','risks_failure_modes','escalation_rules'):
+                    if not skill.get(key): raise ValueError('Incomplete specialist: '+key)
             for key in ('input_schema','output_schema'):
                 Draft202012Validator.check_schema(skill[key])
             validate(skill['input_schema'],skill['test_case']['input'])

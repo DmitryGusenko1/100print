@@ -31,7 +31,7 @@ class OrganizationTests(unittest.TestCase):
         self.org=Organization(self.brain,self.store,self.registry)
 
     def test_catalog_and_all_skill_test_cases(self):
-        self.assertEqual(len(self.registry.skills),45)
+        self.assertEqual(len(self.registry.skills),62)
         self.assertEqual(len(self.registry.departments),7)
         self.assertEqual(len(self.registry.roles),29)
         for dept in self.registry.departments.values():
@@ -55,8 +55,8 @@ class OrganizationTests(unittest.TestCase):
     def test_l2_head_and_critic(self):
         result=self.org.execute(task('L2',['finance']))
         self.assertEqual(result['departmental_result']['department'],'finance')
-        self.assertEqual(result['assignments'],[])
-        self.assertEqual([c['role'] for c in self.brain.calls],['head-finance','head-critic'])
+        self.assertEqual(len(result['assignments']),1)
+        self.assertEqual([c['role'] for c in self.brain.calls],['finance.specialist-1','head-finance','head-critic'])
         self.assertTrue(result['critic_challenge']['blocking'])
         self.assertTrue(result['requires_decision'])
 

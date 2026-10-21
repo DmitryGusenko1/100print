@@ -1,0 +1,12 @@
+[
+ {"question":"Купить ли новое оборудование?","skills":["finance.procurement","operations.production","finance.pricing"]},
+ {"question":"Какой продукт добавить в портал?","skills":["strategy.product"]},
+ {"question":"Когда переводить заказ от партнёра на своё производство?","skills":["operations.production","finance.pricing"]},
+ {"question":"Почему падает маржа?","skills":["finance.pricing"]},
+ {"question":"Как увеличить повторные заказы?","skills":["sales.retention"]},
+ {"question":"Какой канал масштабировать?","skills":["marketing.growth"]},
+ {"question":"Где узкое место в производстве?","skills":["operations.production"]},
+ {"question":"Как оценить качество макета до печати?","skills":["operations.prepress"]},
+ {"question":"Стоит ли открывать новую точку?","skills":["operations.partnerships","finance.pricing","strategy.product"]},
+ {"question":"Какие метрики нужны для MVP портала?","skills":["strategy.product","strategy.analytics"]}
+]

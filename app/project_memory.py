@@ -116,6 +116,12 @@ def context(cur, conversation_id, query, max_chars=16000):
     return result
 
 def routing(question):
+    from app.organization.registry import Registry
+    from app.organization.routing import route, select_skills
+    registry=Registry()
+    if select_skills(question,registry) and not any(w in question.lower() for w in ('council','совет')):
+        selected=route({'type':'ai-task','title':question,'payload':{}},registry)
+        return selected['level'],selected['departments']
     q=question.lower()
     if any(w in q for w in ('новую типограф','новой типограф','new print','council','совет')): return 'L4',[]
     if any(w in q for w in ('метатег','meta tag')): return 'L1',['seo']
