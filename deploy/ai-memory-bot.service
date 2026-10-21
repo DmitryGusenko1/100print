@@ -1,0 +1,18 @@
+[Unit]
+Description=AI Memory Telegram Bot
+After=network.target postgresql.service
+
+[Service]
+Type=simple
+User=ai-memory
+Group=ai-memory
+WorkingDirectory=/opt/ai-memory
+EnvironmentFile=/etc/ai-memory/ai-memory.env
+ExecStart=/opt/ai-memory/.venv/bin/python -m app.bot
+Restart=on-failure
+RestartSec=5
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target
