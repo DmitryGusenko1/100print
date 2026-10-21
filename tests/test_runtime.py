@@ -26,7 +26,7 @@ def wait_for(fn, seconds=45):
         try:
             value=fn()
             if value:return value
-        except psycopg2.OperationalError:
+        except (psycopg2.OperationalError, psycopg2.InterfaceError):
             pass # Own PostgreSQL may be restarting with the unit.
         time.sleep(.25)
     raise AssertionError('Timed out waiting for condition')
