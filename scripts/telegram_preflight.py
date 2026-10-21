@@ -21,7 +21,8 @@ def main():
         with connect() as conn, conn.cursor() as cur:
             from app.telegram_bot import health
             status = health(cur)
-            if 'provider=production-codex-v1' not in status or 'worker=OK' not in status:
+            from app.providers import business_brain
+            if business_brain().identity != 'production-codex-v1' or 'Анализ работает.' not in status:
                 raise SystemExit('Production worker is not ready')
     except Exception:
         raise SystemExit('Project Telegram API or shared memory preflight failed; secrets suppressed') from None

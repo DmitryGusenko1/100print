@@ -50,8 +50,8 @@ class TelegramTests(unittest.TestCase):
         second = self.rows('SELECT * FROM telegram_inbox WHERE update_id=%s', (self.uid+1,))[0]
         self.assertEqual(first['conversation_id'], second['conversation_id'])
         reply = self.rows('SELECT text FROM telegram_outbox WHERE update_id=%s', (self.uid+1,))[0]['text']
-        self.assertIn('production-codex-v1', reply)
-        self.assertIn('memory=ceo_orchestrator/shared OK', reply)
+        self.assertIn('100print — статус', reply)
+        self.assertIn('Общая память доступна', reply)
         bot.ingest(self.cur, self.update('/new', self.uid+2))
         third = self.rows('SELECT * FROM telegram_inbox WHERE update_id=%s', (self.uid+2,))[0]
         self.assertNotEqual(first['conversation_id'], third['conversation_id'])
@@ -163,3 +163,24 @@ class TelegramTests(unittest.TestCase):
         quick = claim(self.cur, fast=True)
         self.assertEqual(str(quick['id']), fast)
         self.assertEqual(self.rows('SELECT status FROM tasks WHERE id=%s',(slow,))[0]['status'], 'processing')
+
+    def test_executive_delivery_preserves_structured_result(self):
+        bot.ingest(self.cur, self.update('Разбери подробно идею 100 типографий'))
+        result = {'provider': 'production-codex-v1', 'demonstration': False,
+                  'routing': {'level': 'L4'}, 'final': {
+                      'decision': 'Проверить <пилот> & маржу.',
+                      'action_plan': [{'action': f'Шаг {i}', 'owner': 'Директор', 'deadline': 'Неделя'} for i in range(7)],
+                      'KPI': ['Маржа']}}
+        self.cur.execute("UPDATE tasks SET status='done',result=%s WHERE id=(SELECT task_id FROM telegram_inbox WHERE update_id=%s)", (Json(result), self.uid))
+        bot.collect(self.cur)
+        stored = self.rows('SELECT t.result FROM tasks t JOIN telegram_inbox i ON i.task_id=t.id WHERE i.update_id=%s', (self.uid,))[0]['result']
+        self.assertEqual(stored, result)
+        with self.delivery_context(), patch.object(bot, 'api', return_value={'message_id': 123}) as send:
+            for _ in range(3):
+                bot.deliver_completed()
+        body = send.call_args.args[1]
+        self.assertEqual(body['parse_mode'], 'HTML')
+        self.assertIn('&lt;пилот&gt; &amp; маржу', body['text'])
+        self.assertIn('Шаг 6', body['text'])
+        self.assertIn('<b>Вывод</b>', body['text'])
+        self.assertNotIn('production-codex-v1', body['text'])

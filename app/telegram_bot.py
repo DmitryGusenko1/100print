@@ -10,6 +10,7 @@ import time
 import urllib.request
 from app.db import ROOT, connect
 from app import project_memory as memory
+from app.telegram_presentation import render_result, telegram_html
 
 
 def api(method, body):
@@ -39,15 +40,11 @@ def queue_reply(cur, update_id, text, kind="final"):
 
 
 def health(cur):
-    from app.providers import business_brain
-    provider = business_brain()
     cur.execute("SELECT updated_at > now()-interval '60 seconds' AS healthy FROM heartbeats WHERE id='orchestrator'")
     row = cur.fetchone()
     worker_ok = bool(row and row['healthy'])
     cur.execute("SELECT count(*) AS n FROM tasks WHERE status IN ('new','processing')")
     count = cur.fetchone()['n']
-    cur.execute("SELECT details->>'active_task' AS active FROM heartbeats WHERE id='orchestrator'")
-    active = cur.fetchone()
     cur.execute("SELECT status,error FROM tasks WHERE type IN ('ai-task','council') ORDER BY updated_at DESC LIMIT 1")
     latest = cur.fetchone()
     cur.execute("""SELECT EXISTS (SELECT 1 FROM organization_steps
@@ -55,10 +52,13 @@ def health(cur):
         AND step_key != 'manifest' AND created_at > now()-interval '10 minutes') AS recent""")
     recent = cur.fetchone()['recent']
     provider_health = 'ERROR' if latest and latest['error'] else ('OK' if recent and worker_ok else 'UNKNOWN')
-    return ('100print | queue='+str(count)+' | active_task='+str(active['active'] if active else None)+
-            ' | provider_health='+provider_health+' | provider='+provider.identity+
-            ' | demonstration='+str(provider.identity != 'production-codex-v1').lower()+
-            ' | memory=ceo_orchestrator/shared OK | worker='+('OK' if row and row['healthy'] else 'STALE'))
+    return ('**100print — статус**\n'
+            + ('Анализ работает.' if worker_ok else 'Анализ временно недоступен.')
+            + '\nВ очереди: '+str(count)
+            + '\nAI-команда: '+{'OK':'доступна', 'ERROR':'последний анализ завершился ошибкой',
+                                  'UNKNOWN':'готовность уточняется'}[provider_health]
+            + '\nОбщая память доступна.')
+
 
 
 def ingest(cur, update):
@@ -95,20 +95,6 @@ def ingest(cur, update):
         queue_reply(cur, uid, 'Принял. Анализирую.', 'ack')
 
 
-def render_result(result):
-    value = result.get('final') or result.get('analysis') or result.get('result') or result
-    if isinstance(value, str):
-        return value
-    lines = []
-    for key, label in [('decision','Решение'),('summary','Ответ'),('recommendation','Рекомендация'),
-                       ('why','Обоснование'),('risks','Риски'),('assumptions','Допущения'),
-                       ('evidence_gaps','Что уточнить'),('change_conditions','Условия пересмотра')]:
-        item = value.get(key)
-        if item:
-            lines.append(label+': '+('; '.join(map(str,item)) if isinstance(item,list) else str(item)))
-    return '\n\n'.join(lines) or json.dumps(value,ensure_ascii=False)
-
-
 def collect(cur):
     # Backfill accepted tasks too; uniqueness makes every collection restart-safe.
     cur.execute("""SELECT i.update_id,t.status,i.created_at < now()-interval '30 seconds' AS overdue
@@ -117,17 +103,17 @@ def collect(cur):
         queue_reply(cur, row['update_id'], 'Принял. Анализирую.', 'ack')
         if row['overdue']:
             queue_reply(cur, row['update_id'], 'Анализ ещё выполняется.', 'progress')
-    cur.execute('''SELECT i.update_id,t.id,t.status,t.result FROM telegram_inbox i JOIN tasks t ON t.id=i.task_id
+    cur.execute('''SELECT i.update_id,t.id,t.status,t.result,t.payload FROM telegram_inbox i JOIN tasks t ON t.id=i.task_id
         WHERE t.status IN ('done','failed') AND NOT EXISTS
         (SELECT 1 FROM telegram_outbox o WHERE o.update_id=i.update_id AND o.kind='final')''')
     for row in cur.fetchall():
         result = row['result'] or {}
         if row['status'] == 'failed':
-            text = 'Анализ не завершён. Задача '+str(row['id'])+'. Попробуйте новый запрос.'
+            text = 'Анализ не завершён. Попробуйте новый запрос.'
         elif result.get('provider') != 'production-codex-v1' or result.get('demonstration') is not False:
-            text = 'Production provider недоступен; демонстрационный ответ заблокирован. Задача '+str(row['id'])
+            text = 'AI-команда временно недоступна. Попробуйте позже.'
         else:
-            text = render_result(result)
+            text = render_result(result, (row['payload'] or {}).get('question', '') or (row['payload'] or {}).get('problem', ''))
         queue_reply(cur, row['update_id'], text)
 
 
@@ -147,7 +133,7 @@ def deliver_completed():
             cur.execute("UPDATE telegram_outbox SET state='sending' WHERE id=%s", (row['id'],))
             conn.commit()  # Durable intent BEFORE the external effect.
             try:
-                sent = api('sendMessage', {'chat_id': row['chat_id'], 'text': row['text']})
+                sent = api('sendMessage', {'chat_id': row['chat_id'], 'text': telegram_html(row['text']), 'parse_mode': 'HTML'})
                 memory.append(cur, str(row['conversation_id']), row['text'], role='assistant',
                               request_id=f'telegram:outbox:{row["id"]}')
                 cur.execute("UPDATE telegram_outbox SET state='sent',sent_at=now(),telegram_message_id=%s WHERE id=%s", (sent['message_id'],row['id']))
