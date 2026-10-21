@@ -14,7 +14,9 @@ LIVE: ceo-telegram-bot.service restarted under its existing owner using SIGTERM
 and the configured systemd Restart=always policy (systemctl management required
 interactive authentication). The new process is active/running; project Telegram
 preflight confirms credentials, allowlist and production-worker readiness.
-A new real user question about the idea of 100 printshops remains required.
+Verified on 2026-10-21: a new real user question about 100 printshops received a
+confirmed final Telegram delivery matching the current formatter exactly. The reply
+is 998 characters and includes conclusion, main ideas, Critic and next actions.
 Verify with:
 
 ```
@@ -26,12 +28,14 @@ The format verifier requires a new real inbox entry after formatter modification
 a confirmed final Telegram delivery, and exact equality with the current presenter.
 Old Telegram deliveries and simulated sends do not count as LIVE E2E.
 
-TESTED: full unittest discovery passed (58 tests); final presenter/transport suite
-passed separately (14 tests), including detailed request routing, HTML escaping,
-confirmed delivery, unknown-field suppression and unchanged structured DB result.
-A concurrent targeted run collided with the full suite's intentional DB restart;
-the isolated final rerun passed. `git diff --check` passed.
+TESTED: acceptance verifiers `verify_telegram_format.py`, `verify_telegram.py` and
+`telegram_preflight.py` passed on 2026-10-21. Full unittest discovery passed
+(69 tests). Coverage includes detailed request
+routing, HTML escaping, confirmed delivery, unknown-field suppression and
+unchanged structured DB results. `git diff --check` passed.
 
-FORMAT: implemented. LIVE: active. E2E: waiting for a new real Telegram question.
-USER_ACTION: send «Оцени идею 100 типографий» to the existing Telegram bot.
-LIMITATIONS: real delivery of the new format has not yet been verified.
+FORMAT: executive summary, bounded length and escaped HTML verified.
+LIVE: active production Telegram bot; credentials and worker readiness verified.
+E2E: real 100-printshops reply delivered; shared memory and artifacts verified.
+USER_ACTION: NONE
+LIMITATIONS: detailed reports remain longer when explicitly requested.
