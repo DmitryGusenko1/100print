@@ -206,7 +206,7 @@ def execute(queue, task):
     prior_pid = queue.meta(f'executor-{number}')
     prior_identity = queue.meta(f'executor-identity-{number}')
     if prior_pid and alive(prior_pid) and process_identity(prior_pid) == prior_identity:
-        queue.update(number, status='RETRY', retry_at=time.time()+30)
+        queue.update(number, status='RUNNING', heartbeat=now())
         return
     if task['attempt'] > 1 and result_path.exists():
         recovered = json.loads(result_path.read_text())

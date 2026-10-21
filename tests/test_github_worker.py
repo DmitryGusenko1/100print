@@ -116,7 +116,7 @@ class WorkerTests(unittest.TestCase):
         with patch('app.github_worker.run', return_value=CompletedProcess([],0,'','')), patch('app.github_worker.alive',return_value=True), patch('app.github_worker.process_identity',return_value='same-process'), patch('app.github_worker.subprocess.Popen') as spawn:
             execute(q, task)
             spawn.assert_not_called()
-        self.assertEqual('RETRY',q.task(1)['status'])
+        self.assertEqual('RUNNING',q.task(1)['status'])
 
     def test_auth_waits_instead_of_claiming_done(self):
         q = self.queue
