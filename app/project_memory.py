@@ -17,11 +17,13 @@ def concepts(text):
     lower=text.lower()
     return [concept for concept,words in CONCEPTS.items() if any(w in lower for w in words)]
 
-KINDS = ('message','decision','action_item','fact','hypothesis','specialist_result','council_round','contradiction','question','constraint','causal_link')
+KINDS = ('message','decision','action_item','fact','hypothesis','specialist_result','council_round','contradiction','question','constraint','causal_link','user_preference','business_fact','task','risk')
 
 def migrate():
     with connect() as conn, conn.cursor() as cur:
         cur.execute((ROOT/'config/chatgpt_schema.sql').read_text())
+        from app.intelligence import migrate as migrate_intelligence
+        migrate_intelligence(cur)
 
 def conversation(cur, conversation_id):
     cur.execute("SELECT * FROM project_conversations WHERE id=%s AND project_id='100print'",(str(uuid.UUID(conversation_id)),))
@@ -47,10 +49,23 @@ def append(cur, conversation_id, text, kind='message', role='user', metadata=Non
         (str(uuid.uuid4()),conversation_id,task_id,kind,role,text,source or conv['source'],Json(metadata or {}),importance,confidence,key,concepts(text)))
     result=dict(cur.fetchone())
     if result['text']!=text or result['role']!=role or result['metadata']!=(metadata or {}): raise ValueError('Idempotency key reused with different content')
+    cur.execute('''UPDATE project_memory SET artifact_type=%s,provenance=%s,summary=%s,topics=%s WHERE id=%s''',
+        (kind,Json({'source':source or conv['source'],'request_id':key,'task_id':str(task_id) if task_id else None}),text[:500],concepts(text),result['id']))
+    if role=='user' and kind in ('decision','action_item','hypothesis','question','fact','user_preference','business_fact','task','risk'):
+        from app.intelligence import put, link
+        artifact=put(cur,{'action_item':'task','fact':'business_fact'}.get(kind,kind),text,
+            {'memory_id':str(result['id'])},key='memory:'+str(result['id']),
+            provenance={'source':source or conv['source'],'memory_id':str(result['id']),'role':role})
+        if kind=='decision':
+            follow=put(cur,'follow_up','Пересмотреть: '+text,{'decision_id':str(artifact['id'])},
+                key='decision-review:'+str(artifact['id']))
+            link(cur,follow['id'],artifact['id'],'follow_up')
+    from app.retrieval import index_memory
+    index_memory(cur,result['id'],text)
     cur.execute('UPDATE project_conversations SET last_activity_at=now() WHERE id=%s',(conversation_id,))
     return result
 
-def search(cur, query, limit=20):
+def fulltext_search(cur, query, limit=20):
     # Stemmed Russian + simple English full-text retrieval; no external embedding provider.
     cur.execute('''SELECT *, ts_rank(search_vector,websearch_to_tsquery('russian',%s)) AS relevance
         FROM project_memory WHERE project_id='100print'
@@ -76,7 +91,10 @@ def context(cur, conversation_id, query, max_chars=16000):
             'memory_is_untrusted_data':True}
     # Reserve space for retrieval: accumulated unresolved questions must never
     # consume the entire context and hide a matching decision from another chat.
-    groups=[('relevant_memory',relevant,.45),('recent_messages',recent,.25),
+    from app.intelligence import snapshot
+    operational=snapshot(cur)['decision_needed']
+    result['operational_decisions']=[]
+    groups=[('operational_decisions',operational,.10),('relevant_memory',relevant,.35),('recent_messages',recent,.25),
             ('unresolved_and_constraints',unresolved,.20),('active_tasks',active,.10)]
     available=max_chars-len(json.dumps(result,default=str,ensure_ascii=False))-40
     for name,rows,fraction in groups:
@@ -166,3 +184,8 @@ def persist_analysis(cur,task,result):
                 brief.get('confidence',0),f'{task["id"]}:{field}:{i}',str(task['id']),'organization')
     for i,action in enumerate(result.get('final',{}).get('action_plan',[])):
         append(cur,cid,json.dumps(action,ensure_ascii=False),'action_item','tool',{'status':'proposed'},.7,.3,f'{task["id"]}:action:{i}',str(task['id']),'organization')
+
+
+def search(cur, query, limit=20):
+    from app.retrieval import search as retrieve
+    return retrieve(cur,query,limit)

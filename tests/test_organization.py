@@ -52,12 +52,13 @@ class OrganizationTests(unittest.TestCase):
         self.assertEqual(len(self.brain.calls),1)
         self.assertIn('seo.specialist',result['specialist'])
 
-    def test_l2_head_and_specialists(self):
+    def test_l2_head_and_critic(self):
         result=self.org.execute(task('L2',['finance']))
         self.assertEqual(result['departmental_result']['department'],'finance')
-        self.assertEqual(len(result['assignments']),7)
-        self.assertEqual(len({x['agent'] for x in result['assignments']}),3)
-        self.assertEqual(self.brain.calls[-1]['role'],'head-finance')
+        self.assertEqual(result['assignments'],[])
+        self.assertEqual([c['role'] for c in self.brain.calls],['head-finance','head-critic'])
+        self.assertTrue(result['critic_challenge']['blocking'])
+        self.assertTrue(result['requires_decision'])
 
     def test_l3_cross_department_handoff_and_agreement(self):
         result=self.org.execute(task('L3',['marketing','finance']))

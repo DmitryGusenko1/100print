@@ -49,6 +49,8 @@ def maintenance(cur, active):
         (Json({'pid':os.getpid(),'active_task':active}),))
     if due(cur,'maintenance',60):
         recover(cur,active=active)
+        from app.intelligence import review
+        review(cur)
         cur.execute("SELECT id,task_id FROM handoffs WHERE status='pending' AND updated_at < now()-interval '5 minutes' FOR UPDATE")
         for handoff in cur.fetchall():
             enqueue(cur,'Review pending handoff','follow_up',{'parent_task':str(handoff['task_id'])},'scheduler',f"handoff:{handoff['id']}")
@@ -101,8 +103,15 @@ def finish(cur, task, result=None, error=None):
     cur.execute('UPDATE agent_runs SET status=%s,finished_at=now(),result=%s,error=%s WHERE id=%s',
         ('failed' if error else 'done',Json(result) if result is not None else None,error,task['run_id']))
     if result:
+        from app.intelligence import record_analysis
+        record_analysis(cur,task,result)
         from app.project_memory import persist_analysis
         persist_analysis(cur,task,result)
+    if status in ('done','failed') and task.get('source') not in ('integration-test','test'):
+        cur.execute('''INSERT INTO project_events(event_key,kind,body) VALUES (%s,%s,%s)
+            ON CONFLICT DO NOTHING''',(f'task:{task["id"]}:{status}',
+            'completed-task' if status=='done' else 'blocked-task',
+            Json({'title':task['title'],'task_id':str(task['id'])})))
     if result and result.get('requires_decision'):
         cur.execute('INSERT INTO decisions(task_id,body) VALUES (%s,%s)',(task['id'],Json(result)))
     logging.info('task=%s processing -> %s error=%s',task['id'],status,error)
@@ -121,6 +130,8 @@ def main():
     with connect() as conn, conn.cursor() as cur:
         cur.execute((ROOT/'config/schema.sql').read_text())
         cur.execute((ROOT/'config/chatgpt_schema.sql').read_text())
+        from app.intelligence import migrate
+        migrate(cur)
         from app.organization.registry import Registry
         Registry().sync(cur)
         recover(cur,startup=True)

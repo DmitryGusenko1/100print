@@ -24,3 +24,6 @@ CREATE TABLE IF NOT EXISTS project_analysis_tasks (
 
 ALTER TABLE project_memory ADD COLUMN IF NOT EXISTS concepts text[] NOT NULL DEFAULT '{}';
 CREATE INDEX IF NOT EXISTS project_memory_concepts ON project_memory USING gin(concepts);
+
+ALTER TABLE project_memory DROP CONSTRAINT IF EXISTS project_memory_kind_check;
+ALTER TABLE project_memory ADD CONSTRAINT project_memory_kind_check CHECK(kind IN ('message','decision','action_item','fact','hypothesis','specialist_result','council_round','contradiction','question','constraint','causal_link','user_preference','business_fact','task','risk'));

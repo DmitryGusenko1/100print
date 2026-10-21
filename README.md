@@ -510,3 +510,15 @@ but cannot provide a transactional exactly-once guarantee across GitHub and SQLi
 Legacy completions other than the explicitly audited #11 are imported without
 re-running their acceptance. A future task must supply truthful completion
 artifacts; an exit code alone never establishes DONE.
+
+### Operational intelligence (#15)
+
+Project-local ledger, artifact links/history, review events, strategic hypothesis
+snapshot and metrics are documented in [operations](docs/ISSUE15_OPERATIONS.md).
+Use `.venv/bin/python scripts/intelligence.py snapshot` or Telegram `/snapshot`;
+`/details UUID`, `/decision UUID`, `/snooze UUID`, `/close UUID` manage review state.
+The existing production provider is reused. L2 now runs head + independent Critic;
+L3 is limited to four functions. Optional vector retrieval has an application-role
+migration and a full-text fallback; no root or extension installation is performed.
+Administrator helper/installer preparation is included but has not been applied.
+Live completion remains subject to actual production and Telegram E2E acceptance.

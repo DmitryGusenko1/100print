@@ -22,7 +22,7 @@ class Input(BaseModel):
     request_id: str | None=Field(default=None,min_length=1,max_length=200)
     task_id: str | None=None
     metadata: dict=Field(default_factory=dict)
-    kind: Literal['message','decision','action_item','fact','hypothesis','specialist_result','council_round','contradiction','question','constraint','causal_link']='message'
+    kind: Literal['message','decision','action_item','fact','hypothesis','specialist_result','council_round','contradiction','question','constraint','causal_link','user_preference','business_fact','task','risk']='message'
     importance: float=Field(default=.5,ge=0,le=1)
     confidence: float=Field(default=.5,ge=0,le=1)
     limit: int=Field(default=20,ge=1,le=50)

@@ -91,6 +91,28 @@ def ingest(cur, update):
                '/new': 'Новая сессия создана. Общая память 100print доступна.'}
     if command == '/status':
         queue_reply(cur, uid, health(cur))
+    elif command in ('/snapshot','/metrics','/details','/decision','/snooze','/close'):
+        from app.intelligence import snapshot, metrics, transition, executive_snapshot
+        from datetime import datetime, timedelta, timezone
+        try:
+            if command in ('/snapshot','/metrics'):
+                value = snapshot(cur) if command == '/snapshot' else metrics(cur)
+                text = executive_snapshot(value) if command=='/snapshot' else json.dumps(value,default=str,ensure_ascii=False)[:2000]
+            else:
+                artifact_id = str(__import__('uuid').UUID(message['text'].split()[1]))
+                if command == '/details':
+                    cur.execute('SELECT * FROM project_artifacts WHERE id=%s',(artifact_id,))
+                    value=cur.fetchone()
+                    if not value: raise LookupError('Missing artifact')
+                    text=json.dumps(dict(value),default=str,ensure_ascii=False)[:6000]
+                else:
+                    status={'/decision':'pending','/snooze':'snoozed','/close':'closed'}[command]
+                    transition(cur,artifact_id,status,f'telegram:{uid}',
+                        datetime.now(timezone.utc)+timedelta(days=1) if command=='/snooze' else None)
+                    text='Сохранено: '+status
+        except (ValueError,IndexError,LookupError):
+            text='Укажите UUID объекта после команды. /snapshot — список объектов.'
+        queue_reply(cur,uid,text)
     elif command in replies:
         queue_reply(cur, uid, replies[command])
     else:
@@ -124,6 +146,7 @@ def collect(cur):
 def deliver_completed():
     with connect() as conn, conn.cursor() as cur:
         collect(cur)
+        collect_notifications(cur)
         cur.execute('''SELECT o.*,i.chat_id,i.user_id,i.conversation_id FROM telegram_outbox o
             JOIN telegram_inbox i ON i.update_id=o.update_id WHERE o.state='pending'
             AND NOT EXISTS (SELECT 1 FROM telegram_outbox earlier WHERE earlier.update_id=o.update_id
@@ -163,6 +186,8 @@ def main():
         if not cur.fetchone()['locked']:
             raise RuntimeError('Telegram transport already running')
     with connect() as conn, conn.cursor() as cur:
+        from app.intelligence import migrate
+        migrate(cur)
         cur.execute((ROOT/'config/telegram_schema.sql').read_text())
         recover_outbox(cur)
         cur.execute("INSERT INTO scheduler_state(name,last_run) VALUES ('telegram-offset',to_timestamp(0)) ON CONFLICT DO NOTHING")
@@ -185,6 +210,22 @@ def main():
             logging.warning('Telegram transport failed; durable state retained')
             time.sleep(5)
 
+
+
+def collect_notifications(cur):
+    # One daily digest per session; existing durable outbox handles delivery recovery.
+    from app.intelligence import review
+    review(cur)
+    cur.execute("SELECT event_key,body FROM project_events WHERE created_at>now()-interval '1 day' ORDER BY created_at DESC LIMIT 5")
+    events=list(cur.fetchall())
+    if not events: return
+    cur.execute("SELECT DISTINCT ON (chat_id,user_id) update_id,chat_id,user_id FROM telegram_inbox ORDER BY chat_id,user_id,created_at DESC")
+    for row in cur.fetchall():
+        cur.execute('''INSERT INTO notification_digests(chat_id,user_id,update_id) VALUES (%s,%s,%s)
+            ON CONFLICT DO NOTHING RETURNING update_id''',(row['chat_id'],row['user_id'],row['update_id']))
+        if not cur.fetchone(): continue
+        queue_reply(cur,row['update_id'],'Требует внимания:\n'+'\n'.join(e['body']['title'][:200] for e in events),
+                    'review-'+time.strftime('%Y-%m-%d',time.gmtime()))
 
 if __name__ == '__main__':
     main()

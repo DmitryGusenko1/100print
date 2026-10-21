@@ -91,8 +91,15 @@ class Organization:
             result=self.skill(context,sid,rid,'L1/skill')
             return {'routing':routing,'provider':self.provider.identity,'specialist':rid,'skill_id':sid,'result':result}
         if level=='L2':
-            result=DepartmentHead(self,deps[0]).run(context,'L2/'+deps[0])
-            return {'routing':routing,'provider':self.provider.identity,**result}
+            position=self.ask('L2/'+deps[0]+'/result','department',deps[0],
+                self.registry.departments[deps[0]]['head'],
+                {'context':context,'findings':[],'inbound':[]},c.POSITION,
+                instructions='Give a concise departmental position, assumptions, objections and change conditions.')
+            result={'departmental_result':position,'assignments':[]}
+            challenge=self.ask('L2/critic','challenge','critic','head-critic',
+                {'context':context,'position':result},c.CHALLENGE,
+                instructions='Review assumptions and strongest counterargument; identify evidence gaps and blocking risk.')
+            return {'routing':routing,'provider':self.provider.identity,**result,'critic_challenge':challenge,'requires_decision':challenge['blocking']}
         self.checkpoint('round/0',context,lambda:context,c.CONTEXT)
         # All initial positions see the same context and never each other's outputs.
         positions=self.independent(lambda d: DepartmentHead(self,d).run(context,'round/1/'+d)['departmental_result'],deps)

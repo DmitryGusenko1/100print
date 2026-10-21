@@ -14,6 +14,9 @@ class TelegramTests(unittest.TestCase):
             'CEO_TELEGRAM_ALLOWED_CHATS': '-110011',
             'CEO_TELEGRAM_ALLOWED_USERS': '110011'})
         self.env.start()
+        self.real_notifications=bot.collect_notifications
+        self.notifications=patch.object(bot,'collect_notifications')
+        self.notifications.start()
         self.conn = connect()
         self.cur = self.conn.cursor()
         self.cur.execute((ROOT/'config/telegram_schema.sql').read_text())
@@ -23,6 +26,7 @@ class TelegramTests(unittest.TestCase):
         self.conn.rollback()
         self.cur.close()
         self.conn.close()
+        self.notifications.stop()
         self.env.stop()
 
     def update(self, text, uid=None, chat=-110011, user=110011):
@@ -32,6 +36,24 @@ class TelegramTests(unittest.TestCase):
     def rows(self, sql, args=()):
         self.cur.execute(sql, args)
         return self.cur.fetchall()
+
+    def test_operational_commands_and_digest_dedup(self):
+        from app.intelligence import put, review
+        from datetime import datetime, timezone, timedelta
+        artifact=put(self.cur,'question','issue15 Telegram review',key='issue15:telegram-review',
+                     review_at=datetime.now(timezone.utc)-timedelta(days=1))
+        review(self.cur)
+        bot.ingest(self.cur,self.update('/snapshot'))
+        bot.ingest(self.cur,self.update('/snooze '+str(artifact['id']),self.uid+1))
+        bot.ingest(self.cur,self.update('/details '+str(artifact['id']),self.uid+2))
+        bot.ingest(self.cur,self.update('/close invalid',self.uid+3))
+        self.assertEqual(len(self.rows('SELECT * FROM telegram_inbox WHERE update_id BETWEEN %s AND %s',(self.uid,self.uid+3))),4)
+        self.real_notifications(self.cur)
+        bot.ingest(self.cur,self.update('/status',self.uid+4))
+        self.real_notifications(self.cur)
+        self.assertEqual(len(self.rows("SELECT * FROM telegram_outbox WHERE update_id BETWEEN %s AND %s AND kind LIKE 'review-%%'",(self.uid,self.uid+4))),1)
+        rows=self.rows("SELECT update_id,kind,count(*) AS n FROM telegram_outbox WHERE kind LIKE 'review-%%' GROUP BY update_id,kind")
+        self.assertTrue(all(r['n']==1 for r in rows))
 
     def test_allowlist_and_empty_updates(self):
         for update in [self.update('x', chat=999), self.update('x', user=999),

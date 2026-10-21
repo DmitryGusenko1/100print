@@ -47,6 +47,7 @@ def route(task, registry):
     if intent=='unsupported': raise ValueError('Not a business task')
     deps=DepartmentRouter().route(task)
     level=ComplexityRouter().route(task,deps,intent)
+    if level=='L3' and len(deps)>4: raise ValueError('L3 supports at most four functions; use L4')
     if level=='L4': deps=list(DEPARTMENTS)
     sid=task.get('payload',{}).get('skill_id')
     if sid and (sid not in registry.skills or deps[0] not in registry.skills[sid]['allowed_departments']):
