@@ -253,3 +253,65 @@ check freshness. No GitHub comment is required for heartbeat visibility.
 Run isolated verification with `python3 -m unittest tests.test_progress -v`.
 Deploy worker changes by restarting only `ceo-github-worker.service` after its
 current executor has finished (restarting during an issue interrupts that run).
+
+## Live GitHub → VPS bridge (#8)
+
+Permanent bridge thread: **https://github.com/DmitryGusenko1/100print/issues/8**.
+`ceo-github-watcher.service` polls its comments every 10 seconds, including when
+this issue is closed. Only comments authored by `DmitryGusenko1` are accepted;
+the GitHub plugin must publish using that account. The repository and issue are
+hardcoded allowlists. Post a comment using this exact format (message may span lines):
+
+```text
+CHATGPT_IN
+session=voice-100print-2026-10-21
+message=Стоит ли снижать цену? Сравни альтернативы, риски и рекомендации.
+```
+
+Replies use:
+
+```text
+CHATGPT_OUT
+session=voice-100print-2026-10-21
+task_id=<UUID>
+result=<JSON with recommendation, alternatives with for/against, risks, critic, confidence>
+```
+
+Keep the same session across turns to resume a conversation. Every new comment
+is a new request; edits to processed comments are not re-executed. Inputs,
+context retrieval, task links, outputs and specialist/Critic/Council artifacts
+use the existing `ceo_orchestrator` project memory. Automatic L1–L4 routing and
+the queue worker are reused. Responses explicitly identify the provider and
+`demonstration`; the currently installed deterministic provider demonstrates
+the pipeline and **does not provide real AI business analysis**.
+
+`chatgpt_bridge_state` stores the last processed comment ID;
+`chatgpt_bridge_comments` durably links each input to its task and reply.
+Intake commits before advancing the cursor. Failed tasks receive an explicit
+failed result. Pending replies are retried independently of new input. A DB
+advisory lock prevents concurrent watchers. A stable HTML task marker recovers
+from a crash after GitHub POST but before committing delivery. GitHub does not
+provide an idempotency key for comments; ambiguous POST outcomes rely on the
+reply becoming visible on a subsequent paginated read before retry.
+
+The existing watcher unit is enabled at boot with `Restart=always`; a reference
+copy is in `config/systemd/ceo-github-watcher.service`. To deploy code changes,
+restart **only** that watcher (or signal its own MainPID to let systemd recover).
+No new credentials, public listener or custom MCP connection is needed.
+
+```sh
+.venv/bin/python -m unittest tests.test_github_bridge -v
+systemctl status ceo-github-watcher.service --no-pager
+systemctl is-enabled ceo-github-watcher.service
+```
+
+In ChatGPT, ask the connected GitHub plugin to add the `CHATGPT_IN` comment,
+then read new comments on issue #8 for the matching `CHATGPT_OUT` session.
+This is a polling transport: Voice must invoke the plugin to read the reply;
+it does not push audio or automatically wake ChatGPT.
+
+Verified live transport on 2026-10-21: [input](https://github.com/DmitryGusenko1/100print/issues/8#issuecomment-6315318611) → PostgreSQL
+→ L4 Council + Critic → [reply](https://github.com/DmitryGusenko1/100print/issues/8#issuecomment-6315337310).
+Task `d70e0ed3-f889-4c01-a035-e65547e468de` finished with provider `deterministic-v1`; this
+verifies transport and artifact persistence, not production AI reasoning.
+The watcher uses pagination compatible with the VPS version of `gh`.
