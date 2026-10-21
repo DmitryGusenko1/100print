@@ -271,3 +271,17 @@ vault/
 5. Добавить Telegram text ingestion.
 6. Протестировать end-to-end: Telegram -> DB -> ACK.
 7. После этого переходить к Router и AI-агентам.
+
+## VPS execution — 2026-10-21
+
+Actual checkout is `/opt/ceo-orchestrator/ai-business-brain`, as required by the
+execution boundary. Private PostgreSQL and API run without changing system services
+or other projects. See README for exact setup, checks and administrator handoff.
+Migrations, schema comparison, PostgreSQL-backed ingestion/ACK tests and unit
+validation passed. The live bot, installed systemd services and reboot test are
+outstanding. These acceptance gates must precede Router/LLM work.
+
+Revalidation found API/PostgreSQL stopped; both were restarted within the checkout.
+Fixed recursive pytest discovery by scoping collection to tests and guarding the
+PostgreSQL runner. Actual results: unit run 2 passed / 5 skipped; PostgreSQL run
+7 passed; ai_brain contains all 13 application tables and pgvector 0.6.0.

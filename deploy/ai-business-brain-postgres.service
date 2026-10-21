@@ -1,0 +1,22 @@
+[Unit]
+Description=AI Business Brain private PostgreSQL cluster
+After=network.target
+
+[Service]
+Type=simple
+User=ceoorch
+Group=ceoorch
+WorkingDirectory=/opt/ceo-orchestrator/ai-business-brain
+Environment=LD_LIBRARY_PATH=/opt/ceo-orchestrator/ai-business-brain/.runtime/postgres/usr/lib/x86_64-linux-gnu
+ExecStart=/opt/ceo-orchestrator/ai-business-brain/.runtime/postgres/usr/lib/postgresql/16/bin/postgres -D /opt/ceo-orchestrator/ai-business-brain/.runtime/pgdata
+Restart=on-failure
+RestartSec=5
+KillSignal=SIGINT
+TimeoutStopSec=60
+UMask=0077
+NoNewPrivileges=true
+StandardOutput=append:/opt/ceo-orchestrator/ai-business-brain/logs/postgres.log
+StandardError=inherit
+
+[Install]
+WantedBy=multi-user.target

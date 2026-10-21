@@ -1,14 +1,20 @@
 [Unit]
 Description=AI Business Brain Telegram Bot
-After=network.target postgresql.service
+After=network-online.target ai-business-brain-postgres.service ai-business-brain-api.service
+Requires=ai-business-brain-postgres.service ai-business-brain-api.service
 
 [Service]
 Type=simple
-User=ai-brain
-Group=ai-brain
-WorkingDirectory=/opt/ai-business-brain
-EnvironmentFile=/opt/ai-business-brain/.env
-ExecStart=/opt/ai-business-brain/.venv/bin/python -m app.bot.main
+User=ceoorch
+Group=ceoorch
+WorkingDirectory=/opt/ceo-orchestrator/ai-business-brain
+EnvironmentFile=/opt/ceo-orchestrator/ai-business-brain/.env
+ExecStart=/opt/ceo-orchestrator/ai-business-brain/.venv/bin/python -m app.bot.main
+StandardOutput=append:/opt/ceo-orchestrator/ai-business-brain/logs/bot.log
+StandardError=inherit
+UMask=0077
+NoNewPrivileges=true
+PrivateTmp=true
 Restart=always
 RestartSec=5
 

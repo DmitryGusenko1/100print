@@ -1,15 +1,16 @@
 import asyncio
-import logging
 
+import structlog
 from aiogram import Bot, Dispatcher, F, Router
 from aiogram.types import Message as TelegramMessage
 
 from app.config import settings
 from app.database.session import SessionLocal
+from app.logging_setup import configure_logging
 from app.services.ingestion import ingest_telegram_text
 
 router = Router()
-log = logging.getLogger(__name__)
+log = structlog.get_logger(__name__)
 
 
 @router.message(F.text)
@@ -26,16 +27,20 @@ async def handle_text(message: TelegramMessage) -> None:
             text=message.text,
         )
 
-    await message.answer(
-        f"ACK message_id={result.message_id} memory_id={result.memory_id}"
+    log.info(
+        "telegram_text_persisted",
+        message_id=result.message_id,
+        memory_id=result.memory_id,
+        duplicate=result.duplicate,
     )
+    await message.answer(f"ACK message_id={result.message_id} memory_id={result.memory_id}")
 
 
 async def run() -> None:
     if not settings.telegram_bot_token:
         raise RuntimeError("TELEGRAM_BOT_TOKEN is not configured")
 
-    logging.basicConfig(level=settings.log_level)
+    configure_logging()
     bot = Bot(token=settings.telegram_bot_token)
     dispatcher = Dispatcher()
     dispatcher.include_router(router)

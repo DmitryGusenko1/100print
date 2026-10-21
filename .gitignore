@@ -9,3 +9,6 @@ logs/
 data/
 *.log
 .DS_Store
+
+.runtime/
+*.egg-info/
