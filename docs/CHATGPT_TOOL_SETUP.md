@@ -77,10 +77,15 @@ CEO_TELEGRAM_TOKEN и CEO_TELEGRAM_ALLOWED_CHATS. Не запускайте дв
 
 ## Production AI
 
-По умолчанию CEO_BRAIN_MODE=deterministic: маршрутизация/Council работают, но ответы
-демонстрационные, confidence=0. Для реальных консультаций нужен настроенный
-production BrainProvider из #5; его контракт дополнен ANALYTICAL. Сбой production
-не заменяется демонстрационным ответом. API не требует OpenAI API key для памяти.
+По умолчанию `CEO_BRAIN_MODE=production`: общий worker использует
+`ProductionCodexProvider` (`production-codex-v1`, `gpt-6.1-sol`) под `ceoorch`.
+Bridge #8, API #6 и Telegram используют один provider. Контракты проверяются
+по JSON Schema; timeout/ошибка CLI/невалидный JSON завершают вызов ошибкой,
+без подмены демонстрационным ответом. В результате сохраняются provider/model,
+структурированные позиции отделов, Critic, конфликты и рекомендация.
+`deterministic` доступен только как явно выбранный test/mock provider.
+Для памяти API не нужен OpenAI API key; для анализа нужна действующая авторизация Codex.
+Подробности и ограничения: [README](../README.md#brain-and-codex-adapters).
 
 ## Проверка
 

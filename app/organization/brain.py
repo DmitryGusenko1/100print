@@ -13,6 +13,17 @@ class DeterministicBrainProvider(BrainProvider):
     identity = 'deterministic-v1'
 
     def respond(self, request):
+        result=self._respond(request)
+        if request['operation'] in ('department','analytical'):
+            result.update(position=result.get('proposal',result.get('decision')),
+                evidence=[], alternatives=['Collect evidence before committing'],
+                arguments_for=['Bounded experiment limits exposure'], arguments_against=['Demand unverified'],
+                objections=['Demonstration only'], recommendation=result.get('proposal',result.get('decision')),
+                change_conditions=['Verified business metrics'], confidence=0)
+        if request['operation']=='challenge': result['alternative_hypotheses']=['Demand may be price insensitive']
+        return result
+
+    def _respond(self, request):
         op=request['operation']; data=request['input']; dept=request['department']
         if op=='analytical':
             return {'question':data['question'],'evidence':[],

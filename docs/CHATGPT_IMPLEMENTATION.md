@@ -33,8 +33,8 @@ Telegram в ходе проверки не отправлялись.
 
 Нет подключённой сессии владельца ChatGPT; HTTPS/tunnel и OAuth gateway не настроены.
 MCP принимает Bearer token; поддержка этого способа авторизации в конкретном
-ChatGPT UI должна проверяться владельцем. Нет настроенного production brain:
-результаты deterministic явно демонстрационные. Нет токена/allowlist для запуска
+ChatGPT UI должна проверяться владельцем. Обновление #9: production brain теперь подключён через авторизованный Codex CLI;
+актуальное подтверждение E2E — в README. Исторические проверки ниже относятся к #6. Нет токена/allowlist для запуска
 нового Telegram polling transport; проверен адаптер и единая БД, а не live bot.
 Существующий ai-business-brain ACK bot и его историческая БД не переключались и
 не мигрировались. Автоматический перехват событий ChatGPT Projects платформа может
@@ -49,4 +49,4 @@ ChatGPT UI должна проверяться владельцем. Нет на
 повтор crash/restart на окончательном коде — PASS (15.961 s).
 Итого 25 уникальных тестов. pip check и git diff --check — PASS.
 Локальный authenticated health возвращает status=ok, project_id=100print,
-brain_mode=deterministic. Внешний end-to-end тест не выполнялся.
+brain_mode=deterministic на момент #6. Production E2E добавлен в #9 (см. README).

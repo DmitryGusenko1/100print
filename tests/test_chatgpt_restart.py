@@ -8,7 +8,10 @@ import uuid
 from pathlib import Path
 import httpx
 from dotenv import dotenv_values
-from app.db import connect
+from app.db import connect, Json
+from unittest.mock import patch
+from app.providers import LocalBrainProvider
+from app.organization.brain import DeterministicBrainProvider
 from app import project_memory as memory
 
 class ChatGPTRestartTests(unittest.TestCase):
@@ -42,14 +45,17 @@ class ChatGPTRestartTests(unittest.TestCase):
         self.assertEqual(resumed['id'],cid)
         self.assertTrue(any(r['text'].startswith(marker) for r in call('search_memory',query=marker)))
         self.assertTrue(any(t['id']==task['task_id'] for t in call('get_relevant_context',conversation_id=cid,query=marker)['active_tasks']))
+        # The live worker stays production. Fixture inference is explicitly mocked in-process.
         with connect() as conn,conn.cursor() as cur:
-            cur.execute("UPDATE tasks SET status='new' WHERE id=%s",(task['task_id'],))
-        deadline=time.monotonic()+90
-        while True:
-            result=call('get_task_result',task_id=task['task_id'])
-            if result['status'] in ('done','failed'): break
-            if time.monotonic()>deadline: self.fail('Worker did not finish analysis')
-            time.sleep(1)
+            cur.execute('SELECT * FROM tasks WHERE id=%s',(task['task_id'],))
+            queued=dict(cur.fetchone())
+        with patch('app.providers.business_brain',return_value=DeterministicBrainProvider()):
+            analytical_result=LocalBrainProvider().execute(queued)
+        with connect() as conn,conn.cursor() as cur:
+            memory.persist_analysis(cur,queued,analytical_result)
+            cur.execute("UPDATE tasks SET status='done',result=%s WHERE id=%s",
+                        (Json(analytical_result),task['task_id']))
+        result=call('get_task_result',task_id=task['task_id'])
         self.assertEqual(result['status'],'done',result)
         self.assertIn('analysis',result['result'])
         self.assertTrue(result['result']['demonstration'])

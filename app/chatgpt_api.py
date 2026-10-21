@@ -110,6 +110,6 @@ def invoke(method: str, data: Input):
 @app.get('/health')
 def health():
     with connect() as conn,conn.cursor() as cur: cur.execute('SELECT 1')
-    return {'status':'ok','project_id':'100print','brain_mode':os.getenv('CEO_BRAIN_MODE','deterministic')}
+    return {'status':'ok','project_id':'100print','brain_mode':os.getenv('CEO_BRAIN_MODE','production')}
 
 app.mount('/mcp',mcp.streamable_http_app())

@@ -147,7 +147,7 @@ class OrganizationTests(unittest.TestCase):
 
     def test_production_adapter_success_and_fail_closed(self):
         class Runner:
-            def run(self,*args,**kwargs): return {'ok':True,'stdout':json.dumps({'challenges':[],'evidence_gaps':[],'blocking':False})}
+            def run(self,*args,**kwargs): return {'ok':True,'stdout':json.dumps({'challenges':[],'evidence_gaps':[],'blocking':False,'alternative_hypotheses':[]})}
         adapter=ProductionBrainProvider(Runner(),'/isolated/workspace','production-test')
         self.assertFalse(adapter.respond({'output_schema':c.CHALLENGE})['blocking'])
         with patch.object(adapter.runner,'run',return_value={'ok':False}):

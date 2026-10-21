@@ -20,6 +20,9 @@ class LocalBrainProvider(BrainProvider):
             from app.organization.store import PostgresStore
             org=Organization(business_brain(),PostgresStore())
             result=org.execute(task)
+            result['provider_metadata']=getattr(org.provider,'metadata',{'provider':org.provider.identity})
+            result['model']=result['provider_metadata'].get('model')
+            result['demonstration']=org.provider.identity.startswith('deterministic')
             if task.get('payload',{}).get('analytical_protocol'):
                 from app.organization import contracts as c
                 if 'critic_challenge' not in result:
@@ -38,11 +41,11 @@ class LocalBrainProvider(BrainProvider):
 def business_brain():
     """An explicit mode prevents a failed production run becoming mock advice."""
     import os
-    from app.organization.brain import DeterministicBrainProvider, ProductionBrainProvider
-    mode=os.getenv('CEO_BRAIN_MODE','deterministic')
+    from app.organization.brain import DeterministicBrainProvider
+    mode=os.getenv('CEO_BRAIN_MODE','production')
     if mode=='deterministic': return DeterministicBrainProvider()
     if mode=='production':
-        from app.codex_runner import CodexRunner
-        return ProductionBrainProvider(CodexRunner(os.environ['CEO_BRAIN_EXECUTABLE']),
-            os.environ['CEO_BRAIN_WORKDIR'],os.environ['CEO_BRAIN_IDENTITY'])
+        from app.organization.codex import ProductionCodexProvider
+        return ProductionCodexProvider(os.getenv('CEO_BRAIN_WORKDIR','/opt/ceo-orchestrator'),
+            os.getenv('CEO_BRAIN_MODEL','gpt-6.1-sol'), float(os.getenv('CEO_BRAIN_TIMEOUT','180')))
     raise ValueError('Unknown CEO_BRAIN_MODE')

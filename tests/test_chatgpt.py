@@ -4,11 +4,13 @@ import os
 import time
 import unittest
 import uuid
+from unittest.mock import patch
 from fastapi.testclient import TestClient
 from app.chatgpt_api import app
 from app.db import connect, Json
 from app import project_memory as memory
 from app.providers import LocalBrainProvider
+from app.organization.brain import DeterministicBrainProvider
 from app.telegram_memory import receive, record_reply
 
 class ChatGPTTests(unittest.TestCase):
@@ -84,7 +86,8 @@ class ChatGPTTests(unittest.TestCase):
                 self.assertEqual(set(created['departments']),departments)
                 with connect() as conn,conn.cursor() as cur:
                     cur.execute('SELECT * FROM tasks WHERE id=%s',(tid,));task=dict(cur.fetchone())
-                result=LocalBrainProvider().execute(task)
+                with patch('app.providers.business_brain',return_value=DeterministicBrainProvider()):
+                    result=LocalBrainProvider().execute(task)
                 self.assertTrue(result['demonstration'])
                 self.assertIn('change_conditions',result['analysis'])
                 self.assertTrue(result['critic_challenge'])

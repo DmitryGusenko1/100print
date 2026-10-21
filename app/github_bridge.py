@@ -80,6 +80,12 @@ def brief(row):
     result = row['result'] or {}
     analysis = result.get('analysis', {})
     return {'status': row['status'], 'provider': result.get('provider'),
+            'model':result.get('model'), 'provider_metadata':result.get('provider_metadata'),
+            'positions':[{k:v for k,v in p.items() if k!='findings'} for p in result.get('positions',[])],
+            'structured_recommendation':{k:analysis.get(k) for k in ('position','recommendation',
+                'arguments_for','arguments_against','objections','evidence','assumptions','change_conditions')},
+            'conflicts':result.get('conflicts'),
+            'synthesis':result.get('synthesis'),
             'demonstration': result.get('demonstration'), 'routing': result.get('routing'),
             'recommendation': analysis.get('decision'), 'alternatives': analysis.get('hypotheses', []),
             'risks': analysis.get('risks', []), 'critic': result.get('critic_challenge'),
@@ -87,11 +93,12 @@ def brief(row):
             'requires_decision': result.get('requires_decision'), 'error': row['error']}
 
 
-def deliver(existing):
+def deliver(existing, test_only=False):
     with connect() as conn, conn.cursor() as cur:
         cur.execute('''SELECT b.*,t.status,t.result,t.error FROM chatgpt_bridge_comments b
                        JOIN tasks t ON t.id=b.task_id WHERE b.delivered_at IS NULL
-                       AND t.status IN ('done','failed') ORDER BY b.comment_id''')
+                       AND t.status IN ('done','failed') AND (b.comment_id<0)=%s
+                       ORDER BY b.comment_id''', (test_only,))
         rows = cur.fetchall()
     for row in rows:
         marker = f'<!-- ceo-chatgpt-result:{row["task_id"]} -->'
@@ -101,6 +108,9 @@ def deliver(existing):
         encoded = json.dumps(summary, ensure_ascii=False, separators=(',', ':'))
         if len(encoded) > 45000:
             summary = {'status': row['status'], 'truncated': True,
+                       'provider':summary['provider'], 'model':summary['model'],
+                       'demonstration':summary['demonstration'], 'confidence':summary['confidence'],
+                       'provider_metadata':summary['provider_metadata'],
                        'recommendation': str(summary['recommendation'])[:4000],
                        'detail': 'Full result and artifacts in project memory by task_id'}
             encoded = json.dumps(summary, ensure_ascii=False)

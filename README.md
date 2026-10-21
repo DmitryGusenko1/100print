@@ -2,7 +2,7 @@
 
 Isolated durable worker and AI organization for GitHub issues #3 and #5. Root: `/opt/ceo-orchestrator`.
 Runs as Linux user `ceoorch` using its own `.venv`, `.env`, database, logs and data.
-No HTTP server, Redis, nginx changes, external API or paid provider required.
+The queue runs locally; production business analysis requires the authenticated Codex service.
 
 ## Running installation
 
@@ -63,21 +63,45 @@ are verified without interrupting other projects.
 
 ## Brain and Codex adapters
 
-`app/providers.py` defines `BrainProvider` and a local deterministic implementation.
-A real provider can replace it without coupling the queue to an API or CLI.
-`app/codex_runner.py` is a separate, currently unconnected process adapter. It
-requires an executable installed inside this project, an explicit timeout (max 300s),
-captures stdout/stderr (returned output capped at 1 MiB each), returns a JSON wrapper,
-and logs start/completion. It invokes the installed executable with prompt on stdin;
-a CLI-specific executable wrapper can supply provider flags later.
+Business inference defaults to `ProductionCodexProvider` (`production-codex-v1`),
+using the installed `/usr/bin/codex` and only ceoorch's existing authentication.
+All API, GitHub bridge and Telegram analysis tasks use this same queue provider.
+The old offline `CodexRunner` remains a separate legacy adapter and is not used
+for production inference.
 
-By default only `jobs/workspaces/**` is accepted. Paths are resolved before checking,
-including symlinks. Additional workdirs require explicit administrator whitelist
-configuration in the adapter constructor. `bubblewrap` provides an offline mount
-namespace exposing only the selected workdir, executable, and read-only system runtime;
-project secrets, other projects and host home directories are absent. This VPS currently rejects creation of user namespaces (`Permission denied`).
-Failure to create the sandbox fails the run; there is no unsandboxed fallback. Provider authentication
-and online connectivity must be designed explicitly before enabling a real provider.
+Codex runs only as `ceoorch`, with exact resolved workdir allowlisting for
+`/opt/ceo-orchestrator` and its owned `ai-business-brain` directory. The optional
+`/opt/ai-business-brain` alias is accepted only when resolving into this project.
+Nested directories, foreign directories and symlink escapes are rejected.
+Only PATH, HOME, CODEX_HOME and LANG enter the subprocess environment; application,
+DB and Telegram secrets are not inherited. User config, rules, hooks, plugins,
+apps, shell tools, images, browser, memory and agent tools are disabled. Project
+instructions are disabled. Inference uses supplied context only, with no tools,
+read-only sandbox policy, no approval prompts and no persistent CLI sessions.
+Configuration flags follow the [official Codex reference](https://developers.openai.com/codex/config-reference).
+
+`CEO_BRAIN_MODE=production` is the default. Optional project `.env` settings:
+`CEO_BRAIN_MODEL=gpt-6.1-sol`, `CEO_BRAIN_WORKDIR=/opt/ceo-orchestrator`,
+`CEO_BRAIN_TIMEOUT=180` (maximum 300 seconds per call). Four concurrent inference
+calls maximum; independent specialist/department outputs retain stable ordering
+and individual durable checkpoints. No CLI wrapper or new API key is required.
+Timeout kills the process group. stdout/stderr are captured with a 1 MiB read
+limit each and discarded; only validated structured final artifacts are stored.
+Nonzero exit, timeout, absent/oversized output, invalid JSON or schema mismatch
+fails closed. There is no mock fallback. CLI credentials and subscription/network
+availability remain operational dependencies.
+
+Task results and checkpoint metadata include provider, model, protocol and
+`demonstration=false`; checkpoint fingerprints include model metadata to prevent
+mixing models after recovery. Departmental positions and analytical briefs include
+position, evidence, assumptions, alternatives, arguments for/against, risks,
+confidence, objections, recommendation and change conditions. Critic adds challenges,
+evidence gaps, blocking and alternative hypotheses. Council returns independent
+positions, conflict map, critique and synthesis. Only structured analytical artifacts
+are persisted; no hidden chain-of-thought is retained.
+
+`CEO_BRAIN_MODE=deterministic` is an explicit **test/mock** mode. Tests inject the
+mock provider directly; never configure this mode on the live worker.
 
 ## Reproduce a fresh installation
 
@@ -178,15 +202,10 @@ commands. Intake deduplicates by repository/issue; results are posted back with 
 stable comment marker and retried after restart. Completed issues are not rerun;
 create a new issue for a new analysis. `CEO_GITHUB_AI_ENABLED=0` disables polling.
 
-The default `CEO_BRAIN_MODE=deterministic` is explicitly a workflow demonstration,
-with unverified assumptions and blocking evidence gaps. It is not live AI advice.
-`production` uses the separate `ProductionBrainProvider` strict JSON adapter,
-configured with `CEO_BRAIN_EXECUTABLE`, `CEO_BRAIN_WORKDIR` and
-`CEO_BRAIN_IDENTITY`. The executable is an installed project-local wrapper that
-accepts a JSON request on stdin and returns a schema-valid JSON object on stdout.
-The existing offline sandbox restrictions apply; unavailable sandbox/credentials
-fail explicitly without mock fallback. Another provider can implement `respond`
-without changing any role, skill, router or council code.
+Production is configured as described above. `DeterministicBrainProvider` is
+retained for explicit mock tests only; it returns zero confidence and labelled
+demonstration results. Other providers can implement `respond` without changing
+roles, skills, routing or council logic.
 
 ```bash
 .venv/bin/python -m unittest tests.test_organization -v
@@ -211,8 +230,8 @@ The existing worker supervises the localhost API on port 8096 when
 See [project instructions](docs/CHATGPT_PROJECT_INSTRUCTIONS.md) and
 [tool setup, transport and production limitations](docs/CHATGPT_TOOL_SETUP.md).
 ChatGPT account connection, trusted HTTPS/OAuth gateway and Telegram credentials
-are deployment prerequisites. The default deterministic provider is a labelled
-workflow demonstration; it must not be presented as production business advice.
+are deployment prerequisites. Analysis uses the shared production Codex provider. Telegram delivery still requires
+its own token and explicit chat allowlist.
 
 ### GitHub worker progress (issue #7)
 
@@ -282,8 +301,8 @@ is a new request; edits to processed comments are not re-executed. Inputs,
 context retrieval, task links, outputs and specialist/Critic/Council artifacts
 use the existing `ceo_orchestrator` project memory. Automatic L1–L4 routing and
 the queue worker are reused. Responses explicitly identify the provider and
-`demonstration`; the currently installed deterministic provider demonstrates
-the pipeline and **does not provide real AI business analysis**.
+`demonstration`; the live production Codex provider returns structured business analysis.
+Missing business metrics remain explicit evidence gaps, rather than invented facts.
 
 `chatgpt_bridge_state` stores the last processed comment ID;
 `chatgpt_bridge_comments` durably links each input to its task and reply.
@@ -315,3 +334,39 @@ Verified live transport on 2026-10-21: [input](https://github.com/DmitryGusenko1
 Task `d70e0ed3-f889-4c01-a035-e65547e468de` finished with provider `deterministic-v1`; this
 verifies transport and artifact persistence, not production AI reasoning.
 The watcher uses pagination compatible with the VPS version of `gh`.
+
+### Production verification (#9, 2026-10-21)
+
+Live [production input](https://github.com/DmitryGusenko1/100print/issues/8#issuecomment-6315465409)
+→ task `14c7501c-c251-4b16-ba92-e155fada3593` →
+[production CHATGPT_OUT](https://github.com/DmitryGusenko1/100print/issues/8#issuecomment-6315696202).
+Provider `production-codex-v1`, model `gpt-6.1-sol`, `demonstration=false`, confidence
+0.85. Marketing, Sales, Finance and Critic produced independent initial positions;
+55 production calls yielded 73 durable checkpoints and 66 project-memory artifacts.
+Five checkpoints survived an intentional own-worker crash unchanged; the task
+resumed and completed on attempt 2. The actual authenticated localhost #6 API
+returned the identical persisted result.
+
+The recommendation preserves baseline prices pending an evidence-based controlled
+test. It distinguishes the +17.65% volume required to preserve revenue after a
+15% discount from the contribution-profit threshold: at an **assumed** 40% initial
+contribution margin, +60% volume is needed before additional costs. Growth versus
+margin/cash is recorded as a tradeoff; the conflict map is honestly empty because
+the departments' recommendations align. Critic challenges and alternative
+hypotheses remain in the result; shared recommendations do not remove evidence gaps.
+
+Recheck persisted production evidence without creating another inference task:
+
+```sh
+.venv/bin/python scripts/verify_production.py
+.venv/bin/python -m unittest discover -s tests -t . -q
+```
+
+The test suite explicitly injects mocks for fixture analysis and tests the live
+queue/restarts separately. Production verification uses real Codex outputs.
+Limitations: no verified business cost/demand metrics were supplied; confidence
+is a model assessment, not measured forecast accuracy. Department independence
+means separate context-isolated initial calls using the same model, not model
+diversity. CLI latency, authorization and upstream availability affect execution.
+Telegram's shared-provider path is tested, but live Telegram delivery remains
+unverified because the project's token and chat allowlist are absent.

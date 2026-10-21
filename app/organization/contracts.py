@@ -40,3 +40,12 @@ ANALYTICAL = obj({'question': TEXT, 'evidence': TEXTS, 'assumptions': TEXTS,
     'counterarguments':TEXTS,'contradictions':TEXTS,'risks':TEXTS,
     'confidence':{'type':'number','minimum':0,'maximum':1}, 'decision':TEXT,
     'change_conditions':TEXTS})
+
+# Explicit production analytical artifact; old keys retained for API consumers.
+BRIEF_FIELDS = {'position':TEXT, 'evidence':TEXTS, 'assumptions':TEXTS,
+    'alternatives':TEXTS, 'arguments_for':TEXTS, 'arguments_against':TEXTS,
+    'risks':TEXTS, 'confidence':{'type':'number','minimum':0,'maximum':1},
+    'objections':TEXTS, 'recommendation':TEXT, 'change_conditions':TEXTS}
+POSITION = obj({**POSITION['properties'], **BRIEF_FIELDS})
+ANALYTICAL = obj({**ANALYTICAL['properties'], **BRIEF_FIELDS})
+CHALLENGE = obj({**CHALLENGE['properties'], 'alternative_hypotheses':TEXTS})

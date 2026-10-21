@@ -3,6 +3,7 @@ import uuid
 from unittest.mock import patch
 from app import github_bridge as bridge
 from app.db import connect
+from app.organization.brain import DeterministicBrainProvider
 
 
 class BridgeTests(unittest.TestCase):
@@ -29,8 +30,15 @@ class BridgeTests(unittest.TestCase):
         # Negative IDs cannot collide with actual GitHub IDs.
         comment = {'id': -int(uuid.uuid4().int % 10**15), 'user': {'login': bridge.OWNER},
                    'body': 'CHATGPT_IN\nsession=test-'+uuid.uuid4().hex+'\nmessage=Проверь метатеги'}
-        bridge.ingest(comment)
-        bridge.ingest(comment)
+        create_task=bridge.memory.create_task
+        def paused_task(cur,*args,**kwargs):
+            result=create_task(cur,*args,**kwargs)
+            # Pause inside intake's transaction, before the live production worker can claim it.
+            cur.execute("UPDATE tasks SET status='waiting' WHERE id=%s",(result['task_id'],))
+            return result
+        with patch.object(bridge.memory,'create_task',side_effect=paused_task):
+            bridge.ingest(comment)
+            bridge.ingest(comment)
         with connect() as conn, conn.cursor() as cur:
             cur.execute('SELECT * FROM chatgpt_bridge_comments WHERE comment_id=%s', (comment['id'],))
             row = cur.fetchone()
@@ -44,10 +52,13 @@ class BridgeTests(unittest.TestCase):
         with connect() as conn, conn.cursor() as cur:
             cur.execute('SELECT * FROM tasks WHERE id=%s', (tid,))
             task = dict(cur.fetchone())
-        result = LocalBrainProvider().execute(task)
+        with patch('app.providers.business_brain',return_value=DeterministicBrainProvider()):
+            result = LocalBrainProvider().execute(task)
         with connect() as conn, conn.cursor() as cur:
             memory.persist_analysis(cur, task, result)
             cur.execute("UPDATE tasks SET status='done',result=%s WHERE id=%s", (Json(result), tid))
+        with patch.object(bridge,'api',side_effect=AssertionError('synthetic delivery escaped test')):
+            bridge.deliver([])
         posted = []
         def post(path, body):
             item = {'id': comment['id']-1, 'body': body, 'user': {'login': bridge.OWNER}}
@@ -55,11 +66,11 @@ class BridgeTests(unittest.TestCase):
             return item
         with patch.object(bridge, 'api', side_effect=post), patch.object(bridge.memory, 'append', side_effect=RuntimeError('crash after POST')):
             with self.assertRaises(RuntimeError):
-                bridge.deliver([])
+                bridge.deliver([], test_only=True)
         self.assertEqual(len(posted), 1)
         # Fresh delivery recovers the reply marker and never sends a second POST.
         with patch.object(bridge, 'api', side_effect=AssertionError('duplicate POST')):
-            bridge.deliver(posted)
+            bridge.deliver(posted, test_only=True)
         with connect() as conn, conn.cursor() as cur:
             cur.execute('SELECT delivered_at FROM chatgpt_bridge_comments WHERE comment_id=%s', (comment['id'],))
             self.assertIsNotNone(cur.fetchone()['delivered_at'])

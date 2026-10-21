@@ -1,3 +1,4 @@
+from concurrent.futures import ThreadPoolExecutor
 from . import contracts as c
 from .registry import Registry
 from .routing import route
@@ -17,9 +18,11 @@ class DepartmentHead:
         org.checkpoint(prefix+'/accepted-and-decomposed',decomposition,lambda:decomposition)
         for rid in self.definition['specialists']:
             role=org.registry.roles[rid]
-            for sid in role['skills']:
-                findings.append(org.skill(context,sid,rid,prefix+'/specialist/'+sid))
-                assignments.append({'agent':rid,'skill_id':sid})
+            assignments.extend({'agent':rid,'skill_id':sid} for sid in role['skills'])
+        def run_assignment(assignment):
+            sid=assignment['skill_id']
+            return org.skill(context,sid,assignment['agent'],prefix+'/specialist/'+sid)
+        findings=org.independent(run_assignment,assignments)
         result=org.ask(prefix+'/result','department',self.department,self.definition['head'],
                        {'context':context,'findings':findings,'inbound':inbound or []},c.POSITION,
                        instructions='Accept context, synthesize specialist findings and inbound departmental results. State constraints, assumptions and risks; identify incompatible goals.')
@@ -29,6 +32,13 @@ class Organization:
     def __init__(self, provider, store, registry=None):
         self.provider=provider; self.store=store; self.registry=registry or Registry()
 
+    def independent(self, callback, inputs):
+        # Production calls are bounded; map preserves order and each checkpoint remains durable.
+        workers=getattr(self.provider,'max_parallel',1)
+        if workers==1: return [callback(item) for item in inputs]
+        with ThreadPoolExecutor(max_workers=workers) as pool:
+            return list(pool.map(callback,inputs))
+
     def checkpoint(self, key, request, callback, schema=None):
         digest=fingerprint(request)
         cached=self.store.get(self.task_id,key,digest)
@@ -37,12 +47,13 @@ class Organization:
         result=callback()
         if schema: c.validate(schema,result)
         self.store.put(self.task_id,key,digest,result,{'provider':self.provider.identity,
-            'role':request.get('role'),'operation':request.get('operation',key)})
+            **getattr(self.provider,'metadata',{}), 'role':request.get('role'),'operation':request.get('operation',key)})
         return result
 
     def ask(self,key,operation,department,role,data,schema,**extra):
         request={'operation':operation,'department':department,'role':role,'input':data,
-                 'output_schema':schema,'provider':self.provider.identity,**extra}
+                 'output_schema':schema,'provider':self.provider.identity,
+                 'provider_metadata':getattr(self.provider,'metadata',{}),**extra}
         return self.checkpoint(key,request,lambda:self.provider.respond(request),schema)
 
     def skill(self,context,sid,rid,key):
@@ -71,7 +82,7 @@ class Organization:
             'criteria':p.get('criteria',['Evidence-supported decision']), 'facts':p.get('facts',[]),
             'assumptions':p.get('assumptions',[])})
         manifest={'routing':routing,'context':context,'provider':self.provider.identity,
-                  'catalog':fingerprint({'skills':self.registry.skills,'roles':self.registry.roles,'departments':self.registry.departments})}
+                  'provider_metadata':getattr(self.provider,'metadata',{}), 'catalog':fingerprint({'skills':self.registry.skills,'roles':self.registry.roles,'departments':self.registry.departments})}
         self.checkpoint('manifest',manifest,lambda:manifest)
         level=routing['level'];deps=routing['departments']
         if level=='L1':
@@ -84,7 +95,7 @@ class Organization:
             return {'routing':routing,'provider':self.provider.identity,**result}
         self.checkpoint('round/0',context,lambda:context,c.CONTEXT)
         # All initial positions see the same context and never each other's outputs.
-        positions=[DepartmentHead(self,d).run(context,'round/1/'+d)['departmental_result'] for d in deps]
+        positions=self.independent(lambda d: DepartmentHead(self,d).run(context,'round/1/'+d)['departmental_result'],deps)
         self.checkpoint('round/1',{'positions':positions},lambda:{'positions':positions})
         reviews=[]
         if level=='L4':
@@ -132,5 +143,6 @@ class Organization:
              'resolutions':resolutions,'agreements':agreements,'challenge':challenge},c.FINAL,
             instructions='Synthesize a decision against round 0 criteria. Address every Critic challenge and unresolved conflict in risks/actions. Distinguish provisional conclusions; do not authorize execution. Include owners, relative deadlines, KPI and next decision point.')
         return {'routing':routing,'provider':self.provider.identity,'final':final,'conflicts':conflicts,
+                'positions':positions,'critique':reviews,'synthesis':final,
                 'resolutions':resolutions,'agreements':agreements,'critic_challenge':challenge,
                 'requires_decision':challenge['blocking'] or any(r['unresolved'] for r in resolutions) or any(a['review']['challenges'] for a in agreements)}
