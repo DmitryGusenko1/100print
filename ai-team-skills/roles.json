@@ -1,0 +1,147 @@
+{
+  "schema_version": 1,
+  "owner": "Дмитрий Гусенко",
+  "status": "instructions-only-not-runtime-installed",
+  "roles": [
+    {
+      "name": "CEO",
+      "skills": [
+        "coordinate-team"
+      ],
+      "reports_to": "owner"
+    },
+    {
+      "name": "Административный руководитель",
+      "skills": [
+        "admin-decisions"
+      ],
+      "reports_to": "owner"
+    },
+    {
+      "name": "Секретарь-аналитик",
+      "skills": [
+        "admin-decisions"
+      ],
+      "reports_to": "owner"
+    },
+    {
+      "name": "HR-руководитель",
+      "skills": [
+        "develop-ai-staff"
+      ],
+      "reports_to": "department-head-or-ceo"
+    },
+    {
+      "name": "Специалист по развитию AI-сотрудников",
+      "skills": [
+        "develop-ai-staff"
+      ],
+      "reports_to": "department-head-or-ceo"
+    },
+    {
+      "name": "Коммерческий руководитель",
+      "skills": [
+        "research-commercial"
+      ],
+      "reports_to": "department-head-or-ceo"
+    },
+    {
+      "name": "Исследователь рынка",
+      "skills": [
+        "research-commercial"
+      ],
+      "reports_to": "department-head-or-ceo"
+    },
+    {
+      "name": "Специалист по продажам",
+      "skills": [
+        "research-commercial"
+      ],
+      "reports_to": "department-head-or-ceo"
+    },
+    {
+      "name": "Руководитель учёта",
+      "skills": [
+        "finance-records"
+      ],
+      "reports_to": "department-head-or-ceo"
+    },
+    {
+      "name": "Аналитик затрат",
+      "skills": [
+        "finance-records"
+      ],
+      "reports_to": "department-head-or-ceo"
+    },
+    {
+      "name": "Руководитель производства",
+      "skills": [
+        "produce-print-orders"
+      ],
+      "reports_to": "department-head-or-ceo"
+    },
+    {
+      "name": "Диспетчер заказов",
+      "skills": [
+        "produce-print-orders"
+      ],
+      "reports_to": "department-head-or-ceo"
+    },
+    {
+      "name": "Разработчик Codex",
+      "skills": [
+        "develop-site"
+      ],
+      "reports_to": "department-head-or-ceo"
+    },
+    {
+      "name": "Специалист эксплуатации",
+      "skills": [
+        "develop-site"
+      ],
+      "reports_to": "department-head-or-ceo"
+    },
+    {
+      "name": "Руководитель качества",
+      "skills": [
+        "verify-quality"
+      ],
+      "reports_to": "department-head-or-ceo"
+    },
+    {
+      "name": "Тестировщик сайта",
+      "skills": [
+        "verify-quality"
+      ],
+      "reports_to": "department-head-or-ceo"
+    },
+    {
+      "name": "Контролёр печатных макетов",
+      "skills": [
+        "verify-quality"
+      ],
+      "reports_to": "department-head-or-ceo"
+    },
+    {
+      "name": "PR-руководитель",
+      "skills": [
+        "communicate-brand"
+      ],
+      "reports_to": "department-head-or-ceo"
+    },
+    {
+      "name": "Контент-редактор",
+      "skills": [
+        "communicate-brand"
+      ],
+      "reports_to": "department-head-or-ceo"
+    },
+    {
+      "name": "SEO-специалист",
+      "skills": [
+        "communicate-brand"
+      ],
+      "reports_to": "department-head-or-ceo"
+    }
+  ]
+}
