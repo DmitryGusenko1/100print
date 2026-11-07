@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-07T18:02:02.177443+00:00",
-  "backup": "backups/20261107T180152Z",
+  "timestamp": "2026-11-07T18:13:24.495425+00:00",
+  "backup": "backups/20261107T181315Z",
   "restored_database": "ceo_orchestrator",
   "temporary_port": 55439,
   "public_tables": 301,

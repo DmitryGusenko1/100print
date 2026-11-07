@@ -3,6 +3,23 @@
 Status: **WAITING_USER**, installation partially verified. See
 [acceptance report](../docs/ai-team/acceptance-2026-11-07.md).
 
+Current update 18:14 UTC: administrator bootstrap completed; Paperclip/Postgres
+are active and the ceoorch user bus is available. Historical initial-install
+limitations below are superseded by the acceptance report. Telegram gateway is
+enabled but safely gated/inactive. Hermes requires separate OAuth: run
+`bash /opt/ceo-orchestrator/ai-team/ops/authorize-hermes.sh` over SSH and finish
+sign-in. It preserves existing Codex authorization and writes the worker's
+readiness marker only after successful credential verification.
+
+`ops/prepare-telegram.py` runs with `runtime/hermes-venv/bin/python`; it reads
+only the project Telegram file, validates the private owner mapping, writes
+native isolated Hermes secrets, installs local skills and checks getMe/webhook.
+It never starts polling or sends messages. Gateway handoff must follow successful
+bounded inference; require old bot inactive before starting the new consumer.
+Use XDG_RUNTIME_DIR=/run/user/999 and
+DBUS_SESSION_BUS_ADDRESS=unix:path=/run/user/999/bus for user systemctl.
+Do not create the inference marker based only on OAuth or successful CLI exit.
+
 All application code downloads, dependencies, runtime data, credentials, backups,
 and private logs are inside this directory. Only `ops/`, sanitized `evidence/`,
 and the organization manifest are tracked. The executor result and readiness

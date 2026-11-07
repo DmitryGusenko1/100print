@@ -1,0 +1,21 @@
+[Unit]
+Description=100print Hermes owner Telegram gateway
+After=network-online.target
+Wants=network-online.target
+ConditionPathExists=/opt/ceo-orchestrator/ai-team/runtime/hermes-inference-verified
+ConditionPathExists=/opt/ceo-orchestrator/data/ai-team-telegram-handover-done
+
+[Service]
+Type=simple
+WorkingDirectory=/opt/ceo-orchestrator/ai-team/runtime/sandbox
+Environment=HERMES_HOME=/opt/ceo-orchestrator/ai-team/runtime/hermes-home
+Environment=PATH=/opt/ceo-orchestrator/ai-team/runtime/hermes-venv/bin:/usr/local/bin:/usr/bin:/bin
+ExecStart=/opt/ceo-orchestrator/ai-team/runtime/hermes-venv/bin/hermes gateway run
+Restart=on-failure
+RestartSec=10
+UMask=0077
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=default.target

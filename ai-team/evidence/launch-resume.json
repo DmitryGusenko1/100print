@@ -1,0 +1,31 @@
+{
+  "request_id": "e85c07cf-d641-44f1-b5fa-f85b6fb7fa6d",
+  "status": "BLOCKED",
+  "public_reason": "Hermes v0.23.0 requires its own OAuth session; bounded inference failed with missing Codex credentials. Existing Codex login is preserved. Telegram handoff has not been requested.",
+  "model_inference": false,
+  "gateway_active": false,
+  "owner_allowlist": false,
+  "outbound_owner_message": false,
+  "checked_at": "2026-11-07T18:15:20.166871+00:00",
+  "system_services": {
+    "ceo-ai-team-paperclip": "active",
+    "ceo-ai-team-postgres": "active",
+    "ceo-telegram-bot": "active; unchanged PID 3815479"
+  },
+  "user_manager": "running",
+  "gateway_unit": "enabled; inactive; ConditionResult=no",
+  "inbound_e2e": false,
+  "owner_plan_approval": "draft; not received",
+  "paperclip_owner": "bootstrap_pending",
+  "skills_discovered": [
+    "admin-decisions",
+    "communicate-brand",
+    "coordinate-team",
+    "develop-ai-staff",
+    "develop-site",
+    "finance-records",
+    "produce-print-orders",
+    "research-commercial",
+    "verify-quality"
+  ]
+}

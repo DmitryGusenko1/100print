@@ -1,5 +1,65 @@
 # Issue 18 acceptance — 2026-11-07
 
+## Resumption at 18:14 UTC — current state supersedes initial blockers below
+
+**WAITING_USER, not DONE.** Expanded issue body fetched again. New LIVE_PREFLIGHT:
+https://github.com/DmitryGusenko1/100print/issues/18#issuecomment-6711147766.
+The administrative bootstrap has now supplied launch request
+`e85c07cf-d641-44f1-b5fa-f85b6fb7fa6d`; user manager is running at
+`/run/user/999/bus`. Paperclip and PostgreSQL system units are **VERIFIED active**,
+Restart=on-failure, PIDs 2610196 / 2610195 after administrative installation.
+Authenticated/private health is ok, owner remains `bootstrap_pending`.
+
+Hermes Telegram unit is **CREATED**, enabled in the ceoorch user manager,
+**not CONNECTED or VERIFIED**: inactive, ConditionResult=no. Conditions require
+both successful inference evidence and the controlled old-bot handoff. No handoff
+request was made. Old `ceo-telegram-bot` remains active, same PID 3815479.
+Rollback after a future handoff: stop the new user gateway first, then an
+administrator starts `ceo-telegram-bot`; never run both consumers together.
+
+Credentials were taken only from project `config/telegram.env`; the configured
+single positive private chat id was validated and mapped to the native
+`TELEGRAM_ALLOWED_USERS`. No group id or guessed user was authorized.
+Native `TELEGRAM_BOT_TOKEN` and `TELEGRAM_ALLOWED_USERS` were verified in pinned
+gateway source. Secret file is isolated and mode 0600. `getMe` and
+`getWebhookInfo` succeeded; webhook absent. No polling or outbound send was
+attempted. **Inbound owner E2E and owner approval remain unverified.**
+
+Two bounded Hermes launches failed before model inference. The configured
+native `codex_app_server` attempt returned: `No Codex credentials stored` and
+requested `hermes auth add openai-codex --type oauth`. Existing `codex login status`
+still reports ChatGPT login; no credentials were copied or refreshed by Hermes.
+Pinned Hermes deliberately stores its OAuth independently to avoid competing
+refresh-token rotation. No model or budget has been assigned to the team.
+
+**One necessary action:** over SSH run
+`bash /opt/ceo-orchestrator/ai-team/ops/authorize-hermes.sh` and complete the
+offered OpenAI sign-in. The script writes `data/ai-team-hermes-auth-ready` only
+after read-only credential verification. Executor readiness uses that marker;
+subsequent inference, gateway handoff and owner dialogue are still required.
+Bootstrap received an atomic **BLOCKED**, with matching request id and all four
+technical readiness booleans false. No fictitious VERIFIED receipt was produced.
+
+The 20 role definitions and nine project instructions from main revision
+`0d74a4e` were staged under `ai-team/roles` and `ai-team/skills`; native
+`hermes skills list` detects all nine as enabled/local in the isolated home.
+This verifies discovery, not employee execution or Paperclip profiles.
+The overnight plan remains [DRAFT](../../ai-team/roles/overnight-draft.md):
+website client journey and confirmed test-environment fixes, plus three competitors.
+Website URL is still unknown; no guessed endpoint or scheduled work was launched.
+
+Validation: two owner mapping tests (including five refusal cases) pass;
+shell syntax and Python compilation pass. User manager loads the gateway unit
+and refuses to start it while conditions are unmet. A fresh backup and independent
+restore at 18:13:24 UTC passed: 301 tables, company/agent/project/issue/run/approval
+counts all zero, one invite, config/key match. This is pre-owner continuity only.
+Evidence: [launch](../../ai-team/evidence/launch-resume.json),
+[Telegram preparation](../../ai-team/evidence/telegram-preparation.json),
+[restore](../../ai-team/evidence/restore.json). No task/run/approval IDs exist.
+Panel remains `http://localhost:3180` through SSH tunnel; human bootstrap is
+still required and was not impersonated. Remaining full DoD in the initial
+report remains outstanding.
+
 **WAITING_USER — full DoD is not met.** Evidence collected on the VPS between
 17:55 and 18:04 UTC. [LIVE_PREFLIGHT](https://github.com/DmitryGusenko1/100print/issues/18#issuecomment-6710979859)
 was posted before installing application components.
