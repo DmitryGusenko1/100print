@@ -1,0 +1,18 @@
+{
+  "request_id": "e85c07cf-d641-44f1-b5fa-f85b6fb7fa6d",
+  "model_inference": true,
+  "gateway_active": false,
+  "owner_allowlist": true,
+  "outbound_owner_message": true,
+  "checked_at": "2026-11-07T22:08:07.291915+00:00",
+  "status": "BLOCKED",
+  "public_reason": "Configured Telegram bot is hundredprintbot; required WebToPrintISbot. Project credential update required.",
+  "gateway_pid": 2623798,
+  "getMe": false,
+  "bot_username": "hundredprintbot",
+  "webhook_absent": true,
+  "previous_consumer_inactive": true,
+  "inbound_e2e": "NOT_RUN",
+  "owner_approval": "DRAFT",
+  "paperclip_owner": "bootstrap_pending"
+}

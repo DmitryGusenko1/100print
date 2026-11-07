@@ -1,5 +1,50 @@
 # Issue 18 acceptance — 2026-11-07
 
+## Current acceptance — 22:08 UTC (supersedes historical states below)
+
+**WAITING_USER; full DoD is not complete.** Fresh issue body fetched and
+[LIVE_PREFLIGHT](https://github.com/DmitryGusenko1/100print/issues/18#issuecomment-6713646128)
+published. Stage remains commit/push, 90%; no stage reduction.
+
+**VERIFIED model:** fresh bounded Hermes inference succeeded, one actual model
+API call, exact control reply, existing Codex ChatGPT login retained. Evidence:
+[bounded inference](../../ai-team/evidence/hermes-inference-current.json).
+
+**CONNECTED transport, wrong bot:** permitted project `config/telegram.env`
+returns `getMe.username=hundredprintbot`, whereas the owner's urgent requirement
+is `WebToPrintISbot`. No other credentials were searched. Gateway PID 2623798
+is active, enabled, Restart=on-failure, NRestarts=0, user Linger=yes. Previous
+`ceo-telegram-bot` is inactive; webhook absent; private owner allowlist matches.
+Paperclip/PostgreSQL units remain active. No services were restarted this turn.
+The prior owner readiness message exists, but proves delivery only to the
+configured bot, not to the required bot and not a model reply in Telegram.
+
+**BLOCKED required Telegram:** verifier now requires the exact username and a
+recent successful inference from persisted session history. The previous
+VERIFIED receipt accepted any bot id and is superseded by atomic BLOCKED for
+launch request `e85c07cf-d641-44f1-b5fa-f85b6fb7fa6d`; model_inference=true,
+gateway_active=false (required bot), owner_allowlist=true,
+outbound_owner_message=true (historical configured bot). Evidence:
+[transport checks](../../ai-team/evidence/telegram-launch.json).
+No Telegram-source model session is present; inbound E2E is NOT_RUN, owner plan
+remains DRAFT, no owner approval has been impersonated. No new readiness message
+was sent to the wrong bot this turn. Night work was not started.
+
+**One required action:** replace `CEO_TELEGRAM_TOKEN` in project-local
+`/opt/ceo-orchestrator/config/telegram.env` with the token for `@WebToPrintISbot`.
+Do not post the token in GitHub. Executor result uses readiness `telegram`;
+only after correct credentials can the gateway be reconfigured and inbound E2E
+requested. Paperclip bootstrap, organization, adapter acceptance, QA/approval,
+full continuity/restore and website checks remain outstanding and deferred per
+the urgent priority. Website URL is not guessed. Panel remains loopback
+`http://localhost:3180`, SSH tunnel and personal human bootstrap required.
+
+Validation this turn: successful bounded real inference, read-only Codex auth
+status, Telegram getMe/webhook/allowlist, systemd active/enabled/lingering checks,
+owner credential mapping tests and Python compilation. Existing uncommitted
+backup/unit/config/role changes were preserved and excluded from this commit.
+
+
 ## Resumption at 18:14 UTC — current state supersedes initial blockers below
 
 **WAITING_USER, not DONE.** Expanded issue body fetched again. New LIVE_PREFLIGHT:
