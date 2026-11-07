@@ -1,0 +1,119 @@
+{
+  "schemaVersion": 1,
+  "kind": "100print-organization-intent",
+  "note": "Desired structure, not a native Paperclip export or proof of deployment. Actual IDs and verification belong in the acceptance report.",
+  "company": {
+    "name": "100print",
+    "description": "AI-команда проекта «100 типографий»"
+  },
+  "owner": {
+    "name": "Дмитрий Гусенко",
+    "kind": "human_board",
+    "responsibility": "Основные идеи, стратегия, утверждение инициатив и решений о разработке нового функционала"
+  },
+  "project": {
+    "name": "Сайт 100print",
+    "repository": "https://github.com/DmitryGusenko1/100print",
+    "workspacePolicy": "Use a verified project workspace; never point agents at the live site checkout for acceptance tests."
+  },
+  "foundationPolicy": {
+    "recurringWorkEnabled": false,
+    "departmentProfilesPaused": true,
+    "modelsDeferred": true,
+    "skillsDeferred": true,
+    "budgetsDeferred": true,
+    "newInitiativesRequireOwnerApproval": true,
+    "approvedPlanContinuesWithoutReminders": true,
+    "qualityControlMayReturnForRework": true,
+    "createdDoesNotMeanConnectedOrVerified": true
+  },
+  "coordinator": {
+    "key": "hermes-coordinator",
+    "name": "Hermes — координатор",
+    "reportsTo": "owner",
+    "paperclipReportsTo": null,
+    "desiredAdapter": "hermes_local",
+    "alternativeSupportedAdapter": "hermes_gateway",
+    "responsibility": "Координация шести основных департаментов, распределение утверждённых задач, сводный отчёт владельцу; предложения новых инициатив только на согласование"
+  },
+  "departments": [
+    {
+      "key": "administration",
+      "name": "Административный департамент",
+      "reportsTo": "owner",
+      "head": {
+        "name": "Руководитель административного департамента",
+        "paperclipReportsTo": null,
+        "responsibility": "Поручения владельца, фиксация решений и согласований, административная поддержка и контроль исполнения; прямой отчёт владельцу"
+      }
+    },
+    {
+      "key": "hr",
+      "name": "HR",
+      "reportsTo": "hermes-coordinator",
+      "head": {
+        "name": "Руководитель HR",
+        "responsibility": "Профили AI-сотрудников, распределение ответственности, потребность в компетенциях, предложения по составу команды; назначения и расширение согласуются владельцем"
+      }
+    },
+    {
+      "key": "commercial",
+      "name": "Коммерческий департамент",
+      "reportsTo": "hermes-coordinator",
+      "head": {
+        "name": "Руководитель коммерческого департамента",
+        "responsibility": "Исследование спроса, маркетинг, SEO, продажи, коммерческие предложения и экономика привлечения; новые инициативы на согласование владельцу"
+      }
+    },
+    {
+      "key": "accounting",
+      "name": "Бухгалтерия",
+      "reportsTo": "hermes-coordinator",
+      "head": {
+        "name": "Руководитель бухгалтерии",
+        "responsibility": "Учёт, бюджеты, расходы и управленческие отчёты; подготовка предложений и документов без самостоятельного проведения платежей и обязательств"
+      }
+    },
+    {
+      "key": "production",
+      "name": "Производство",
+      "reportsTo": "hermes-coordinator",
+      "head": {
+        "name": "Руководитель производства",
+        "responsibility": "Планирование и исполнение утверждённых работ, производство заказов, разработка согласованных изменений сайта, передача результата контролю качества"
+      }
+    },
+    {
+      "key": "quality",
+      "name": "Контроль качества",
+      "reportsTo": "hermes-coordinator",
+      "head": {
+        "name": "Руководитель контроля качества",
+        "responsibility": "Независимая проверка критериев приёмки, фиксация дефектов, возврат неудовлетворительного результата исполнителю; повторная проверка до приёмки"
+      }
+    },
+    {
+      "key": "pr",
+      "name": "PR и связи с общественностью",
+      "reportsTo": "hermes-coordinator",
+      "head": {
+        "name": "Руководитель PR и связей с общественностью",
+        "responsibility": "Репутация, публичные коммуникации, партнёрства и отношения с сообществом; предложения кампаний на согласование"
+      }
+    }
+  ],
+  "developmentExecutor": {
+    "key": "codex-development",
+    "name": "Codex — разработчик",
+    "reportsTo": "production",
+    "desiredAdapter": "codex_local",
+    "responsibility": "Разработка утверждённых изменений, проверки и возврат результата через задачи Paperclip; тестовая приёмка только в отдельном workspace"
+  },
+  "paperclipMapping": {
+    "departments": "Use native teams if supported by the pinned server; otherwise named head profiles plus reportsTo hierarchy.",
+    "owner": "Human board identity. Do not create an AI owner or assign a human ID to agent reportsTo.",
+    "topLevelHeads": "Hermes and administration have reportsTo=null and explicitly report to the human board in capabilities/instructions.",
+    "departmentHeads": "Create paused profiles without active executable credentials. Enable an executor only for a bounded acceptance task.",
+    "approval": "Use native approval records and linked tasks. A pending approval alone is not proof that arbitrary task execution is technically gated."
+  }
+}
