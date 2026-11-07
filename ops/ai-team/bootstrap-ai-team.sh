@@ -27,6 +27,28 @@ for unit in ceo-ai-team-postgres ceo-ai-team-paperclip; do
  grep -qx 'User=ceoorch' "$unit_file" || fail "$unit must run as ceoorch"
  systemd-analyze verify "$unit_file"
 done
+# A fixed root-owned handoff permits stopping only the owner's previous bot.
+# The unprivileged executor requests it only after preparing Hermes inference.
+cat > /etc/systemd/system/ceo-ai-team-telegram-handover.service <<'UNIT'
+[Unit]
+Description=100print owner-authorized Telegram polling handoff
+[Service]
+Type=oneshot
+ExecStart=/bin/systemctl stop ceo-telegram-bot.service
+ExecStartPost=/usr/sbin/runuser -u ceoorch -- /usr/bin/touch /opt/ceo-orchestrator/data/ai-team-telegram-handover-done
+ExecStartPost=/bin/rm -f /opt/ceo-orchestrator/data/ai-team-telegram-handover-request
+UNIT
+cat > /etc/systemd/system/ceo-ai-team-telegram-handover.path <<'UNIT'
+[Unit]
+Description=100print Telegram handoff request
+[Path]
+PathExists=/opt/ceo-orchestrator/data/ai-team-telegram-handover-request
+Unit=ceo-ai-team-telegram-handover.service
+[Install]
+WantedBy=multi-user.target
+UNIT
+systemctl daemon-reload
+systemctl enable --now ceo-ai-team-telegram-handover.path
 # Request is written before the readiness marker awakens the existing executor.
 install -d -o ceoorch -g ceoorch -m 0700 "$BASE/data"
 python3 - "$BASE/data/ai-team-launch-request.json" "$USER_UID" <<'PY'
