@@ -1,0 +1,15 @@
+{
+  "timestamp": "2026-11-07T18:04:04.571409+00:00",
+  "health": {
+    "status": "ok",
+    "deploymentMode": "authenticated",
+    "deploymentExposure": "private",
+    "localAiLoginSupported": true,
+    "commit": "ebe308d21b4911bfcbfa1a56a4eb8b10db7c8088",
+    "bootstrapStatus": "bootstrap_pending",
+    "bootstrapInviteActive": true
+  },
+  "company_agent_invite_counts": "0|0|1",
+  "codex_sandbox_proof_exists": false,
+  "codex_sandbox_proof_exact": false
+}

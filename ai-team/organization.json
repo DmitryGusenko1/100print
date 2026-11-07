@@ -1,0 +1,123 @@
+{
+  "status": "PREPARED_NOT_CREATED",
+  "company": {
+    "name": "100print"
+  },
+  "owner": {
+    "name": "Дмитрий Гусенко",
+    "entity": "human_board_user",
+    "create_ai_profile": false
+  },
+  "project": {
+    "name": "Сайт 100print",
+    "workspace": null,
+    "reason": "Каталог сайта не найден в прочитанной конфигурации проекта; не угадывать."
+  },
+  "coordinator": {
+    "key": "hermes",
+    "name": "Hermes",
+    "adapterType": "hermes_local",
+    "reportsToRef": "owner",
+    "status": "paused",
+    "scheduleEnabled": false,
+    "adapterConfig": {
+      "command": "/opt/ceo-orchestrator/ai-team/runtime/hermes-venv/bin/hermes",
+      "cwd": "/opt/ceo-orchestrator/ai-team/runtime/sandbox",
+      "env": {
+        "HERMES_HOME": "/opt/ceo-orchestrator/ai-team/runtime/hermes-home"
+      }
+    }
+  },
+  "departmentHeads": [
+    {
+      "key": "administration",
+      "name": "Административный",
+      "capabilities": "Администрирование и организация работы",
+      "reportsToRef": "owner",
+      "status": "paused",
+      "scheduleEnabled": false,
+      "adapterType": "process",
+      "executorConnected": false
+    },
+    {
+      "key": "hr",
+      "name": "HR",
+      "capabilities": "Роли и кадровая структура AI-команды",
+      "reportsToRef": "hermes",
+      "status": "paused",
+      "scheduleEnabled": false,
+      "adapterType": "process",
+      "executorConnected": false
+    },
+    {
+      "key": "commercial",
+      "name": "Коммерческий",
+      "capabilities": "Спрос, маркетинг, SEO, продажи",
+      "reportsToRef": "hermes",
+      "status": "paused",
+      "scheduleEnabled": false,
+      "adapterType": "process",
+      "executorConnected": false
+    },
+    {
+      "key": "accounting",
+      "name": "Бухгалтерия",
+      "capabilities": "Учёт, бюджеты, управленческие отчёты",
+      "reportsToRef": "hermes",
+      "status": "paused",
+      "scheduleEnabled": false,
+      "adapterType": "process",
+      "executorConnected": false
+    },
+    {
+      "key": "production",
+      "name": "Производство",
+      "capabilities": "Заказы, планирование, разработка утверждённых решений",
+      "reportsToRef": "hermes",
+      "status": "paused",
+      "scheduleEnabled": false,
+      "adapterType": "process",
+      "executorConnected": false
+    },
+    {
+      "key": "qa",
+      "name": "Контроль качества",
+      "capabilities": "Приёмка и возврат на доработку",
+      "reportsToRef": "hermes",
+      "status": "paused",
+      "scheduleEnabled": false,
+      "adapterType": "process",
+      "executorConnected": false
+    },
+    {
+      "key": "pr",
+      "name": "PR и связи с общественностью",
+      "capabilities": "Репутация, коммуникации, партнёрства",
+      "reportsToRef": "hermes",
+      "status": "paused",
+      "scheduleEnabled": false,
+      "adapterType": "process",
+      "executorConnected": false
+    }
+  ],
+  "developer": {
+    "key": "codex",
+    "name": "Codex — исполнитель разработки",
+    "adapterType": "codex_local",
+    "reportsToRef": "production",
+    "status": "paused",
+    "scheduleEnabled": false,
+    "adapterConfig": {
+      "command": "/usr/bin/codex",
+      "cwd": "/opt/ceo-orchestrator/ai-team/runtime/sandbox"
+    },
+    "executorConnected": false
+  },
+  "applicationNotes": [
+    "Resolve symbolic reportsToRef to native agent UUID; owner is a Board membership, never an agent UUID.",
+    "Use reportsTo=null for Hermes and administration with explicit metadata accountableTo=owner Board user.",
+    "Create via native API after owner bootstrap, then immediately pause; global scheduler remains disabled.",
+    "Do not supply invented model or budget values.",
+    "Process adapter denotes profile only; no executable command is configured for heads."
+  ]
+}

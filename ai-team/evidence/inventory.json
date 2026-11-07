@@ -1,0 +1,53 @@
+{
+  "timestamp": "2026-11-07T18:03:47.291998+00:00",
+  "os": "Ubuntu 24.04.4 LTS",
+  "uid": 999,
+  "cpu": 4,
+  "ramMiB": 24033,
+  "initialDiskAvailableGiB": 17,
+  "systemNode": "v22.23.1",
+  "privateNode": "v24.15.0",
+  "systemPython": "3.12.3",
+  "privatePython": "3.14.10",
+  "codex": "0.163.0",
+  "hermes": "v0.23.0",
+  "paperclip": "2026.1106.0",
+  "postgres": "16.15 (Ubuntu 16.15-0ubuntu0.24.04.1)",
+  "systemd": "255",
+  "pnpm": "absent; packaged npm distribution used",
+  "sources": {
+    "paperclip": "d69631b01b9c658f80bf8bed389863dce82643e1",
+    "hermes": "2bd378ed1b8d6bf2192cb26e0a55ff3091e6bd19"
+  },
+  "serviceManager": {
+    "userBus": false,
+    "passwordlessSudo": false,
+    "newUnitsInstalled": false
+  },
+  "website": {
+    "verified": false,
+    "reason": "No site URL or workspace in inspected project configuration"
+  },
+  "existingServices": [
+    {
+      "name": "ceo-orchestrator",
+      "beforePID": 3815350,
+      "afterMatches": true
+    },
+    {
+      "name": "ceo-telegram-bot",
+      "beforePID": 3815479,
+      "afterMatches": true
+    },
+    {
+      "name": "ceo-github-worker",
+      "beforePID": 1386597,
+      "afterMatches": true
+    },
+    {
+      "name": "ceo-github-watcher",
+      "beforePID": 1387067,
+      "afterMatches": true
+    }
+  ]
+}

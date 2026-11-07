@@ -1,0 +1,19 @@
+{
+  "timestamp": "2026-11-07T18:02:02.177443+00:00",
+  "backup": "backups/20261107T180152Z",
+  "restored_database": "ceo_orchestrator",
+  "temporary_port": 55439,
+  "public_tables": 301,
+  "row_counts": {
+    "companies": 0,
+    "agents": 0,
+    "projects": 0,
+    "issues": 0,
+    "heartbeat_runs": 0,
+    "approvals": 0,
+    "invites": 1
+  },
+  "config_and_key_byte_match": true,
+  "status": "passed",
+  "limitation": "Pre-owner database; no company, agent, project, task or run continuity yet."
+}

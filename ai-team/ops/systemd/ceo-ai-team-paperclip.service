@@ -1,0 +1,19 @@
+[Unit]
+Description=100print Paperclip authenticated private board
+Requires=ceo-ai-team-postgres.service
+After=ceo-ai-team-postgres.service network.target
+[Service]
+Type=simple
+User=ceoorch
+Group=ceoorch
+WorkingDirectory=/opt/ceo-orchestrator/ai-team
+ExecStart=/bin/sh /opt/ceo-orchestrator/ai-team/ops/paperclip.sh
+Restart=on-failure
+RestartSec=5
+TimeoutStopSec=90
+UMask=0077
+NoNewPrivileges=true
+StandardOutput=journal
+StandardError=journal
+[Install]
+WantedBy=multi-user.target

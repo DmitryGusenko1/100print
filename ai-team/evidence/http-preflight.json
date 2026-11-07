@@ -1,0 +1,21 @@
+{
+  "timestamp": "2026-11-07T18:00:59.096483+00:00",
+  "/api/health": {
+    "status": 200,
+    "body": {
+      "status": "ok",
+      "deploymentMode": "authenticated",
+      "deploymentExposure": "private",
+      "localAiLoginSupported": true,
+      "commit": "ebe308d21b4911bfcbfa1a56a4eb8b10db7c8088",
+      "bootstrapStatus": "bootstrap_pending",
+      "bootstrapInviteActive": false
+    }
+  },
+  "/api/companies": {
+    "status": 403
+  },
+  "/": {
+    "status": 200
+  }
+}

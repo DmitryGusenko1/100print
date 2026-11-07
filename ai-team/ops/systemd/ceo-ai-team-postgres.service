@@ -1,0 +1,19 @@
+[Unit]
+Description=100print AI-team isolated PostgreSQL
+After=network.target
+[Service]
+Type=simple
+User=ceoorch
+Group=ceoorch
+WorkingDirectory=/opt/ceo-orchestrator/ai-team
+ExecStart=/bin/sh /opt/ceo-orchestrator/ai-team/ops/postgres.sh
+Restart=on-failure
+RestartSec=5
+KillSignal=SIGINT
+TimeoutStopSec=90
+UMask=0077
+NoNewPrivileges=true
+StandardOutput=journal
+StandardError=journal
+[Install]
+WantedBy=multi-user.target
