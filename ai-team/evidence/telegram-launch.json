@@ -6,7 +6,7 @@
   "transport_verified": true,
   "owner_allowlist": true,
   "outbound_owner_message": true,
-  "checked_at": "2026-11-08T06:32:44.039284+00:00",
+  "checked_at": "2026-11-08T06:42:07.314340+00:00",
   "status": "VERIFIED",
   "gateway_pid": 3347678,
   "getMe": true,
@@ -14,7 +14,7 @@
   "webhook_absent": true,
   "exclusive_project_consumer": true,
   "previous_consumer_inactive": true,
-  "inbound_e2e": "WAITING_REAL_OWNER_MESSAGE",
+  "inbound_e2e": "VERIFIED",
   "owner_approval": "DRAFT",
   "paperclip_owner": "bootstrap_pending"
 }

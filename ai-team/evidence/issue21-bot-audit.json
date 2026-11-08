@@ -1,6 +1,6 @@
 {
-  "checked_at": "2026-11-08T04:40:03.995709+00:00",
-  "settings_files_checked": 248,
+  "checked_at": "2026-11-08T06:41:23.368557+00:00",
+  "settings_files_checked": 12335,
   "distinct_tokens_checked": 1,
   "public_usernames": [
     "hundredprintbot"
@@ -10,12 +10,7 @@
   "customer_bot": "WebToPrintISbot",
   "customer_token_found": false,
   "customer_webhook": "cannot_verify_globally_without_customer_token",
-  "customer_integrations": "none_found_in_project_settings",
-  "project_consumers": [
-    {
-      "pid": 2623798,
-      "kind": "hermes_gateway"
-    }
-  ],
-  "scope": "project settings, project Hermes cron, project systemd definitions; no other projects or users"
+  "customer_integrations": "none_found_in_scoped_settings",
+  "customer_references": [],
+  "scope": "project config, isolated Hermes settings and cron, project systemd definitions; no foreign projects or users"
 }

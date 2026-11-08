@@ -11,7 +11,7 @@ from dotenv import dotenv_values
 
 BASE = Path('/opt/ceo-orchestrator')
 HOME = BASE / 'ai-team/runtime/hermes-home'
-TARGET = 'WebToPrintISbot'
+TARGET = 'hundredprintbot'
 
 
 def exclusive_consumer(expected_pid):
@@ -71,7 +71,7 @@ def check(e2e=False, credentials_only=False):
         return False
     if not e2e:
         return True
-    sent = json.loads((BASE / 'ai-team/runtime/owner-launch-WebToPrintISbot.json').read_text())
+    sent = json.loads((BASE / 'ai-team/runtime/owner-launch-hundredprintbot.json').read_text())
     if sent.get('bot_username') != TARGET:
         return False
     # Only genuine private Telegram sessions after this launch's owner message.

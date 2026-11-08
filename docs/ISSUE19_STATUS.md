@@ -52,6 +52,7 @@ reported decisions, ambiguous proposal send and legacy scheduler isolation.
 Proposal transport tests use mocks; no real approval or real inbound Telegram
 E2E is claimed. Health is technical transport readiness, not owner acceptance.
 
-Full DoD is WAITING_USER, readiness=telegram-e2e, because #18/#20 genuine owner
-inbound E2E remains pending. One owner action: send one real message to
-@hundredprintbot. No token/OAuth action or Paperclip registration is requested.
+Current #21 recheck supersedes the old E2E blocker: genuine owner inbound/model
+E2E passes on hundredprintbot and current bridge health is verified. #19 is
+requeued for its independent remaining acceptance; no client token or Paperclip
+bootstrap dependency is imposed. Plan approval remains a separate owner action.
