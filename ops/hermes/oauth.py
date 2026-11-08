@@ -31,13 +31,30 @@ def claims(token):
         raise ValueError('OAuth access token is not a supported JWT') from None
 
 
-def tokens_from(store):
+def token_source(store):
     if not isinstance(store, dict) or store.get('version') != 1:
         raise ValueError('unsupported Hermes auth store version')
     provider = store.get('providers', {}).get('openai-codex', {})
     tokens = provider.get('tokens', {})
-    if not all(isinstance(tokens.get(key), str) and tokens[key] for key in ('access_token', 'refresh_token')):
+    def complete(value):
+        return isinstance(value, dict) and all(
+            isinstance(value.get(key), str) and value[key]
+            for key in ('access_token', 'refresh_token'))
+    if complete(tokens):
+        return tokens
+    pool = store.get('credential_pool', {}).get('openai-codex', [])
+    if not isinstance(pool, list):
+        raise ValueError('unsupported Hermes credential pool')
+    candidates = [entry for entry in pool if complete(entry)]
+    if len(candidates) > 1:
+        raise ValueError('multiple Hermes OAuth pool accounts; explicit selection required')
+    if not candidates:
         raise ValueError('existing Hermes openai-codex OAuth is missing')
+    return candidates[0]
+
+
+def tokens_from(store):
+    tokens = token_source(store)
     claim = claims(tokens['access_token'])
     if not isinstance(claim.get('exp'), (int, float)):
         raise ValueError('OAuth JWT has no expiration')
@@ -179,12 +196,15 @@ def access_token(path=AUTH):
                 or original_identity.get('sub') != refreshed_identity.get('sub')):
             raise ValueError('OAuth refresh changed principal')
         stamp = datetime.now(timezone.utc).isoformat()
-        store['providers']['openai-codex'].update(tokens=updated, last_refresh=stamp)
-        # Match native Hermes singleton aliases; preserve independent pool accounts.
+        provider = store.get('providers', {}).get('openai-codex', {})
+        if provider.get('tokens') is tokens:
+            provider.update(tokens=updated, last_refresh=stamp)
+        # Update only aliases of the selected token pair. Pool-only stores remain
+        # pool-only; no duplicate singleton or independent refresh family is made.
         for entry in store.get('credential_pool', {}).get('openai-codex', []):
-            if isinstance(entry, dict) and (entry.get('source') == 'device_code'
-                    or entry.get('source') == 'manual:device_code'
-                    and entry.get('access_token') == previous['access_token']):
+            if (isinstance(entry, dict)
+                    and entry.get('access_token') == previous['access_token']
+                    and entry.get('refresh_token', previous['refresh_token']) == previous['refresh_token']):
                 entry.update(access_token=updated['access_token'], refresh_token=updated['refresh_token'],
                              last_refresh=stamp)
                 for field in ('last_status', 'last_status_at', 'last_error_code', 'last_error_reason',
