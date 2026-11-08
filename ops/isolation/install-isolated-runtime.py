@@ -29,7 +29,13 @@ p.unlink()
 checks['host_canary_hidden'] = not Path('/var/lib/100print-isolation/host-only-canary').exists()
 checks['host_project_hidden'] = not Path('/opt/ceo-orchestrator').exists()
 checks['host_home_hidden'] = not Path('/home').exists()
-checks['credentials_absent'] = not any(Path(x).exists() for x in ['/root/.ssh', '/root/.codex', '/run/docker.sock', '/project/.env'])
+def visible_or_accessible(path):
+    try:
+        Path(path).stat()
+        return True
+    except (FileNotFoundError, PermissionError):
+        return False
+checks['credentials_not_accessible'] = not any(visible_or_accessible(x) for x in ['/root/.ssh', '/root/.codex', '/run/docker.sock', '/project/.env'])
 try:
     Path('/app/forbidden-write').write_text('no')
     checks['policy_read_only'] = False
@@ -217,6 +223,19 @@ def self_test():
             self.assertNotIn('/opt/ceo-orchestrator', text)
             self.assertNotIn('docker.sock', text)
             self.assertNotIn('[Install]', text)
+        def test_inaccessible_credentials(self):
+            import ast
+            from unittest.mock import patch
+            tree = ast.parse(SMOKE)
+            helper = next(node for node in tree.body
+                          if isinstance(node, ast.FunctionDef) and node.name == 'visible_or_accessible')
+            namespace = {'Path': Path}
+            exec(compile(ast.Module(body=[helper], type_ignores=[]), '<helper>', 'exec'), namespace)
+            for error in (PermissionError('denied'), FileNotFoundError('absent')):
+                with patch.object(Path, 'stat', side_effect=error):
+                    self.assertFalse(namespace['visible_or_accessible']('/root/.ssh'))
+            with patch.object(Path, 'stat', return_value=object()):
+                self.assertTrue(namespace['visible_or_accessible']('/root/.ssh'))
         def test_smoke_compiles(self):
             compile(SMOKE, '<smoke>', 'exec')
         def test_unsafe_directory(self):
