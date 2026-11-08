@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Local backup and isolated restoration verification. Never touches shared DBs."""
-import datetime, hashlib, json, os, shutil, subprocess, tarfile, tempfile
+import datetime, hashlib, json, os, shutil, sqlite3, subprocess, tarfile, tempfile
 from pathlib import Path
 ROOT = Path('/opt/ceo-orchestrator/ai-team')
 R = ROOT/'runtime'
@@ -16,9 +16,23 @@ backup = ROOT/'backups'/datetime.datetime.now(datetime.timezone.utc).strftime('%
 backup.mkdir(parents=True, mode=0o700)
 run('pg_dump','-h',R/'pgsocket','-p','55438','-U','ceo_ai_team','-d','ceo_orchestrator','-Fc','-f',backup/'database.dump')
 files=['paperclip-config.json','service.env','secrets','storage','hermes-home','paperclip-home','sandbox']
-with tarfile.open(backup/'state.tar.gz','w:gz') as tar:
-    for name in files:
-        if (R/name).exists(): tar.add(R/name,arcname=name)
+sqlite_files = list((R/'hermes-home').rglob('*.db'))
+with tempfile.TemporaryDirectory(prefix='sqlite-backup-', dir=R) as snapshot:
+    def stable_files(info):
+        # SQLite WAL/SHM are live runtime files. Archive online snapshots instead.
+        if info.name.startswith('hermes-home/installs/') or info.name == 'hermes-home/installs':
+            return None  # Rebuildable runner environments contain absolute venv links.
+        if info.name.endswith(('.db', '.db-wal', '.db-shm')):
+            return None
+        return info
+    with tarfile.open(backup/'state.tar.gz','w:gz') as tar:
+        for name in files:
+            if (R/name).exists(): tar.add(R/name,arcname=name,filter=stable_files)
+        for index, source in enumerate(sqlite_files):
+            target = Path(snapshot)/f'{index}.db'
+            with sqlite3.connect(f'file:{source}?mode=ro',uri=True) as live, sqlite3.connect(target) as saved:
+                live.backup(saved)
+            tar.add(target,arcname=str(source.relative_to(R)))
 checksums={p.name:hashlib.sha256(p.read_bytes()).hexdigest() for p in backup.iterdir()}
 (backup/'sha256.json').write_text(json.dumps(checksums,indent=2))
 for p in backup.iterdir(): p.chmod(0o600)
@@ -45,7 +59,18 @@ try:
     with tarfile.open(backup/'state.tar.gz') as tar: tar.extractall(state,filter='data')
     for name in ['paperclip-config.json','service.env','secrets/master.key','secrets/db-password']:
         assert (R/name).read_bytes()==(state/name).read_bytes()
+    restored_sqlite = {}
+    for source in sqlite_files:
+        restored = state/source.relative_to(R)
+        with sqlite3.connect(restored) as saved:
+            assert saved.execute('PRAGMA integrity_check').fetchone()[0] == 'ok'
+            if source.name == 'state.db':
+                restored_sqlite['sessions'] = saved.execute('SELECT count(*) FROM sessions').fetchone()[0]
+                restored_sqlite['messages'] = saved.execute('SELECT count(*) FROM messages').fetchone()[0]
+    for name in ['hermes-home/auth.json','hermes-home/config.yaml','hermes-home/.env']:
+        assert (R/name).read_bytes()==(state/name).read_bytes()
     evidence={'timestamp':datetime.datetime.now(datetime.timezone.utc).isoformat(),'backup':str(backup.relative_to(ROOT)), 'restored_database':'ceo_orchestrator','temporary_port':55439,'public_tables':len(after.splitlines()),'row_counts':counts,'config_and_key_byte_match':True,'status':'passed','limitation':'Pre-owner database; no company, agent, project, task or run continuity yet.'}
+    evidence.update(hermes_sqlite_integrity=True,hermes_restored_counts=restored_sqlite,hermes_credentials_and_config_match=True)
     (ROOT/'evidence/restore.json').write_text(json.dumps(evidence,indent=2))
     print(json.dumps(evidence,indent=2))
 finally:

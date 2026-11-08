@@ -1,6 +1,6 @@
 {
-  "timestamp": "2026-11-07T18:13:24.495425+00:00",
-  "backup": "backups/20261107T181315Z",
+  "timestamp": "2026-11-08T06:36:05.238889+00:00",
+  "backup": "backups/20261108T063429Z",
   "restored_database": "ceo_orchestrator",
   "temporary_port": 55439,
   "public_tables": 301,
@@ -15,5 +15,11 @@
   },
   "config_and_key_byte_match": true,
   "status": "passed",
-  "limitation": "Pre-owner database; no company, agent, project, task or run continuity yet."
+  "limitation": "Pre-owner database; no company, agent, project, task or run continuity yet.",
+  "hermes_sqlite_integrity": true,
+  "hermes_restored_counts": {
+    "sessions": 9,
+    "messages": 25
+  },
+  "hermes_credentials_and_config_match": true
 }

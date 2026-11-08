@@ -1,3 +1,12 @@
+Backup/restore follow-up 2026-11-08: first attempt safely rejected absolute
+Python links in rebuildable Hermes runner environments. Excluded only
+`hermes-home/installs/`; retained safe extraction. Repeated isolated restore
+**PASSED**: 301 public tables, pre-owner entity counts match, config/key and
+Hermes auth/config match, SQLite integrity ok, 9 sessions and 25 messages restored.
+See [restore evidence](../../ai-team/evidence/restore.json). Existing SQLite
+snapshot work was preserved and exercised with this fix. This remains pre-owner
+Paperclip recovery, not full organization/task continuity.
+
 # Current acceptance — 2026-11-08 06:33 UTC
 
 **CHANGED / WAITING_USER; full DoD incomplete.** This section supersedes all

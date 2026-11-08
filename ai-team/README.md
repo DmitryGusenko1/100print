@@ -108,6 +108,11 @@ Run as ceoorch while the isolated database is available:
 python3 /opt/ceo-orchestrator/ai-team/ops/backup-restore.py
 ```
 
+Rebuildable Hermes `installs/` environments are excluded because their absolute
+venv symlinks are rejected by safe extraction. Recreate those environments with
+the pinned runner when needed. Live SQLite databases use online snapshots and
+restored integrity checks.
+
 This creates a timestamped 0700 directory under `backups/`, a custom-format
 pg_dump and state archive (0600), SHA256 checksums, and immediately restores to a
 throwaway cluster under `runtime/` (Unix socket only, port 55439). It compares
