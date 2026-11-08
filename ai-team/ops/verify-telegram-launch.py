@@ -58,13 +58,13 @@ def main():
     getme = bool(identity.get('id')) and identity.get('username') == 'WebToPrintISbot'
     no_webhook = not api('getWebhookInfo').get('url')
     gateway = active and connected and old_inactive and no_webhook and getme
-    sent_path = TEAM / 'runtime/owner-launch-message.json'
+    sent_path = TEAM / 'runtime/owner-launch-WebToPrintISbot.json'
     if inference and gateway and allowlist and getme and not sent_path.exists():
         sent = api('sendMessage', {'chat_id': owner, 'text': 'Дмитрий, Hermes подключён: модель отвечает, постоянный Telegram gateway запущен. Это техническая готовность к диалогу; полный DoD Paperclip ещё не завершён.\n\nЧерновик ночного плана: 1) проверить клиентский сценарий сайта в тестовой среде; 2) исправить только подтверждённые ошибки там и проверить результат; 3) исследовать трёх конкурентов. До вашего утверждения работы не запускаются. Утренний отчёт — Asia/Almaty, только по реальным артефактам.\n\nОтветьте мне здесь, чтобы проверить диалог, и укажите URL сайта/тестовую среду. Если согласны с этим планом, явно напишите «Утверждаю ночной план». Регистрация владельца Paperclip остаётся отдельным шагом.'})
-        atomic(sent_path, {'message_id': sent['message_id'], 'date': sent['date']})
+        atomic(sent_path, {'message_id': sent['message_id'], 'date': sent['date'], 'bot_username': identity['username']})
     request = json.loads((BASE / 'data/ai-team-launch-request.json').read_text())
     receipt = {'request_id': request['request_id'], 'model_inference': inference, 'gateway_active': gateway,
-               'owner_allowlist': allowlist, 'outbound_owner_message': sent_path.exists(),
+               'owner_allowlist': allowlist, 'outbound_owner_message': getme and sent_path.exists(),
                'checked_at': datetime.datetime.now(datetime.timezone.utc).isoformat()}
     verified = all(receipt[k] for k in ('model_inference', 'gateway_active', 'owner_allowlist', 'outbound_owner_message'))
     receipt['status'] = 'VERIFIED' if verified else 'BLOCKED'

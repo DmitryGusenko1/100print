@@ -1,6 +1,37 @@
 # Issue 18 acceptance — 2026-11-07
 
-## Current acceptance — 22:08 UTC (supersedes historical states below)
+## Issue 20 update — 2026-11-08
+
+Current status: WAITING_USER, readiness `telegram`. This update supersedes the
+old instruction to manually replace only config/telegram.env. Expanded permitted
+search covered config/, ai-team/runtime/secrets/, isolated Hermes settings and
+backups, ai-team/config/, .hermes settings and the project root bot configuration.
+65 settings files yielded one distinct Telegram token; getMe succeeded as
+hundredprintbot. No target token was found and no API check failed.
+
+@WebToPrintISbot: **not found, not configured, not started, no reply**.
+Existing gateway is active/enabled for hundredprintbot; no service was restarted
+and no readiness message was sent. Model evidence remains historical from #18;
+no fresh inference or Telegram E2E is claimed. Target webhook/poller checks are
+blocked on its credential. No owner message or approval was simulated.
+
+One owner action, in a ceoorch terminal at /opt/ceo-orchestrator:
+`.venv/bin/python ai-team/ops/set-owner-telegram.py`, then paste the target token
+into the hidden prompt. It verifies exact getMe username before writes, validates
+and preserves owner allowlists and model settings, creates 0700/0600 private
+backups, and replaces each configuration atomically with rollback on write failure.
+It does not restart services. On readiness `telegram`, resume exclusive consumer
+and webhook checks, controlled project-only handoff if necessary, user gateway
+restart, fresh inference, exact getMe, conflict checks and target readiness delivery.
+Then wait for a real owner message using readiness `telegram-e2e`.
+
+The wrong-token blocker remains factual; it cannot be marked resolved before a
+correct credential exists. Historical outbound evidence no longer counts toward
+required-bot readiness. The verifier uses a separate target-specific delivery
+receipt. #19 independent bridge implementation and offline tests may proceed
+immediately; target Telegram credentials gate only its Telegram integration/E2E.
+
+## Historical acceptance — 22:08 UTC (supersedes historical states below)
 
 **WAITING_USER; full DoD is not complete.** Fresh issue body fetched and
 [LIVE_PREFLIGHT](https://github.com/DmitryGusenko1/100print/issues/18#issuecomment-6713646128)

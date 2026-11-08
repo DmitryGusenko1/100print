@@ -1,3 +1,19 @@
+# Issue 19 — dependency correction from issue 20 (2026-11-08)
+
+Bridge implementation, artifact/replay checks and offline tests can resume now.
+A Telegram token is not a prerequisite for those independent tasks. Paperclip
+registration is also not required. No bridge work or acceptance is claimed by
+issue 20. Only Telegram integration and real inbound E2E depend on the required
+bot credential and subsequent gateway validation.
+
+Issue 20 expanded the permitted project settings search: one unique token,
+getMe=hundredprintbot; no WebToPrintISbot token. A single hidden local input is
+prepared; see [current #18 update](ai-team/acceptance-2026-11-07.md).
+The prior #19 WAITING_USER receipt is historical and must not suppress independent
+bridge scheduling; replace it with the executing #19 worker's factual outcome.
+
+## Historical report (superseded dependency rule)
+
 # Issue 19 — prerequisite blocked
 
 VPS check: 2026-11-07T22:10:21Z. Status: WAITING_USER; DoD incomplete.
