@@ -30,3 +30,8 @@ live identity/webhook, bounded inference, systemd/consumer/allowlist and inbound
 E2E checks. Existing unrelated working tree changes excluded from commit.
 Full #21 remains WAITING_USER for explicit owner plan approval. After actual
 approval, confirmation marker: data/issue21-owner-plan-approved.
+
+Issue22 follow-up: the 06:30–06:31 UTC private owner exchange confirms E2E.
+There is no remaining telegram-e2e wait in #21; its owner-plan wait is valid.
+Current proposal is DAY-2026-11-08-v1, delivered privately by hundredprintbot.
+The status request was not approval. See [issue22](ISSUE22_STATUS.md).

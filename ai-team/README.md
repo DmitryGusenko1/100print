@@ -1,6 +1,5 @@
-Current issue #20 execution: target @WebToPrintISbot is blocked on its missing
-credential; prior hundredprintbot readiness does not satisfy this switch.
-See [issue 20 report](../docs/ISSUE20_STATUS.md). Independent #19 bridge work remains unblocked.
+Current operating status: see [issue 22 report](../docs/ISSUE22_STATUS.md).
+Management: hundredprintbot only; WebToPrintISbot disabled.
 
 # Current operating status — 2026-11-08
 
