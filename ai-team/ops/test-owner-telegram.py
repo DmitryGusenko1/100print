@@ -13,8 +13,8 @@ class OwnerCredentialTests(unittest.TestCase):
     def test_reject_other_bot_before_writes(self):
         with tempfile.TemporaryDirectory() as directory:
             base = Path(directory)
-            with self.assertRaisesRegex(ValueError, 'not for hundredprintbot'):
-                m.install(TOKEN, base, lambda _: 'WebToPrintISbot')
+            with self.assertRaisesRegex(ValueError, 'not for WebToPrintISbot'):
+                m.install(TOKEN, base, lambda _: 'hundredprintbot')
             self.assertEqual(list(base.iterdir()), [])
 
     def test_install_preserves_allowlist_and_auth_and_private_backup(self):

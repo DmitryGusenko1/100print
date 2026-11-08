@@ -158,6 +158,8 @@ def readiness(task):
         args = [str(ROOT/'.venv/bin/python'), str(ROOT/'ai-team/ops/management-readiness.py')]
         if task['readiness'] == 'telegram-e2e':
             args.append('--e2e')
+        else:
+            args.append('--credentials')
         return run(args, 45).returncode == 0
     if task['readiness'] == 'telegram-e2e':
         return run([str(ROOT/'.venv/bin/python'), str(ROOT/'scripts/verify_telegram.py')], 45).returncode == 0

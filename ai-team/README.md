@@ -1,3 +1,7 @@
+Current issue #20 execution: target @WebToPrintISbot is blocked on its missing
+credential; prior hundredprintbot readiness does not satisfy this switch.
+See [issue 20 report](../docs/ISSUE20_STATUS.md). Independent #19 bridge work remains unblocked.
+
 # Current operating status — 2026-11-08
 
 Hermes management on @hundredprintbot is active/enabled and genuine owner/model

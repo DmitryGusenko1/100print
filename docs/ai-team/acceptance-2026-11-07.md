@@ -1,3 +1,7 @@
+Current issue #20 execution: target @WebToPrintISbot is blocked on its missing
+credential; prior hundredprintbot readiness does not satisfy this switch.
+See [issue 20 report](../ISSUE20_STATUS.md). Independent #19 bridge work remains unblocked.
+
 Backup/restore follow-up 2026-11-08: first attempt safely rejected absolute
 Python links in rebuildable Hermes runner environments. Excluded only
 `hermes-home/installs/`; retained safe extraction. Repeated isolated restore

@@ -11,7 +11,7 @@ from dotenv import dotenv_values
 
 BASE = Path('/opt/ceo-orchestrator')
 HOME = BASE / 'ai-team/runtime/hermes-home'
-TARGET = 'hundredprintbot'
+TARGET = 'WebToPrintISbot'
 
 
 def exclusive_consumer(expected_pid):
@@ -34,7 +34,7 @@ def exclusive_consumer(expected_pid):
     return consumers == [str(expected_pid)]
 
 
-def check(e2e=False):
+def check(e2e=False, credentials_only=False):
     values = dotenv_values(HOME / '.env')
     project = dotenv_values(BASE / 'config/telegram.env')
     token = values.get('TELEGRAM_BOT_TOKEN')
@@ -43,6 +43,10 @@ def check(e2e=False):
         return False
     if project.get('CEO_TELEGRAM_ALLOWED_CHATS') != owner or values.get('TELEGRAM_ALLOW_ALL_USERS', '').lower() in ('true', '1'):
         return False
+    if credentials_only:
+        with urllib.request.urlopen(f'https://api.telegram.org/bot{token}/getMe', timeout=15) as response:
+            data = json.load(response)
+        return data.get('ok') is True and data.get('result', {}).get('username') == TARGET
     env = dict(os.environ, XDG_RUNTIME_DIR=f'/run/user/{os.getuid()}')
     env['DBUS_SESSION_BUS_ADDRESS'] = f"unix:path={env['XDG_RUNTIME_DIR']}/bus"
     for state in ('is-active', 'is-enabled'):
@@ -67,7 +71,7 @@ def check(e2e=False):
         return False
     if not e2e:
         return True
-    sent = json.loads((BASE / 'ai-team/runtime/owner-launch-hundredprintbot.json').read_text())
+    sent = json.loads((BASE / 'ai-team/runtime/owner-launch-WebToPrintISbot.json').read_text())
     if sent.get('bot_username') != TARGET:
         return False
     # Only genuine private Telegram sessions after this launch's owner message.
@@ -84,7 +88,7 @@ def check(e2e=False):
 
 if __name__ == '__main__':
     try:
-        ready = check('--e2e' in sys.argv)
+        ready = check('--e2e' in sys.argv, '--credentials' in sys.argv)
     except Exception:
         ready = False
     print('Management readiness: ' + ('verified' if ready else 'pending'))

@@ -156,3 +156,12 @@ class ManagementReadinessTests(unittest.TestCase):
         with patch('app.github_worker.run', return_value=SimpleNamespace(returncode=1)) as probe:
             self.assertFalse(readiness(dict(issue_number=11, readiness='telegram-e2e')))
             self.assertTrue(str(probe.call_args.args[0][1]).endswith('verify_telegram.py'))
+
+
+class CredentialResumeTests(unittest.TestCase):
+    def test_credentials_resume_without_running_gateway(self):
+        from types import SimpleNamespace
+        with patch('app.github_worker.run', return_value=SimpleNamespace(returncode=0)) as probe:
+            self.assertTrue(readiness(dict(issue_number=20, readiness='telegram')))
+            self.assertIn('--credentials', probe.call_args.args[0])
+            self.assertNotIn('--e2e', probe.call_args.args[0])
