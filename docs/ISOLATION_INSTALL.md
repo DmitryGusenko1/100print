@@ -7,7 +7,7 @@
 Запустить на VPS обычным пользователем dmitry. Git fetch выполняется без sudo; текущая ветка, рабочие файлы и существующие сервисы не перезаписываются. Нужны git-доступ к origin и sudo для установки. Перед выполнением можно изучить закреплённый installer в репозитории.
 
 ```bash
-bash -c 'set -euo pipefail; d=$(mktemp -d); trap '\''rm -rf "$d"'\'' EXIT; git -C /opt/ceo-orchestrator fetch origin master; git -C /opt/ceo-orchestrator show b2a1ec965f3213c26fa08d13b74b5a9cfec5dfc4:ops/isolation/install-isolated-runtime.py > "$d/install.py"; chmod 600 "$d/install.py"; echo "5fd8cb624f29bd37fd9e7f19b6485de89a8770ef6c28c3eeb9f5cc950cc1f034  $d/install.py" | sha256sum -c -; sudo python3 "$d/install.py"'
+bash -c 'set -euo pipefail; d=$(mktemp -d); trap '\''rm -rf "$d"'\'' EXIT; git -C /opt/ceo-orchestrator fetch origin master; git -C /opt/ceo-orchestrator show 024ba62dc0d0a66d4218673e9b10f2408932c187:ops/isolation/install-isolated-runtime.py > "$d/install.py"; chmod 600 "$d/install.py"; echo "ca1c467525ae55867eee317dbc8f28bc64716ef6d8f25bfb1847ce84ef4b1dee  $d/install.py" | sha256sum -c -; sudo python3 "$d/install.py"'
 ```
 
 Никакой код не загружается и не исполняется от root через curl pipe. SHA фиксирует проверенную версию. Installer использует только стандартную библиотеку Python, не импортирует код проекта и не читает его секреты.
