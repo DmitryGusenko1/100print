@@ -42,6 +42,7 @@ def main():
     environment = dict(os.environ, XDG_RUNTIME_DIR=f'/run/user/{os.getuid()}')
     environment['DBUS_SESSION_BUS_ADDRESS'] = f"unix:path={environment['XDG_RUNTIME_DIR']}/bus"
     pid = subprocess.check_output(['systemctl', '--user', 'show', 'ceo-ai-team-hermes-gateway', '-p', 'MainPID', '--value'], env=environment, text=True).strip()
+    enabled = subprocess.run(['systemctl', '--user', 'is-enabled', '--quiet', 'ceo-ai-team-hermes-gateway'], env=environment).returncode == 0
     active = subprocess.run(['systemctl', '--user', 'is-active', '--quiet', 'ceo-ai-team-hermes-gateway'], env=environment).returncode == 0
     old_inactive = subprocess.run(['systemctl', 'is-active', '--quiet', 'ceo-telegram-bot'], stdout=subprocess.DEVNULL).returncode != 0
     state = json.loads((TEAM / 'runtime/hermes-home/gateway_state.json').read_text())
@@ -55,26 +56,30 @@ def main():
     allowlist = configured.get('TELEGRAM_ALLOWED_USERS') == owner and configured.get('TELEGRAM_BOT_TOKEN') == token
     allowlist = allowlist and configured.get('TELEGRAM_ALLOW_ALL_USERS', '').lower() not in ('true', '1')
     identity = api('getMe')
-    getme = bool(identity.get('id')) and identity.get('username') == 'WebToPrintISbot'
+    getme = bool(identity.get('id')) and identity.get('username') == 'hundredprintbot'
     no_webhook = not api('getWebhookInfo').get('url')
-    gateway = active and connected and old_inactive and no_webhook and getme
-    sent_path = TEAM / 'runtime/owner-launch-WebToPrintISbot.json'
+    ready_spec = importlib.util.spec_from_file_location('management_ready', TEAM / 'ops/management-readiness.py')
+    ready = importlib.util.module_from_spec(ready_spec)
+    ready_spec.loader.exec_module(ready)
+    exclusive = ready.exclusive_consumer(pid)
+    gateway = exclusive and active and enabled and connected and old_inactive and no_webhook and getme
+    sent_path = TEAM / 'runtime/owner-launch-hundredprintbot.json'
     if inference and gateway and allowlist and getme and not sent_path.exists():
-        sent = api('sendMessage', {'chat_id': owner, 'text': 'Дмитрий, Hermes подключён: модель отвечает, постоянный Telegram gateway запущен. Это техническая готовность к диалогу; полный DoD Paperclip ещё не завершён.\n\nЧерновик ночного плана: 1) проверить клиентский сценарий сайта в тестовой среде; 2) исправить только подтверждённые ошибки там и проверить результат; 3) исследовать трёх конкурентов. До вашего утверждения работы не запускаются. Утренний отчёт — Asia/Almaty, только по реальным артефактам.\n\nОтветьте мне здесь, чтобы проверить диалог, и укажите URL сайта/тестовую среду. Если согласны с этим планом, явно напишите «Утверждаю ночной план». Регистрация владельца Paperclip остаётся отдельным шагом.'})
+        sent = api('sendMessage', {'chat_id': owner, 'text': 'Дмитрий, управляющий Hermes на @hundredprintbot проверен: модель отвечает, gateway active/enabled, доступ ограничен владельцем. Клиентский @WebToPrintISbot не требуется. Ответьте здесь настоящим сообщением для проверки диалога. Ночной план ожидает вашего явного утверждения; работы по нему не запускаются.'})
         atomic(sent_path, {'message_id': sent['message_id'], 'date': sent['date'], 'bot_username': identity['username']})
     request = json.loads((BASE / 'data/ai-team-launch-request.json').read_text())
-    receipt = {'request_id': request['request_id'], 'model_inference': inference, 'gateway_active': gateway,
+    receipt = {'request_id': request['request_id'], 'model_inference': inference, 'gateway_active': active, 'gateway_enabled': enabled, 'transport_verified': gateway,
                'owner_allowlist': allowlist, 'outbound_owner_message': getme and sent_path.exists(),
                'checked_at': datetime.datetime.now(datetime.timezone.utc).isoformat()}
-    verified = all(receipt[k] for k in ('model_inference', 'gateway_active', 'owner_allowlist', 'outbound_owner_message'))
+    verified = all(receipt[k] for k in ('model_inference', 'transport_verified', 'owner_allowlist', 'outbound_owner_message'))
     receipt['status'] = 'VERIFIED' if verified else 'BLOCKED'
     if not verified:
-        receipt['public_reason'] = ('Configured Telegram bot is not WebToPrintISbot; update project credentials.'
+        receipt['public_reason'] = ('Configured Telegram bot is not hundredprintbot; update project credentials.'
                                     if not getme else 'Technical launch checks incomplete; see individual booleans.')
     atomic(BASE / 'data/ai-team-telegram-ready.json', receipt)
     atomic(TEAM / 'evidence/telegram-launch.json', dict(receipt, gateway_pid=int(pid), getMe=getme, bot_username=identity.get('username'),
-           webhook_absent=no_webhook, previous_consumer_inactive=old_inactive,
-           inbound_e2e='NOT_RUN', owner_approval='DRAFT', paperclip_owner='bootstrap_pending'))
+           webhook_absent=no_webhook, exclusive_project_consumer=exclusive, previous_consumer_inactive=old_inactive,
+           inbound_e2e='WAITING_REAL_OWNER_MESSAGE', owner_approval='DRAFT', paperclip_owner='bootstrap_pending'))
     print(json.dumps(receipt))
 
 

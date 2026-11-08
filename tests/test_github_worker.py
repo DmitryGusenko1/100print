@@ -4,7 +4,7 @@ import tempfile
 import unittest
 from unittest.mock import patch
 
-from app.github_worker import Queue, execute, tick, finish, eligible, priority
+from app.github_worker import Queue, execute, tick, finish, eligible, priority, readiness
 from app.progress import Progress
 
 
@@ -139,3 +139,20 @@ class WorkerTests(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+
+
+class ManagementReadinessTests(unittest.TestCase):
+    def test_management_wait_uses_hermes_probe(self):
+        from types import SimpleNamespace
+        for number in (18, 20, 21):
+            with self.subTest(number=number), patch('app.github_worker.run', return_value=SimpleNamespace(returncode=0)) as probe:
+                self.assertTrue(readiness(dict(issue_number=number, readiness='telegram-e2e')))
+                self.assertEqual(len(probe.call_args_list), 1)
+                self.assertTrue(str(probe.call_args.args[0][1]).endswith('management-readiness.py'))
+                self.assertEqual(probe.call_args.args[0][-1], '--e2e')
+
+    def test_legacy_tasks_keep_existing_probe(self):
+        from types import SimpleNamespace
+        with patch('app.github_worker.run', return_value=SimpleNamespace(returncode=1)) as probe:
+            self.assertFalse(readiness(dict(issue_number=11, readiness='telegram-e2e')))
+            self.assertTrue(str(probe.call_args.args[0][1]).endswith('verify_telegram.py'))

@@ -154,6 +154,11 @@ class Queue:
 
 
 def readiness(task):
+    if task.get('issue_number') in (18, 20, 21) and task['readiness'] in ('telegram', 'telegram-e2e'):
+        args = [str(ROOT/'.venv/bin/python'), str(ROOT/'ai-team/ops/management-readiness.py')]
+        if task['readiness'] == 'telegram-e2e':
+            args.append('--e2e')
+        return run(args, 45).returncode == 0
     if task['readiness'] == 'telegram-e2e':
         return run([str(ROOT/'.venv/bin/python'), str(ROOT/'scripts/verify_telegram.py')], 45).returncode == 0
     if task['readiness'] == 'telegram':

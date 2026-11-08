@@ -1,3 +1,12 @@
+# Current owner correction — 2026-11-08
+
+Management is `hundredprintbot`; `WebToPrintISbot` is the disabled future customer bot.
+The old credential mismatch and token requests below are superseded.
+See [current issue 21 facts](ISSUE21_STATUS.md).
+#19 is queued independently; #18/#20 await genuine management inbound E2E.
+
+## Historical evidence (superseded target)
+
 # Issue 19 — dependency correction from issue 20 (2026-11-08)
 
 Bridge implementation, artifact/replay checks and offline tests can resume now.

@@ -13,7 +13,7 @@ import urllib.request
 from datetime import datetime, timezone
 
 BASE = Path('/opt/ceo-orchestrator')
-TARGET = 'WebToPrintISbot'
+TARGET = 'hundredprintbot'
 
 
 def identity(token):
@@ -52,7 +52,7 @@ def install(token, base=BASE, check=identity):
     if not re.fullmatch(r'\d{6,15}:[A-Za-z0-9_-]{30,50}', token):
         raise ValueError('Invalid token format; no configuration changed')
     if check(token) != TARGET:
-        raise ValueError('Token is not for WebToPrintISbot; no configuration changed')
+        raise ValueError('Token is not for hundredprintbot; no configuration changed')
     project = base / 'config/telegram.env'
     native = base / 'ai-team/runtime/hermes-home/.env'
     # Reuse the existing strict private-owner mapping without changing any allowlist.
@@ -89,10 +89,10 @@ def main():
     if not sys.stdin.isatty():
         raise SystemExit('Interactive terminal required for hidden token entry')
     try:
-        install(getpass.getpass('Token @WebToPrintISbot (hidden): ').strip())
+        install(getpass.getpass('Token @hundredprintbot (hidden): ').strip())
     except ValueError as error:
         raise SystemExit(str(error)) from None
-    print('getMe=WebToPrintISbot; configurations saved. Executor must verify exclusive transport, restart gateway and test inference/E2E. Services have not been restarted.')
+    print('getMe=hundredprintbot; configurations saved. Executor must verify exclusive transport, restart gateway and test inference/E2E. Services have not been restarted.')
 
 
 if __name__ == '__main__':
