@@ -48,6 +48,55 @@ def auth_store(token=None):
 
 
 class OAuthTests(unittest.TestCase):
+    def test_pool_only_existing_access_needs_no_login_or_store_change(self):
+        store = {'version': 1, 'providers': {}, 'credential_pool': {
+            'openai-codex': [{'id': 'fixture', 'access_token': jwt(), 'refresh_token': 'pool-refresh'}]}}
+        self.path.write_text(json.dumps(store))
+        before = self.path.read_bytes()
+        with patch.object(oauth, 'request') as network:
+            self.assertEqual(oauth.access_token(self.path), store['credential_pool']['openai-codex'][0]['access_token'])
+            network.assert_not_called()
+        self.assertEqual(self.path.read_bytes(), before)
+
+    def test_pool_only_refresh_updates_selected_entry_without_singleton(self):
+        old, fresh = jwt(time.time() - 1), jwt()
+        store = {'version': 1, 'credential_pool': {'openai-codex': [
+            {'id': 'fixture', 'source': 'manual:device_code', 'access_token': old,
+             'refresh_token': 'pool-refresh', 'last_error_code': 'old-error'}]},
+            'providers': {'other': {'keep': True}}}
+        self.path.write_text(json.dumps(store))
+        with patch.object(oauth, 'request', return_value={'access_token': fresh, 'refresh_token': 'rotated'}) as request:
+            self.assertEqual(oauth.access_token(self.path), fresh)
+            request.assert_called_once()
+        saved = json.loads(self.path.read_text())
+        entry = saved['credential_pool']['openai-codex'][0]
+        self.assertEqual((entry['id'], entry['access_token'], entry['refresh_token']), ('fixture', fresh, 'rotated'))
+        self.assertIsNone(entry['last_error_code'])
+        self.assertEqual(saved['providers'], {'other': {'keep': True}})
+        with patch.object(oauth, 'request') as request:
+            self.assertEqual(oauth.access_token(self.path), fresh)
+            request.assert_not_called()
+
+    def test_multiple_pool_accounts_are_not_selected_arbitrarily(self):
+        store = {'version': 1, 'credential_pool': {'openai-codex': [
+            {'access_token': jwt(account=account), 'refresh_token': account}
+            for account in ('one', 'two')]}}
+        self.path.write_text(json.dumps(store))
+        with patch.object(oauth, 'request') as request:
+            with self.assertRaisesRegex(ValueError, 'multiple'):
+                oauth.access_token(self.path)
+            request.assert_not_called()
+
+    def test_singleton_refresh_preserves_unrelated_device_code_account(self):
+        old, fresh = jwt(time.time() - 1), jwt()
+        store = auth_store(old)
+        other = {'source': 'device_code', 'access_token': jwt(account='other'), 'refresh_token': 'other-refresh'}
+        store['credential_pool'] = {'openai-codex': [dict(other)]}
+        self.path.write_text(json.dumps(store))
+        with patch.object(oauth, 'request', return_value={'access_token': fresh, 'refresh_token': 'rotated'}):
+            oauth.access_token(self.path)
+        self.assertEqual(json.loads(self.path.read_text())['credential_pool']['openai-codex'], [other])
+
     def setUp(self):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
