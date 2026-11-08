@@ -141,7 +141,7 @@ def install():
         'status': 'IN_PROGRESS_NOT_READY', 'installer_sha256': digest}) + '\n')
     ATTEMPT_STARTED = True
     if not Path('/run/systemd/system').is_dir():
-        raise RuntimeError('Requires a systemd Linux host; no host changes made')
+        raise RuntimeError('Requires a systemd Linux host; no service/runtime provisioning performed')
     for command in ('systemctl', 'systemd-analyze', 'useradd'):
         if not shutil.which(command):
             raise RuntimeError('Missing host command: ' + command)
