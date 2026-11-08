@@ -1,0 +1,22 @@
+{
+  "timestamp": "2026-11-08T06:32:15.082428+00:00",
+  "before": [
+    "Restart=on-failure",
+    "MainPID=2623798",
+    "ActiveState=active"
+  ],
+  "after": [
+    "Restart=on-failure",
+    "MainPID=3347678",
+    "ActiveState=active"
+  ],
+  "counts_before": {
+    "sessions": 9,
+    "messages": 25
+  },
+  "counts_after": {
+    "sessions": 9,
+    "messages": 25
+  },
+  "scope": "only ceo-ai-team-hermes-gateway restarted; E2E and runtime reconnect checked separately"
+}

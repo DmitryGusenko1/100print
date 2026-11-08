@@ -1,3 +1,43 @@
+# Current acceptance — 2026-11-08 06:33 UTC
+
+**CHANGED / WAITING_USER; full DoD incomplete.** This section supersedes all
+historical blockers, bot targets and service states below.
+
+- **VERIFIED:** management `hundredprintbot`; fresh bounded inference, one API
+  call, exact control response, session recorded in
+  [inference evidence](../../ai-team/evidence/issue18-resume-inference.json).
+  Existing Codex login remains authenticated; credentials were preserved.
+- **VERIFIED:** genuine owner inbound and subsequent Hermes/model answer,
+  session `20261108_063045_dc3d9b5b`. Owner requested status and a work proposal;
+  this is **not approval**. No owner message was synthesized. Sanitized
+  [E2E evidence](../../ai-team/evidence/issue18-owner-e2e.json) excludes content.
+- **VERIFIED:** exclusive management consumer, owner allowlist, absent webhook,
+  active/enabled persistent gateway, previous readiness delivery. Restarted
+  only ceo-ai-team-hermes-gateway: PID 2623798 -> 3347678; 9 sessions and
+  25 messages retained. Telegram reconnected and E2E rechecked after restart.
+  [Restart evidence](../../ai-team/evidence/issue18-gateway-restart.json).
+- Customer `WebToPrintISbot`: no configured integrations found in the scoped
+  project audit; token/data preserved. Its global webhook cannot be checked
+  without its token, which does not block management or GitHub bridge #19.
+- **CREATED only:** organization manifest and role instructions. Paperclip
+  authenticated/private health is ok but reports `bootstrap_pending`.
+  Organization/project/agents, native adapter tasks, QA return, owner approval
+  pending/nonexecution and full entity continuity remain unverified.
+- Night plan remains DRAFT; no night tasks were launched. Website/test URL
+  remains unconfirmed. No website availability claim is made.
+
+**Required human action:** complete personal Paperclip owner registration using
+its private one-time bootstrap URL (`ai-team/runtime/secrets/owner-bootstrap.txt`)
+through the SSH tunnel to `http://localhost:3180`. After successful registration,
+confirm it by creating project marker `data/ai-team-paperclip-owner-ready`.
+Do not publish the bootstrap URL. Executor readiness is this marker; Telegram
+E2E is already verified and is no longer the blocker. The marker does not grant
+owner approval; the next executor must verify authenticated bootstrap state.
+
+Validation: 21 bridge/worker tests, 2 owner mapping tests, 2 Telegram preparation
+tests; live inference, transport/E2E, Codex login and private Paperclip health.
+Existing unrelated uncommitted changes are preserved.
+
 # Current owner correction — 2026-11-08
 
 Management is `hundredprintbot`; `WebToPrintISbot` is the disabled future customer bot.

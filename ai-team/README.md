@@ -1,3 +1,15 @@
+# Current operating status — 2026-11-08
+
+Hermes management on @hundredprintbot is active/enabled and genuine owner/model
+Telegram E2E is verified, including history persistence after gateway restart.
+OAuth is complete. Do not repeat obsolete authentication or handoff steps below.
+Paperclip is authenticated/private on loopback 3180; human bootstrap remains
+pending. Complete personal registration with the private bootstrap link, then
+create `data/ai-team-paperclip-owner-ready` to resume the worker. Night work still
+requires explicit owner approval. See the current acceptance section for evidence.
+
+## Historical installation instructions (states superseded above)
+
 # 100print AI-team foundation
 
 Status: **WAITING_USER**, installation partially verified. See

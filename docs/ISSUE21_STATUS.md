@@ -1,3 +1,12 @@
+# Update for issue 18 — 2026-11-08 06:33 UTC
+
+Genuine owner inbound/model E2E is now VERIFIED in management session
+`20261108_063045_dc3d9b5b`, including after isolated gateway restart. Owner
+requested a proposal; night plan remains DRAFT. For #18 the next blocker is
+personal Paperclip owner bootstrap (`bootstrap_pending`), with readiness
+`file:data/ai-team-paperclip-owner-ready`. Historical pending-E2E statements
+below are superseded for #18. See current acceptance report.
+
 # Issue 21 — management restored, owner E2E pending
 
 Checked 2026-11-08 UTC. Management target: `hundredprintbot`.
