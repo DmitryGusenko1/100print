@@ -4,28 +4,18 @@ import http.server
 import json
 import os
 from pathlib import Path
-import socket
 import subprocess
 import threading
 import time
+from protocol import rpc as wire_rpc
 
+ACTIVE_TASK = {}
 SOCKET = '/broker/control.sock'
 LIMIT = 2_000_000
 
 
 def rpc(message):
-    wire = json.dumps(message).encode() + b'\n'
-    if len(wire) > LIMIT:
-        raise ValueError('request too large')
-    with socket.socket(socket.AF_UNIX) as connection:
-        connection.settimeout(240)
-        connection.connect(SOCKET)
-        connection.sendall(wire)
-        result = connection.makefile('rb').readline(LIMIT + 1)
-    if len(result) > LIMIT:
-        raise ValueError('response too large')
-    return json.loads(result)
-
+    return wire_rpc(SOCKET, message)
 
 def completion_data(body, stream):
     if not stream:
@@ -63,7 +53,7 @@ class Model(http.server.BaseHTTPRequestHandler):
             body = json.loads(self.rfile.read(size))
             stream = body.get('stream') is True
             body['stream'] = False
-            result = rpc({'op': 'model', 'body': body})
+            result = wire_rpc('/model/model.sock', dict(ACTIVE_TASK, op='model', body=body))
             data = completion_data(result['body'], stream)
             self.send_response(result['status'])
             self.send_header('Content-Type', 'text/event-stream' if stream else 'application/json')
@@ -75,11 +65,16 @@ class Model(http.server.BaseHTTPRequestHandler):
 
 
 def execute(task):
+    global ACTIVE_TASK
+    ACTIVE_TASK = {key: task[key] for key in ('id', 'expires', 'capability')}
     job = task['id']
     # Broker-generated hex identifiers only; never interpolate user paths.
     if len(job) != 32 or any(c not in '0123456789abcdef' for c in job):
         raise ValueError('invalid task id')
-    work = Path('/workspace/jobs') / job
+    jobs = Path('/workspace/jobs')
+    if jobs.is_symlink():
+        raise ValueError('workspace job root must not be a symlink')
+    work = jobs / job
     work.mkdir(parents=True, exist_ok=False, mode=0o700)
     usage = work / 'usage.json'
     env = dict(os.environ, HERMES_HOME='/workspace/hermes', TERMINAL_CWD=str(work),

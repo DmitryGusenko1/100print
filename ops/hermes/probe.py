@@ -9,14 +9,24 @@ import subprocess
 import uuid
 
 
+def accessible(path):
+    try:
+        Path(path).stat()
+        return True
+    except (FileNotFoundError, PermissionError):
+        return False
+
+
 def probe():
     checks = {'unprivileged': os.geteuid() != 0,
               'no_new_privileges': ctypes.CDLL(None).prctl(39, 0, 0, 0, 0) == 1}
     for name, path in {'host_project': '/opt/ceo-orchestrator', 'host_home': '/home',
                        'host_canary': '/var/lib/100print-isolation/host-only-canary',
-                       'credentials': '/etc/100print-hermes.json', 'docker': '/run/docker.sock',
+                       'credentials': '/etc/100print-hermes.json', 'canonical_oauth': '/oauth/auth.json',
+                       'model_state': '/model-state/usage.db',
+                       'broker_signing_key': '/run/credentials/100print-hermes-model.service/capability-key', 'docker': '/run/docker.sock',
                        'host_proc': '/proc/1/root'}.items():
-        checks[name + '_hidden'] = not Path(path).exists()
+        checks[name + '_hidden'] = not accessible(path)
     for path in ('/app/hermes/forbidden', '/runtime/forbidden'):
         try:
             Path(path).write_text('probe')
@@ -54,6 +64,12 @@ def probe():
                                 'from pathlib import Path; '
                                 'raise SystemExit(Path("/opt/ceo-orchestrator").exists())'], timeout=5)
         checks['child_confined'] = child.returncode == 0
+        network_child = subprocess.run(['/usr/bin/python3', '-I', '-c',
+            'import socket; s=socket.socket(); s.settimeout(1);\n'
+            'try: s.connect(("10.0.0.1",443))\n'
+            'except OSError: raise SystemExit(77)\n'
+            'raise SystemExit(0)'], timeout=5)
+        checks['child_private_network_denied'] = network_child.returncode == 77
     finally:
         for item in root.iterdir():
             item.unlink()
