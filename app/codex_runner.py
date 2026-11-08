@@ -16,6 +16,8 @@ class CodexRunner:
             raise ValueError('Executable must be installed inside project')
 
     def run(self, prompt, workdir=ROOT, timeout=60):
+        from app.isolation import require_isolated_execution
+        require_isolated_execution()
         wd = Path(workdir).resolve(strict=True)
         if not any(wd.is_relative_to(base) for base in self.allowed):
             raise ValueError('Workdir outside whitelist')

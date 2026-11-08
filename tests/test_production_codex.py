@@ -10,6 +10,13 @@ from app.providers import business_brain
 
 
 class ProductionCodexTests(unittest.TestCase):
+    def setUp(self):
+        # Contract tests for dormant provider internals; live denial is covered
+        # separately by test_isolation without this explicit test-only mock.
+        guard = patch('app.isolation.require_isolated_execution')
+        guard.start()
+        self.addCleanup(guard.stop)
+
     def request(self):
         return {'operation':'challenge','output_schema':CHALLENGE,'input':{'question':'price'}}
 

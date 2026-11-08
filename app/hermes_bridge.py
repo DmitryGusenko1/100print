@@ -62,6 +62,8 @@ def finish(tid, state, receipt):
 
 
 def execute(job):
+    from app.isolation import require_isolated_execution
+    require_isolated_execution()
     tid = str(job['task_id'])
     work = PRIVATE / 'workspaces' / hashlib.sha256(job['session_id'].encode()).hexdigest()
     work.mkdir(parents=True, exist_ok=True, mode=0o700)
@@ -171,9 +173,8 @@ def work_once():
             cur.execute("SELECT * FROM hermes_bridge_jobs WHERE status='queued' ORDER BY created_at LIMIT 1")
             job = cur.fetchone()
             if job:
-                cur.execute("UPDATE hermes_bridge_jobs SET status='running',updated_at=now() WHERE task_id=%s", (job['task_id'],))
-                lock.commit()
-                execute(job)
+                # Retain queued requests without claiming or replaying effects.
+                return
         finally:
             cur.execute('SELECT pg_advisory_unlock(819019)')
 

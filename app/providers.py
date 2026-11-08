@@ -7,6 +7,9 @@ class BrainProvider(ABC):
 
 class LocalBrainProvider(BrainProvider):
     def execute(self, task):
+        from app.isolation import require_isolated_execution
+        if task['type'] not in ('echo', 'follow_up'):
+            require_isolated_execution()
         import time
         kind = task['type']
         if kind == 'echo':

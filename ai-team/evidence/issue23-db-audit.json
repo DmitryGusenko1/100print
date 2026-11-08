@@ -1,0 +1,10 @@
+{
+  "identity": "ceo_orchestrator",
+  "database": "ceo_orchestrator",
+  "role_flags": {
+    "rolsuper": false,
+    "rolcreatedb": false,
+    "rolcreaterole": false,
+    "rolbypassrls": false
+  }
+}

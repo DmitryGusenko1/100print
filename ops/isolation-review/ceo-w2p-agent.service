@@ -1,0 +1,35 @@
+# REVIEW ONLY: new dedicated service; do not install before provisioning/review.
+# Does not modify any existing service or shared identity.
+[Unit]
+Description=Web-to-Print isolated agent (pending approval and E2E)
+ConditionPathExists=/opt/ceo-orchestrator/data/isolation/approved-rootfs/usr/bin/python3
+[Service]
+Type=simple
+User=ceo-w2p-agent
+Group=ceo-w2p-agent
+RootDirectory=/opt/ceo-orchestrator/data/isolation/approved-rootfs
+WorkingDirectory=/workspace
+# Only sanitized source export and disposable per-project workspace, never full ROOT.
+BindReadOnlyPaths=/opt/ceo-orchestrator/data/isolation/source:/project
+BindPaths=/opt/ceo-orchestrator/data/isolation/workspace:/workspace
+ExecStart=/usr/bin/python3 /project/isolated_executor.py
+Environment=HOME=/workspace
+Environment=PATH=/usr/bin:/bin
+NoNewPrivileges=yes
+CapabilityBoundingSet=
+AmbientCapabilities=
+PrivateDevices=yes
+PrivateTmp=yes
+PrivateNetwork=yes
+ProtectSystem=strict
+ProtectHome=yes
+ProtectKernelTunables=yes
+ProtectKernelModules=yes
+ProtectControlGroups=yes
+RestrictSUIDSGID=yes
+RestrictNamespaces=yes
+RestrictAddressFamilies=AF_UNIX
+LockPersonality=yes
+ReadWritePaths=/workspace
+UMask=0077
+Restart=no

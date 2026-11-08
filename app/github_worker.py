@@ -208,70 +208,16 @@ def execute(queue, task):
                 sync_progress(queue, number, progress)
         finish(queue, task, {'status': 'DONE', 'summary': 'Synthetic task automatically picked up and completed'}, progress)
         return
-    if run(['codex', 'login', 'status'], 20).returncode != 0:
-        finish(queue, task, dict(status='WAITING_USER', summary='Codex authorization is unavailable', user_action='Восстановите project-local авторизацию Codex.', readiness='codex'), progress)
-        return
-    result_path = queue.root / f'data/executor-result-{number}.json'
-    # If the old worker died while its executor survived, wait rather than duplicate it.
     prior_pid = queue.meta(f'executor-{number}')
     prior_identity = queue.meta(f'executor-identity-{number}')
     if prior_pid and alive(prior_pid) and process_identity(prior_pid) == prior_identity:
         queue.update(number, status='RUNNING', heartbeat=now())
         return
-    if task['attempt'] > 1 and result_path.exists():
-        recovered = json.loads(result_path.read_text())
-        if recovered.get('status') == 'DONE':
-            finish(queue, task, recovered, progress)
-            return
-    result_path.unlink(missing_ok=True)
-    final_path = queue.root / f'data/executor-final-{number}.txt'
-    final_path.unlink(missing_ok=True)
-    prompt = f'''Ты исполнитель CEO Orchestrator. Выполни issue #{number} {REPO}.
-TITLE: {task['title']}
-BODY:\n{task['body']}
-Работать только в /opt/ceo-orchestrator. Не читать чужие .env, не трогать другие проекты/пользователей.
-Только сервисы ceo-* / ai-business-brain-* и БД ceo_orchestrator / ai_brain разрешены.
-Сначала прочитай scripts/progress.py и сохранённый progress. Не уменьшай этап.
-Обновляй фактический этап: python3 scripts/progress.py --issue {number} --stage STAGE --current "подзадача" --action "действие".
-Этапы analysis, planning, implementation, integration, tests, commit/push; done выставляет только worker.
-При изменениях выполнить tests, git add/commit/push. Финал DONE/CHANGED/TESTED/NEXT.
-ОБЯЗАТЕЛЬНО запиши {result_path} JSON: {{"status":"DONE","summary":"проверенный результат"}} ТОЛЬКО при полном DoD.
-Если нужны token/OAuth/UI/права: прекрати зависимое выполнение, запиши JSON
-{{"status":"WAITING_USER","summary":"причина","user_action":"ровно одно простое действие","readiness":"telegram или telegram-e2e или github или file:data/имя-маркера"}}.
-Для отсутствующих Telegram credentials readiness=telegram; для ожидания реального сообщения/E2E readiness=telegram-e2e. Для общего UI подтверждения попроси создать указанный project-local marker только после подтверждения.
-Не помещай секреты, логи команд и hidden reasoning в JSON или финал. Exit 0 без DONE JSON не означает успех.
-'''
-    log_path = queue.root / f'logs/executor-{number}.log'
-    log_path.parent.mkdir(parents=True, exist_ok=True)
-    with log_path.open('a') as output:
-        process = subprocess.Popen(['codex', 'exec', '--skip-git-repo-check', '--dangerously-bypass-approvals-and-sandbox', '--output-last-message', str(final_path), prompt], cwd=ROOT, stdout=output, stderr=output, start_new_session=True)
-        queue.meta(f'executor-{number}', process.pid)
-        queue.meta(f'executor-identity-{number}', process_identity(process.pid))
-        deadline = time.monotonic() + 3600
-        try:
-            while process.poll() is None:
-                sync_progress(queue, number, progress)
-                queue.meta('heartbeat', time.time())
-                try:
-                    queue.flush()
-                except Exception as error:
-                    queue.meta('last_error', str(error))
-                if time.monotonic() > deadline:
-                    raise TimeoutError('Executor exceeded one-hour limit')
-                time.sleep(5)
-        finally:
-            if process.poll() is None:
-                os.killpg(process.pid, signal.SIGTERM)
-                try:
-                    process.wait(timeout=10)
-                except subprocess.TimeoutExpired:
-                    os.killpg(process.pid, signal.SIGKILL)
-                    process.wait()
-    if process.returncode != 0 or not result_path.exists():
-        queue.update(number, status='RETRY', retry_at=time.time()+300, result='Executor failed or did not supply a verified result')
-        return
-    result = json.loads(result_path.read_text())
-    finish(queue, task, result, progress)
+    finish(queue, task, dict(status='WAITING_USER',
+        summary='Issue 23: autonomous executor disabled pending verified OS isolation',
+        user_action='Согласуйте host migration из docs/ISSUE23_ISOLATION.md.',
+        readiness='file:data/issue23-host-review-approved'), progress)
+    return
 
 
 def finish(queue, task, result, progress):

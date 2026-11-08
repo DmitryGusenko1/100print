@@ -71,23 +71,8 @@ def maintenance(cur, active):
         logging.info('daily report counts=%s',counts)
 
 def claim(cur, fast=False):
-    cur.execute('''SELECT * FROM tasks WHERE status='new' AND available_at<=now()
-        AND (%s = (COALESCE(payload->>'level','')='L1'))
-        ORDER BY priority DESC,created_at FOR UPDATE SKIP LOCKED LIMIT 1''', (fast,))
-    task=cur.fetchone()
-    if not task: return None
-    from app.organization.routing import DEPARTMENTS
-    business=task['type'] in ('ai-task','council',*DEPARTMENTS)
-    cur.execute("SELECT id FROM agents WHERE enabled AND id=%s",('chief-of-staff' if business else 'local',))
-    agent=cur.fetchone()
-    if not agent: return None
-    task=dict(task); task['assigned_to']=agent['id']
-    cur.execute("UPDATE tasks SET status='processing',started_at=now(),updated_at=now(),attempts=attempts+1,assigned_to=%s,error=NULL WHERE id=%s",(agent['id'],task['id']))
-    cur.execute("INSERT INTO agent_runs(task_id,agent_id,status) VALUES (%s,%s,'processing') RETURNING id",(task['id'],agent['id']))
-    task['run_id']=cur.fetchone()['id']
-    cur.execute('INSERT INTO decisions(task_id,body) VALUES (%s,%s)',(task['id'],Json({'agent':agent['id'],'reason':'business routing pending' if business else 'enabled local handler'})))
-    logging.info('task=%s new -> processing agent=%s',task['id'],agent['id'])
-    return task
+    # Issue 23: status/maintenance stay available; no autonomous task dispatch.
+    return None
 
 def finish(cur, task, result=None, error=None):
     if error:
@@ -130,6 +115,8 @@ def main():
     with connect() as conn, conn.cursor() as cur:
         cur.execute((ROOT/'config/schema.sql').read_text())
         cur.execute((ROOT/'config/chatgpt_schema.sql').read_text())
+        cur.execute((ROOT/'config/github_bridge_schema.sql').read_text())
+        cur.execute((ROOT/'config/isolation_pause.sql').read_text())
         from app.intelligence import migrate
         migrate(cur)
         from app.organization.registry import Registry

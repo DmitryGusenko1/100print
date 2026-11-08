@@ -1,0 +1,8 @@
+{
+  "scope": "installed Hermes modules with project interlock; no LLM turn claimed",
+  "hermes_tool_dispatch_denied": true,
+  "hermes_codex_transport_denied": true,
+  "cron_direct_denied": true,
+  "cron_external_worker_denied": true,
+  "cron_tick_paused": true
+}

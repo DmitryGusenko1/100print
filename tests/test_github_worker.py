@@ -127,7 +127,7 @@ class WorkerTests(unittest.TestCase):
             execute(q, q.claim())
             spawn.assert_not_called()
         self.assertEqual('WAITING_USER',q.task(1)['status'])
-        self.assertEqual('codex',q.task(1)['readiness'])
+        self.assertEqual('file:data/issue23-host-review-approved',q.task(1)['readiness'])
 
     def test_done_requires_explicit_result(self):
         q = self.queue

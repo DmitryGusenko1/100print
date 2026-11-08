@@ -36,10 +36,14 @@ class ProductionCodexProvider(BrainProvider):
                          'demonstration': False, 'protocol': 'structured-v2'}
 
     def respond(self, request):
+        from app.isolation import require_isolated_execution
+        require_isolated_execution()
         with self._slots:
             return self._respond(request)
 
     def _respond(self, request):
+        from app.isolation import require_isolated_execution
+        require_isolated_execution()
         # Temporary artifacts live only inside our project; no hidden reasoning is persisted.
         base = ROOT / 'data/codex-inference'
         base.mkdir(mode=0o700, parents=True, exist_ok=True)

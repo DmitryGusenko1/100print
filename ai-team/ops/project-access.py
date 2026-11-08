@@ -37,6 +37,9 @@ def executor_probe(action: str = 'status') -> dict:
 
     This does not authorize functional work. No arbitrary task input is accepted.
     """
+    if action == 'submit':
+        from app.isolation import require_isolated_execution
+        require_isolated_execution()
     from app.db import connect, enqueue
     if action not in ('status', 'submit'):
         raise ValueError('Expected status or submit')

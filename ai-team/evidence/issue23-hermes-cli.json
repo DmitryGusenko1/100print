@@ -1,0 +1,7 @@
+{
+  "real_cli_invoked": true,
+  "exit_code": 2,
+  "containment_denial_observed": true,
+  "inference_e2e_passed": false,
+  "note": "Model transport intentionally paused; tool dispatch module probes are separate evidence."
+}
