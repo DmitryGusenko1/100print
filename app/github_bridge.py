@@ -4,6 +4,8 @@ import logging
 import re
 import subprocess
 import time
+import threading
+from app import hermes_bridge as hermes
 from app.db import connect, ROOT, enqueue, Json
 from app import project_memory as memory
 
@@ -74,21 +76,39 @@ def ingest(comment):
         operation, separator, content = text.partition('\n')
         if operation in ('CONTEXT', 'DECISION') and separator and content.strip():
             if operation == 'CONTEXT':
-                result = {'operation': operation, 'context': memory.context(cur, cid, content)}
+                context = memory.context(cur, cid, content)
+                result = {'operation': operation, 'context': {'private_on_vps': True,
+                          'relevant_memory_count': len(context.get('relevant_memory', []))}}
             else:
                 item = memory.append(cur, cid, content, kind='decision',
-                    metadata={'status': 'accepted', 'transport': 'github',
+                    metadata={'status': 'reported', 'transport': 'github',
                               'comment_id': comment['id'], 'source': 'user-reported'},
                     request_id=key + ':decision')
                 result = {'operation': operation, 'saved': True, 'memory_id': str(item['id']),
-                          'decision_status': 'accepted', 'text': content}
+                          'decision_status': 'reported', 'approval_granted': False}
             tid = enqueue(cur, operation + ' bridge receipt', 'echo', {}, 'chatgpt', key)
             cur.execute("UPDATE tasks SET status='done',result=%s,finished_at=now() WHERE id=%s",
                         (Json(json.loads(json.dumps(result, default=str))), tid))
             task = {'task_id': tid}
         else:
-            # create_task retrieves server context before enqueueing analysis.
-            task = memory.create_task(cur, cid, text, key)
+            op, _, argument = text.partition('\n')
+            if op == 'status':
+                result = {'operation': op, 'health': hermes.health()}
+                cur.execute('SELECT status,count(*) AS n FROM hermes_bridge_jobs GROUP BY status')
+                result['tasks'] = {r['status']: r['n'] for r in cur.fetchall()}
+            elif op == 'get_task_result':
+                result = {'operation': op, **hermes.result(cur, session, argument.strip())}
+            elif op == 'propose_owner':
+                tid = hermes.submit(cur, session, argument, key + ':proposal')
+                cur.execute("UPDATE hermes_bridge_jobs SET status='awaiting_owner' WHERE task_id=%s", (tid,))
+                result = {'operation': op, 'status': 'awaiting_owner', 'task_id': tid,
+                          'approval_granted': False, 'delivery': 'pending'}
+            else:
+                tid = hermes.submit(cur, session, argument if op == 'submit_task' else text, key + ':hermes')
+                result = {'operation': 'submit_task', 'status': 'queued', 'task_id': tid, 'health': hermes.health()}
+            receipt = enqueue(cur, 'Hermes bridge receipt', 'echo', {}, 'chatgpt', key)
+            cur.execute("UPDATE tasks SET status='done',result=%s,finished_at=now() WHERE id=%s", (Json(result), receipt))
+            task = {'task_id': receipt}
         cur.execute('''INSERT INTO chatgpt_bridge_comments(comment_id,session_id,conversation_id,task_id)
                        VALUES (%s,%s,%s,%s)''', (comment['id'], session, cid, task['task_id']))
     logging.info('Bridge intake comment=%s task=%s', comment['id'], task['task_id'])
@@ -96,21 +116,16 @@ def ingest(comment):
 
 def brief(row):
     result = row['result'] or {}
-    if result.get('operation') in ('CONTEXT', 'DECISION'):
-        return {'status': row['status'], **result}
-    analysis = result.get('analysis', {})
-    return {'status': row['status'], 'provider': result.get('provider'),
-            'model':result.get('model'), 'provider_metadata':result.get('provider_metadata'),
-            'positions':[{k:v for k,v in p.items() if k!='findings'} for p in result.get('positions',[])],
-            'structured_recommendation':{k:analysis.get(k) for k in ('position','recommendation',
-                'arguments_for','arguments_against','objections','evidence','assumptions','change_conditions')},
-            'conflicts':result.get('conflicts'),
-            'synthesis':result.get('synthesis'),
-            'demonstration': result.get('demonstration'), 'routing': result.get('routing'),
-            'recommendation': analysis.get('decision'), 'alternatives': analysis.get('hypotheses', []),
-            'risks': analysis.get('risks', []), 'critic': result.get('critic_challenge'),
-            'confidence': analysis.get('confidence'), 'change_conditions': analysis.get('change_conditions', []),
-            'requires_decision': result.get('requires_decision'), 'error': row['error']}
+    if result.get('operation') == 'CONTEXT':
+        context = result.get('context', {})
+        return {'status': row['status'], 'operation': 'CONTEXT', 'context': {
+            'private_on_vps': True, 'relevant_memory_count': context.get('relevant_memory_count', len(context.get('relevant_memory', [])))}}
+    if result.get('operation') == 'DECISION':
+        return {'status': row['status'], 'operation': 'DECISION', 'saved': result.get('saved'),
+                'memory_id': result.get('memory_id'), 'decision_status': 'reported', 'approval_granted': False}
+    if result.get('operation') in ('status', 'get_task_result', 'submit_task', 'propose_owner', 'hermes'):
+        return result
+    return {'status': row['status'], 'private_on_vps': True}
 
 
 def deliver(existing, test_only=False):
@@ -138,7 +153,11 @@ def deliver(existing, test_only=False):
                        'detail': 'Full result and artifacts in project memory by task_id'}
             encoded = json.dumps(summary, ensure_ascii=False)
         body = f'CHATGPT_OUT\nsession={row["session_id"]}\ntask_id={row["task_id"]}\nresult={encoded}\n{marker}'
+        if found is None and row['delivery_attempts'] >= 5:
+            continue
         if found is None:
+            with connect() as conn, conn.cursor() as cur:
+                cur.execute('UPDATE chatgpt_bridge_comments SET delivery_attempts=delivery_attempts+1 WHERE comment_id=%s', (row['comment_id'],))
             found = api(f'repos/{REPO}/issues/{ISSUE}/comments', body)
             existing.append(found)
         with connect() as conn, conn.cursor() as cur:
@@ -175,6 +194,7 @@ def poll():
 def main():
     logging.basicConfig(level=logging.INFO, format='%(asctime)s %(levelname)s %(message)s')
     migrate()
+    threading.Thread(target=hermes.worker, daemon=True).start()
     logging.info('ChatGPT bridge active: %s#%s', REPO, ISSUE)
     while True:
         try:

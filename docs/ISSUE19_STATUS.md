@@ -1,48 +1,57 @@
-# Current owner correction — 2026-11-08
+# Issue 19 — Hermes bridge verified; owner Telegram E2E pending
 
-Management is `hundredprintbot`; `WebToPrintISbot` is the disabled future customer bot.
-The old credential mismatch and token requests below are superseded.
-See [current issue 21 facts](ISSUE21_STATUS.md).
-#19 is queued independently; #18/#20 await genuine management inbound E2E.
+Checked 2026-11-08 UTC. Existing ceo-github-watcher / issue #8 now routes new
+ordinary/submit_task requests to installed Hermes, without a legacy provider
+fallback, extra orchestrator, Telegram poller or public server. Native CLI
+`-z --in --usage-file --resume` was checked against the installed implementation.
+Management health verified at 2026-11-08T04:50:54Z: hundredprintbot gateway,
+allowlist, exclusive consumer and webhook checks pass. WebToPrintISbot is not
+a prerequisite; #18/#20 instructions and #21 correction were read first.
 
-## Historical evidence (superseded target)
+Durable PostgreSQL job/session state and private VPS outputs support status,
+submit_task, get_task_result and propose_owner. GitHub results expose only
+technical receipts and artifact hashes/sizes. CONTEXT returns counts without
+private memory text; DECISION saves a reported choice, approval_granted=false.
+Proposals use the existing owner Telegram configuration, remain awaiting_owner,
+and never execute or approve themselves. Ambiguous sends are not automatically
+repeated. Real owner agreement has not been simulated or claimed.
 
-# Issue 19 — dependency correction from issue 20 (2026-11-08)
+## Sanitized live evidence
 
-Bridge implementation, artifact/replay checks and offline tests can resume now.
-A Telegram token is not a prerequisite for those independent tasks. Paperclip
-registration is also not required. No bridge work or acceptance is claimed by
-issue 20. Only Telegram integration and real inbound E2E depend on the required
-bot credential and subsequent gateway validation.
+- Input #8 comment 6717405371, session issue19-e2e-20261108-v3.
+- Queued OUT 6717406140; durable job f7cba20e-6d60-41f4-b1d6-07179215b886.
+- Real Hermes inference: one API call, completed 2026-11-08T04:49:11Z.
+- Exact model response saved by adapter as an isolated workspace artifact:
+  20 bytes, SHA256 3cc37a194aaea543886ecf232a3d7043a7b161aa01955f43298c966bc7fe9230.
+  Expected test marker content verified locally; private outputs stay on VPS.
+- Retrieval input 6717411603, done OUT 6717412629; read back via GitHub connector.
+- Twice replaying input 6717405371 leaves exactly one job and no repeated effect.
+- Restarted only ceo-github-watcher; completed result and native session survived.
+- Continuity input 6717416714, job 23b4089f-6cb5-4754-b25d-c1f574883d1c:
+  one real API call, completed 2026-11-08T04:50:26Z. Resumed the same native
+  Hermes session and reproduced the previous marker without it in the new prompt.
 
-Issue 20 expanded the permitted project settings search: one unique token,
-getMe=hundredprintbot; no WebToPrintISbot token. A single hidden local input is
-prepared; see [current #18 update](ai-team/acceptance-2026-11-07.md).
-The prior #19 WAITING_USER receipt is historical and must not suppress independent
-bridge scheduling; replace it with the executing #19 worker's factual outcome.
+Earlier probes were not acceptance: an advertised CLI flag was rejected by the
+installed gateway launcher; removed after source verification. A later model
+inference completed but native file writes were denied by its sandbox/approval
+policy. No permissions were broadened. The accepted artifact above is a saved
+model response, not a claim of successful native shell/file tool execution.
+`done` reports inference completion, not independent validation of every prose task.
 
-## Historical report (superseded dependency rule)
+Recovery preserves queued jobs. Interrupted running jobs recover a saved completion
+receipt or fail with effect_unknown, without blind reexecution. GitHub delivery
+uses markers and bounded attempts; an uncertain Telegram proposal uses one send
+attempt and retains unknown status for reconciliation. Scheduler excludes Hermes
+jobs from legacy followups; bridge heartbeat also protects the still-running
+legacy scheduler without restarting it.
 
-# Issue 19 — prerequisite blocked
+Validation: 15 focused bridge/progress/scheduler tests passed, Python compilation
+and git whitespace checks. Tests cover intake replay, post-delivery crash,
+unknown-effect restart, session isolation, private legacy context filtering,
+reported decisions, ambiguous proposal send and legacy scheduler isolation.
+Proposal transport tests use mocks; no real approval or real inbound Telegram
+E2E is claimed. Health is technical transport readiness, not owner acceptance.
 
-VPS check: 2026-11-07T22:10:21Z. Status: WAITING_USER; DoD incomplete.
-
-Read saved progress (analysis, 10%), existing app/github_bridge.py,
-docs/VOICE_BRIDGE.md and current issue #18 reports through the GitHub connector.
-Latest #18 blocker: issuecomment-6713656513; worker receipt: issuecomment-6713665254.
-
-Read-only Telegram getMe using only project config/telegram.env succeeded,
-but the configured username is hundredprintbot rather than required WebToPrintISbot.
-No token or owner identifier is included here. No polling, outbound messaging,
-service restart or approval was performed. Existing unrelated changes were preserved.
-
-Hermes inference evidence from #18 at 2026-11-07T22:07:53Z records one real
-openai-codex model call; this is not bridge acceptance. No new bridge inference,
-artifact, replay or restart acceptance is claimed. Existing bridge behavior remains
-pending replacement and must not be represented as a verified Hermes integration.
-
-Required action: replace CEO_TELEGRAM_TOKEN in the existing project-local
-config/telegram.env with the token for @WebToPrintISbot, privately.
-Executor readiness is telegram. Resume priority #18 model/Telegram readiness,
-then implement and verify #19 without requiring Paperclip registration.
-Progress remains analysis; no stage advancement for incomplete integration.
+Full DoD is WAITING_USER, readiness=telegram-e2e, because #18/#20 genuine owner
+inbound E2E remains pending. One owner action: send one real message to
+@hundredprintbot. No token/OAuth action or Paperclip registration is requested.

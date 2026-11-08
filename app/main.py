@@ -56,7 +56,7 @@ def maintenance(cur, active):
             enqueue(cur,'Review pending handoff','follow_up',{'parent_task':str(handoff['task_id'])},'scheduler',f"handoff:{handoff['id']}")
             cur.execute("UPDATE handoffs SET status='waiting',updated_at=now() WHERE id=%s",(handoff['id'],))
     if due(cur,'hourly',3600):
-        cur.execute("SELECT id FROM tasks WHERE status IN ('new','waiting','processing') AND type!='follow_up' AND updated_at < now()-interval '1 hour'")
+        cur.execute("SELECT id FROM tasks WHERE status IN ('new','waiting','processing') AND type NOT IN ('follow_up','hermes_bridge') AND updated_at < now()-interval '1 hour'")
         for row in cur.fetchall():
             enqueue(cur,'Review inactive task','follow_up',{'parent_task':str(row['id'])},'scheduler',f"followup:{row['id']}")
     if due(cur,'daily',86400):

@@ -1,37 +1,57 @@
-# Voice bridge #8
+# ChatGPT ↔ Hermes bridge #8
 
-Постоянный транспорт: https://github.com/DmitryGusenko1/100print/issues/8.
-Входные комментарии принимаются только от владельца DmitryGusenko1:
+Transport: https://github.com/DmitryGusenko1/100print/issues/8.
+Only comments authored by DmitryGusenko1 are accepted. Public repository: send
+only sanitized technical instructions. Never post Telegram conversations,
+customer context, credentials, OAuth links/codes or private artifacts.
 
-```text
+```
 CHATGPT_IN
-session=<unique chat session>
-message=<user question, multiline allowed>
+session=<stable unique chat session>
+message=submit_task
+<sanitized task>
 ```
 
-```text
-CHATGPT_OUT
-session=<same session>
-task_id=<durable UUID>
-result=<JSON>
-```
+Supported message operations (each argument starts on the next real line):
 
-В конце OUT есть HTML marker с task_id для восстановления доставки после сбоя.
-Для CONTEXT и DECISION поле message начинается с отдельной строки `CONTEXT`
-или `DECISION`; последующие строки содержат запрос контекста или явно принятое
-решение. Ответ CONTEXT содержит context; DECISION — saved и memory_id.
-Обычный текст создаёт analysis task с серверным контекстом и Critic.
-Не повторять POST при ожидании; перечитывать комментарии, связывать OUT с session,
-операцией, result.request_comment_id (ID входного комментария) и task_id. Для нескольких одновременных вопросов используйте разные session.
-Аналитика занимает несколько минут; завершение Voice-реплики не отменяет серверную задачу.
+- `status`: last verified management health with checked_at and job counts.
+- `submit_task\n<task>`: durable queued job; ordinary text is an alias.
+- `get_task_result\n<task UUID>`: same session only; queued/running/awaiting_owner/done/failed.
+- `propose_owner\n<sanitized proposal>`: send to the existing management Telegram,
+  leaving awaiting_owner. This never approves or executes the proposal.
+- `CONTEXT\n<query>`: compatible context receipt; private text stays on VPS,
+  public response contains memory counts.
+- `DECISION\n<explicit user decision>`: saved reported decision with memory_id;
+  approval_granted=false. Passing information grants no additional permission.
 
-Для нового Voice-чата (одно действие, GitHub plugin должен быть подключён):
+Responses start CHATGPT_OUT, followed by session, task_id and result JSON.
+Match result.request_comment_id to the input comment ID. The outer task_id is
+the receipt ID; result.task_id is the durable Hermes job ID for retrieval.
+Do not resubmit while waiting: reread comments, then request get_task_result.
+A done result reports provider=hermes, actual API call count, completion time,
+and artifact hashes/sizes. Model text and full artifacts remain private on VPS.
+There is no legacy provider fallback. Do not invent an answer from a queued receipt.
 
-> Используй GitHub plugin: прочитай docs/CHATGPT_PROJECT_INSTRUCTIONS.md в DmitryGusenko1/100print, следуй этим инструкциям и через bridge issue #8 проведи с Finance, Marketing, Sales и Critic анализ, стоит ли нам снизить цены на 15% ради быстрого роста, не соглашаясь автоматически.
+The existing ceo-github-watcher runs both intake and a serial durable worker.
+Hermes uses its installed `-z --usage-file --resume` interface, preserving native
+session IDs by bridge session. Workspaces and private outputs: data/hermes-bridge/.
+Queued jobs survive restart. Interrupted running jobs recover a saved completion
+receipt or fail with effect_unknown; they are never blindly rerun. GitHub delivery
+uses markers, rereads and at most five send attempts. Telegram proposals have one
+send attempt; unknown delivery needs reconciliation, never automatic replay.
+Awaiting_owner requires actual owner interaction; no approval is simulated.
 
-Инструкции также можно заранее вставить в Project Instructions. Реальное выполнение
-GitHub tools зависит от их доступности в выбранном ChatGPT Voice режиме и разрешений
-аккаунта; VPS не может включить plugin или изменить настройки ChatGPT за пользователя.
-Нет гарантии exactly-once POST при неопределённом результате GitHub HTTP запроса:
-marker и перечитывание восстанавливают подтверждённую публикацию. Intake, cursor и
-артефакты идемпотентны и транзакционны в ceo_orchestrator PostgreSQL.
+Management bot: hundredprintbot. Future customer bot WebToPrintISbot is disabled
+by project policy and is not a bridge prerequisite. Health verification checks
+the real existing management gateway, allowlist and exclusive consumer. It is
+not proof of genuine inbound Telegram E2E or approval of any plan.
+
+Long tasks live on VPS after ChatGPT's response ends. This bridge cannot open
+this chat or start ChatGPT in the background. ChatGPT reads the bridge only in
+an active dialogue or a separately configured scheduled task.
+
+`done` certifies a completed inference and saved response artifact, not independent
+verification of every action requested in prose. Native Codex file tools currently
+fail closed in unattended Hermes sessions. The E2E artifact is the exact model
+response saved by the adapter; no native tool permission was broadened. Do not
+claim that an arbitrary requested file edit succeeded from this receipt alone.
