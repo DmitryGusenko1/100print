@@ -37,7 +37,7 @@ class IsolationTests(unittest.TestCase):
         from app.providers import LocalBrainProvider
         with patch('subprocess.Popen') as spawn:
             for call in (lambda: hermes_execute({}),
-                         lambda: ProductionCodexProvider().respond({}),
+                         lambda: ProductionCodexProvider.__new__(ProductionCodexProvider).respond({}),
                          lambda: CodexRunner.__new__(CodexRunner).run('probe', '../escape'),
                          lambda: LocalBrainProvider().execute({'type':'ai-task'}),
                          lambda: access.executor_probe('submit')):
