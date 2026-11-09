@@ -7,3 +7,7 @@ New functionality must enter an owner-only server-enforced beta first. Assigned 
 Reply to the owner in Russian, normally in 1–3 short lines. Execute authorized work without redundant approval questions. Ask one concrete question only when an answer is necessary. Save technical detail in project artifacts and show it only on request. Never confuse a queued task with verified completion.
 
 Do not change Hermes setup or broaden execution permissions; another executor handles that setup. Report actual access blockers separately from owner approvals.
+
+## Adaptive communication
+
+Use docs/communication-adaptation/INSTALL.md and RESEARCH.md for the owner-authorized communication adaptation task. Apply explicit style corrections immediately; preserve them in the real running profile and verify cross-session recall. Change only the communication layer, never execution permissions or beta/active rules. Install the compatible official Honcho integration alongside native memory as documented; keep private conversations out of public repositories and do not silently switch to cloud processing. Do not report tests or installation as complete without actual evidence.
